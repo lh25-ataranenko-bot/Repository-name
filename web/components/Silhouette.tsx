@@ -1,0 +1,25 @@
+// Body-type silhouettes: the catalogue shows no photos without usage rights.
+const SIL: Record<string, { b: string; g: string; w: number[] }> = {
+  sedan: { b: "M8 58 C8 51 12 47 22 46 L56 42 L79 28 C83 25 87 24 93 24 L125 24 C131 24 135 26 139 29 L157 42 L183 46 C189 47 192 51 192 57 L192 62 L8 62 Z", g: "M64 42 L84 30 C87 28 90 28 94 28 L107 28 L107 42 Z M111 28 L124 28 C129 28 132 29 135 32 L148 42 L111 42 Z", w: [50, 150] },
+  liftback: { b: "M8 58 C8 51 12 47 22 46 L56 42 L81 27 C85 24 89 23 95 23 L121 23 C127 23 131 25 137 28 L171 44 L184 47 C189 48 192 52 192 57 L192 62 L8 62 Z", g: "M64 42 L86 29 C89 27 92 27 96 27 L108 27 L108 42 Z M112 27 L121 27 C126 27 129 28 134 31 L156 42 L112 42 Z", w: [50, 150] },
+  crossover: { b: "M10 58 L10 44 C10 39 14 37 20 36 L44 34 L64 18 C67 16 71 15 77 15 L143 15 C149 15 153 17 156 20 L170 33 L184 36 C189 37 192 41 192 47 L192 62 L10 62 Z", g: "M52 34 L68 21 C70 19 73 19 77 19 L104 19 L104 34 Z M108 19 L141 19 C146 19 149 20 151 23 L162 34 L108 34 Z", w: [50, 152] },
+  hatch: { b: "M14 58 L14 46 C14 41 18 39 24 38 L50 36 L72 19 C75 17 78 16 84 16 L144 16 C150 16 153 18 155 22 L164 41 L170 44 C173 46 174 50 174 55 L174 62 L14 62 Z", g: "M58 36 L76 22 C78 20 81 20 85 20 L110 20 L110 36 Z M114 20 L143 20 C147 20 149 21 151 24 L158 36 L114 36 Z", w: [48, 144] },
+  wagon: { b: "M8 58 C8 51 12 47 22 46 L56 42 L80 26 C84 24 88 23 94 23 L172 23 C177 23 180 26 182 31 L188 46 C191 48 192 52 192 57 L192 62 L8 62 Z", g: "M64 42 L84 29 C87 27 90 27 94 27 L110 27 L110 42 Z M114 27 L168 27 C172 27 174 29 176 33 L180 42 L114 42 Z", w: [50, 150] },
+};
+
+export function Silhouette({ body }: { body: string }) {
+  const s = SIL[body] ?? SIL.sedan;
+  return (
+    <svg className="sil" viewBox="0 0 200 76" aria-hidden="true">
+      <line className="ground" x1="2" y1="72.5" x2="198" y2="72.5" />
+      <path className="body" d={s.b} />
+      <path className="glass" d={s.g} />
+      {s.w.map((x) => (
+        <g key={x}>
+          <circle className="tyre" cx={x} cy="62" r="11" />
+          <circle className="hub" cx={x} cy="62" r="5" />
+        </g>
+      ))}
+    </svg>
+  );
+}

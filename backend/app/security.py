@@ -59,14 +59,18 @@ def require_editor(user: User = Depends(current_user)) -> User:
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """Simple per-IP sliding window. Behind several API instances use a shared store (Redis)."""
 
-    def __init__(self, app, per_minute: int):
+    def __init__(self, app, per_minute: int, trust_forwarded_for: bool = False):
         super().__init__(app)
         self.per_minute = per_minute
+        self.trust_forwarded_for = trust_forwarded_for
         self.hits: dict[str, deque[float]] = defaultdict(deque)
 
     async def dispatch(self, request: Request, call_next):
         if request.url.path.startswith("/api/"):
             ip = request.client.host if request.client else "unknown"
+            fwd = request.headers.get("x-forwarded-for")
+            if self.trust_forwarded_for and fwd:
+                ip = fwd.split(",")[0].strip()
             now = time.monotonic()
             q = self.hits[ip]
             while q and now - q[0] > 60:

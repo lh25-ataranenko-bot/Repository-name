@@ -1,0 +1,44 @@
+# Full stack: PostgreSQL + FastAPI + Next.js.  Start: docker compose up --build
+# Open http://localhost:3000. The API is reachable only through the website (/api/*)
+# and, for the mobile app during development, on http://localhost:8000.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: autowise
+      POSTGRES_PASSWORD: autowise
+      POSTGRES_DB: autowise
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autowise"]
+      interval: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      AUTOWISE_DATABASE_URL: postgresql+psycopg://autowise:autowise@db:5432/autowise
+      AUTOWISE_JWT_SECRET: ${AUTOWISE_JWT_SECRET:-change-this-to-a-long-random-string-0123456789}
+      AUTOWISE_ADMIN_EMAIL: ${AUTOWISE_ADMIN_EMAIL:-admin@autowise.local}
+      AUTOWISE_ADMIN_PASSWORD: ${AUTOWISE_ADMIN_PASSWORD:-change-me-now}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: ./web
+      args:
+        API_URL_INTERNAL: http://api:8000
+    environment:
+      API_URL_INTERNAL: http://api:8000
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

@@ -12,7 +12,10 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:8081"]
     admin_email: str = "admin@autowise.local"
     admin_password: str = "change-me-now"
-    rate_limit_per_minute: int = 120
+    rate_limit_per_minute: int = 300
+    # The website proxies /api/* to the backend, so the client IP arrives in X-Forwarded-For.
+    # Keep True only while the API is reachable solely through that proxy.
+    trust_forwarded_for: bool = True
 
     # Default assumptions for cost calculations (editable by the user per request)
     petrol_uah: float = 58.5

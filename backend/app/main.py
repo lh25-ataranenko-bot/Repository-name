@@ -12,7 +12,8 @@ app = FastAPI(
     version="1.0.0",
     description="Каталог, порівняння модифікацій, вартість володіння, рейтинги й аналіз оголошень.",
 )
-app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute)
+app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute,
+                   trust_forwarded_for=settings.trust_forwarded_for)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
