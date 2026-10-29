@@ -1,0 +1,77 @@
+import time
+from collections import defaultdict, deque
+from datetime import UTC, datetime, timedelta
+
+import bcrypt
+import jwt
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+
+from .config import get_settings
+from .db import get_db
+from .models import User
+
+bearer = HTTPBearer(auto_error=False)
+
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+
+def verify_password(password: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(password.encode(), hashed.encode())
+    except ValueError:
+        return False
+
+
+def create_token(user: User) -> str:
+    s = get_settings()
+    payload = {"sub": str(user.id), "role": user.role,
+               "exp": datetime.now(UTC) + timedelta(minutes=s.jwt_ttl_minutes)}
+    return jwt.encode(payload, s.jwt_secret, algorithm="HS256")
+
+
+def current_user(
+    cred: HTTPAuthorizationCredentials | None = Depends(bearer), db: Session = Depends(get_db)
+) -> User:
+    if cred is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Увійдіть в обліковий запис")
+    try:
+        payload = jwt.decode(cred.credentials, get_settings().jwt_secret, algorithms=["HS256"])
+    except jwt.PyJWTError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Сесія завершилася. Увійдіть знову") from None
+    user = db.get(User, int(payload["sub"]))
+    if user is None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Користувача не знайдено")
+    return user
+
+
+def require_editor(user: User = Depends(current_user)) -> User:
+    if user.role not in ("editor", "admin"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Потрібні права редактора")
+    return user
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """Simple per-IP sliding window. Behind several API instances use a shared store (Redis)."""
+
+    def __init__(self, app, per_minute: int):
+        super().__init__(app)
+        self.per_minute = per_minute
+        self.hits: dict[str, deque[float]] = defaultdict(deque)
+
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path.startswith("/api/"):
+            ip = request.client.host if request.client else "unknown"
+            now = time.monotonic()
+            q = self.hits[ip]
+            while q and now - q[0] > 60:
+                q.popleft()
+            if len(q) >= self.per_minute:
+                return JSONResponse({"detail": "Забагато запитів. Спробуйте за хвилину."}, status_code=429)
+            q.append(now)
+        return await call_next(request)
