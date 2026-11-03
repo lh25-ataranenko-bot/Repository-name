@@ -86,4 +86,5 @@ def test_admin_import_and_patch(client, admin_token):
     assert golf["status"] == "unverified" and golf["torque"] is None
     r = client.patch("/api/admin/cars/toyota-camry-xv70", headers=h, json={"hp": 200}).json()
     assert r["status"] == "partial"
-    assert client.get("/api/admin/changelog", headers=h).json()[0]["field"] == "hp"
+    log = client.get("/api/admin/changelog", headers=h, params={"slug": "toyota-camry-xv70"}).json()
+    assert [e["field"] for e in log[:2]] == ["status", "hp"]

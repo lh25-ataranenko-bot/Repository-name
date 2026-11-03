@@ -46,7 +46,8 @@ def seed(db: Session) -> int:
 
     s = get_settings()
     if not db.scalar(select(User).where(User.email == s.admin_email)):
-        db.add(User(email=s.admin_email, name="Адміністратор", role="admin", password_hash=hash_password(s.admin_password)))
+        db.add(User(email=s.admin_email, name="Адміністратор", role="admin", email_verified=True,
+                    password_hash=hash_password(s.admin_password)))
     db.commit()
     return added
 

@@ -89,6 +89,29 @@ class UserOut(BaseModel):
     email: str
     name: str
     role: str
+    email_verified: bool = False
+
+
+class TokenIn(BaseModel):
+    token: str = Field(min_length=10, max_length=200)
+
+
+class ForgotIn(BaseModel):
+    email: str = Field(max_length=200)
+
+
+class ResetIn(BaseModel):
+    token: str = Field(min_length=10, max_length=200)
+    password: str = Field(min_length=8, max_length=128)
+
+
+class PasswordChangeIn(BaseModel):
+    current: str = Field(max_length=128)
+    new: str = Field(min_length=8, max_length=128)
+
+
+class ProfileIn(BaseModel):
+    name: str = Field(max_length=120)
 
 
 class TokenOut(BaseModel):
@@ -119,18 +142,75 @@ class ImportIn(BaseModel):
     csv: str = Field(max_length=2_000_000)
 
 
-class CarPatch(BaseModel):
-    """Editable fields. A change to a critical value sets status to 'partial' until reviewed."""
-    hp: int | None = None
-    torque: int | None = None
-    acc: float | None = None
-    vmax: int | None = None
-    cons_pass: float | None = None
-    cons_real: float | None = None
-    price: float | None = None
-    maint_per_year: float | None = None
-    repair_per_year: float | None = None
-    depreciation: float | None = None
-    reliability: int | None = None
-    source: str | None = None
+Body = Literal["sedan", "liftback", "crossover", "hatch", "wagon"]
+FuelT = Literal["petrol", "diesel", "hybrid", "electric"]
+TransT = Literal["auto", "robot", "cvt", "manual", "reducer"]
+DriveT = Literal["FWD", "RWD", "AWD"]
+
+
+class CarFields(BaseModel):
+    """Every editable characteristic. Ranges catch unit mistakes (mpg instead of l/100 km, etc.)."""
+    name: str | None = Field(None, min_length=1, max_length=120)
+    year_from: int | None = Field(None, ge=1950, le=2100)
+    year_to: int | None = Field(None, ge=1950, le=2100)
+    year_ref: int | None = Field(None, ge=1950, le=2100)
+    body: Body | None = None
+    fuel: FuelT | None = None
+    engine_code: str | None = Field(None, max_length=80)
+    displacement: int | None = Field(None, ge=500, le=9000)
+    hp: int | None = Field(None, ge=30, le=1500)
+    torque: int | None = Field(None, ge=50, le=1500)
+    transmission: str | None = Field(None, max_length=80)
+    trans_type: TransT | None = None
+    drive: DriveT | None = None
+    acc: float | None = Field(None, ge=2, le=30)
+    vmax: int | None = Field(None, ge=80, le=420)
+    cons_pass: float | None = Field(None, ge=1, le=40)
+    cons_real: float | None = Field(None, ge=1, le=40)
+    tank: float | None = Field(None, ge=10, le=200)
+    battery: float | None = Field(None, ge=5, le=250)
+    length: int | None = Field(None, ge=2000, le=7000)
+    width: int | None = Field(None, ge=1200, le=2600)
+    height: int | None = Field(None, ge=1000, le=2500)
+    wheelbase: int | None = Field(None, ge=1500, le=4500)
+    clearance: int | None = Field(None, ge=80, le=400)
+    trunk: int | None = Field(None, ge=0, le=3000)
+    ncap: int | None = Field(None, ge=0, le=5)
+    ncap_year: int | None = Field(None, ge=1997, le=2100)
+    airbags: int | None = Field(None, ge=0, le=20)
+    assists: list[Literal["AEB", "LKA", "ACC", "BSM", "RCTA"]] | None = None
+    comfort: float | None = Field(None, ge=0, le=10)
+    reliability: int | None = Field(None, ge=0, le=100)
+    reliability_confidence: Literal["висока", "середня", "низька"] | None = None
+    maint_per_year: float | None = Field(None, ge=0, le=20000)
+    repair_per_year: float | None = Field(None, ge=0, le=20000)
+    depreciation: float | None = Field(None, ge=0, le=0.6)
+    liquidity: Literal["висока", "середня", "низька"] | None = None
+    price: float | None = Field(None, ge=500, le=1_000_000)
+    source: str | None = Field(None, max_length=200)
+
+
+class CarPatch(CarFields):
+    """A change to a critical value sets status to 'partial' until an editor reviews it."""
     status: Literal["verified", "partial", "unverified"] | None = None
+
+
+class CarCreate(CarFields):
+    brand: str = Field(min_length=1, max_length=80)
+    model: str = Field(min_length=1, max_length=80)
+    generation: str = Field(min_length=1, max_length=80)
+    name: str = Field(min_length=1, max_length=120)
+    body: Body
+    fuel: FuelT
+    trans_type: TransT
+    drive: DriveT
+
+
+class IssueIn(BaseModel):
+    part: str = Field(min_length=1, max_length=200)
+    frequency: Literal["часто", "іноді", "рідко"]
+    cost: float = Field(0, ge=0, le=100000)
+
+
+class RoleIn(BaseModel):
+    role: Literal["user", "editor", "admin"]

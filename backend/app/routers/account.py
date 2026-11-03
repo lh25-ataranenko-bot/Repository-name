@@ -1,5 +1,8 @@
 """Registration, login and the personal cabinet: favourites, saved comparisons, garage."""
 
+import hashlib
+import secrets
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response
@@ -7,15 +10,18 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import Favorite, GarageCar, GarageEntry, Modification, SavedComparison, User
-from ..schemas import GarageCarIn, GarageEntryIn, LoginIn, RegisterIn, SavedIn, TokenOut, UserOut
-from ..security import create_token, current_user, hash_password, verify_password
+from ..config import get_settings
+from ..models import AuthToken, Favorite, GarageCar, GarageEntry, Modification, SavedComparison, User
+from ..schemas import (ForgotIn, GarageCarIn, GarageEntryIn, LoginIn, PasswordChangeIn, ProfileIn, RegisterIn, ResetIn,
+                       SavedIn, TokenIn, TokenOut, UserOut)
+from ..security import create_token, current_user, hash_password, login_guard, verify_password
+from ..services import mailer
 
 router = APIRouter(prefix="/api", tags=["account"])
 
 
 def user_out(u: User) -> UserOut:
-    return UserOut(id=u.id, email=u.email, name=u.name, role=u.role)
+    return UserOut(id=u.id, email=u.email, name=u.name, role=u.role, email_verified=u.email_verified)
 
 
 def mod_by_slug(db: Session, slug: str) -> Modification:
@@ -25,6 +31,36 @@ def mod_by_slug(db: Session, slug: str) -> Modification:
     return m
 
 
+TOKEN_TTL = {"verify": timedelta(days=3), "reset": timedelta(hours=1)}
+
+
+def issue_token(db: Session, user: User, purpose: str) -> str:
+    """Creates a one-time link token; older unused tokens of the same purpose stop working."""
+    for t in db.scalars(select(AuthToken).where(AuthToken.user_id == user.id, AuthToken.purpose == purpose,
+                                                AuthToken.used_at.is_(None))):
+        t.used_at = datetime.now(UTC)
+    raw = secrets.token_urlsafe(32)
+    db.add(AuthToken(user_id=user.id, purpose=purpose, token_hash=hashlib.sha256(raw.encode()).hexdigest(),
+                     expires_at=datetime.now(UTC) + TOKEN_TTL[purpose]))
+    return raw
+
+
+def consume_token(db: Session, raw: str, purpose: str) -> User:
+    t = db.scalar(select(AuthToken).where(AuthToken.token_hash == hashlib.sha256(raw.encode()).hexdigest(),
+                                          AuthToken.purpose == purpose))
+    if t is None or t.used_at is not None or t.expires_at < datetime.now(UTC):
+        raise HTTPException(400, "Посилання недійсне або застаріло. Запросіть новий лист.")
+    t.used_at = datetime.now(UTC)
+    return db.get(User, t.user_id)
+
+
+def send_verification(db: Session, u: User) -> None:
+    raw = issue_token(db, u, "verify")
+    mailer.send(u.email, "AutoWise: підтвердіть пошту",
+                f"Вітаємо{', ' + u.name if u.name else ''}!\n\nЩоб підтвердити пошту, відкрийте посилання:\n"
+                f"{get_settings().app_url}/account/verify?token={raw}\n\nПосилання діє 3 дні.")
+
+
 @router.post("/auth/register", response_model=TokenOut, status_code=201)
 def register(body: RegisterIn, db: Session = Depends(get_db)) -> TokenOut:
     email = body.email.lower()
@@ -32,21 +68,90 @@ def register(body: RegisterIn, db: Session = Depends(get_db)) -> TokenOut:
         raise HTTPException(409, "Користувач із такою поштою вже існує")
     u = User(email=email, name=body.name, password_hash=hash_password(body.password))
     db.add(u)
+    db.flush()
+    send_verification(db, u)
     db.commit()
     return TokenOut(token=create_token(u), user=user_out(u))
 
 
 @router.post("/auth/login", response_model=TokenOut)
 def login(body: LoginIn, db: Session = Depends(get_db)) -> TokenOut:
-    u = db.scalar(select(User).where(User.email == body.email.lower()))
+    email = body.email.lower().strip()
+    login_guard.check(email)
+    u = db.scalar(select(User).where(User.email == email))
     if u is None or not verify_password(body.password, u.password_hash):
+        login_guard.failed(email)
         raise HTTPException(401, "Неправильна пошта або пароль")
+    login_guard.succeeded(email)
+    return TokenOut(token=create_token(u), user=user_out(u))
+
+
+@router.post("/auth/verify", response_model=UserOut)
+def verify_email(body: TokenIn, db: Session = Depends(get_db)) -> UserOut:
+    u = consume_token(db, body.token, "verify")
+    u.email_verified = True
+    db.commit()
+    return user_out(u)
+
+
+@router.post("/auth/resend-verification", status_code=204)
+def resend_verification(user: User = Depends(current_user), db: Session = Depends(get_db)) -> Response:
+    if not user.email_verified:
+        send_verification(db, user)
+        db.commit()
+    return Response(status_code=204)
+
+
+@router.post("/auth/forgot", status_code=204)
+def forgot_password(body: ForgotIn, db: Session = Depends(get_db)) -> Response:
+    """Always 204, so the form does not reveal which emails are registered."""
+    u = db.scalar(select(User).where(User.email == body.email.lower().strip()))
+    if u is not None:
+        raw = issue_token(db, u, "reset")
+        mailer.send(u.email, "AutoWise: відновлення пароля",
+                    "Хтось запросив відновлення пароля для вашого облікового запису AutoWise.\n\n"
+                    f"Щоб задати новий пароль, відкрийте посилання:\n{get_settings().app_url}/account/reset?token={raw}\n\n"
+                    "Посилання діє 1 годину. Якщо це були не ви, просто проігноруйте лист.")
+        db.commit()
+    return Response(status_code=204)
+
+
+@router.post("/auth/reset", response_model=TokenOut)
+def reset_password(body: ResetIn, db: Session = Depends(get_db)) -> TokenOut:
+    u = consume_token(db, body.token, "reset")
+    u.password_hash = hash_password(body.password)
+    u.token_version += 1  # signs out every other device
+    u.email_verified = True  # the link proved access to the mailbox
+    login_guard.succeeded(u.email)
+    db.commit()
     return TokenOut(token=create_token(u), user=user_out(u))
 
 
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(current_user)) -> UserOut:
     return user_out(user)
+
+
+@router.patch("/me", response_model=UserOut)
+def update_me(body: ProfileIn, user: User = Depends(current_user), db: Session = Depends(get_db)) -> UserOut:
+    user.name = body.name
+    db.commit()
+    return user_out(user)
+
+
+@router.post("/me/password", response_model=TokenOut)
+def change_password(body: PasswordChangeIn, user: User = Depends(current_user), db: Session = Depends(get_db)) -> TokenOut:
+    if not verify_password(body.current, user.password_hash):
+        raise HTTPException(400, "Поточний пароль неправильний")
+    if body.current == body.new:
+        raise HTTPException(400, "Новий пароль має відрізнятися від поточного")
+    user.password_hash = hash_password(body.new)
+    user.token_version += 1
+    db.commit()
+    mailer.send(user.email, "AutoWise: пароль змінено",
+                "Пароль вашого облікового запису AutoWise щойно змінено. Інші пристрої вийшли з облікового запису.\n\n"
+                f"Якщо це були не ви, відновіть пароль: {get_settings().app_url}/account/forgot")
+    return TokenOut(token=create_token(user), user=user_out(user))
 
 
 # ---- favourites

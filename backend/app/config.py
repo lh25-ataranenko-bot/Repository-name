@@ -13,6 +13,16 @@ class Settings(BaseSettings):
     admin_email: str = "admin@autowise.local"
     admin_password: str = "change-me-now"
     rate_limit_per_minute: int = 300
+    login_attempts_per_15min: int = 5
+
+    # Email. Without smtp_host letters are only written to the log (development).
+    app_url: str = "http://localhost:3000"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = "AutoWise <no-reply@autowise.local>"
+    smtp_starttls: bool = True
     # The website proxies /api/* to the backend, so the client IP arrives in X-Forwarded-For.
     # Keep True only while the API is reachable solely through that proxy.
     trust_forwarded_for: bool = True
