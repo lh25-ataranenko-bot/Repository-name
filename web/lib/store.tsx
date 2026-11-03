@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { api, setToken } from "./api";
+import { api, setToken, setUnauthorizedHandler } from "./api";
 import type { User } from "./types";
 
 interface Store {
@@ -13,6 +13,7 @@ interface Store {
   user: User | null;
   signIn: (token: string, user: User) => void;
   signOut: () => void;
+  updateUser: (user: User) => void;
   toast: (msg: string) => void;
   ready: boolean;
 }
@@ -49,12 +50,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    setUnauthorizedHandler((m) => {
+      setToken(null);
+      setUser(null);
+      write({ token: undefined, user: undefined });
+      toast(m);
+    });
     const s = read();
     if (s.compare) setCompareState(s.compare);
     if (s.favs) setFavs(s.favs);
     if (s.token && s.user) {
       setToken(s.token);
       setUser(s.user);
+      api<User>("/api/me").then((u) => { setUser(u); write({ user: u }); }).catch(() => null);
       api<string[]>("/api/me/favorites").then(setFavs).catch(() => {
         setToken(null);
         setUser(null);
@@ -104,6 +112,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .catch(() => null);
   };
 
+  const updateUser = (u: User) => {
+    setUser(u);
+    write({ user: u });
+  };
+
   const signOut = () => {
     setToken(null);
     setUser(null);
@@ -112,7 +125,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, toast, ready }}>
+    <Ctx.Provider value={{ compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, updateUser, toast, ready }}>
       {children}
       {msg && (
         <div className="toast" role="status">

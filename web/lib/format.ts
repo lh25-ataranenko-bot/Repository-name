@@ -34,3 +34,13 @@ export const CATS: [import("./types").CategoryKey, string][] = [
 export const PRESETS: Record<string, string> = {
   balanced: "Збалансовано", city: "Місто", highway: "Траса", family: "Сім’я", sport: "Активне водіння", budget: "Мінімальні витрати",
 };
+
+export const ACTION: Record<string, string> = {
+  create: "Створення", update: "Зміна", review: "Перевірка", import: "Імпорт", delete: "Видалення", role: "Роль",
+};
+/** Change-log values are stored raw; show statuses and roles in words. */
+export const logValue = (field: string | null, v: string | null) => {
+  if (v == null) return "—";
+  if (field === "status") return STATUS[v]?.[0] ?? v;
+  return ({ user: "Користувач", editor: "Редактор", admin: "Адміністратор" } as Record<string, string>)[v] ?? v;
+};

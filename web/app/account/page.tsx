@@ -40,7 +40,62 @@ function AuthForm() {
       <div className="field"><label htmlFor="a-pass">Пароль{mode === "register" && " (щонайменше 8 символів)"}</label><input id="a-pass" type="password" required minLength={mode === "register" ? 8 : 1} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "login" ? "current-password" : "new-password"} /></div>
       {error && <p className="err">{error}</p>}
       <button className="btn-primary" type="submit">{mode === "login" ? "Увійти" : "Створити обліковий запис"}</button>
+      {mode === "login" && <Link href="/account/forgot" className="small">Забули пароль?</Link>}
     </form>
+  );
+}
+
+function Profile() {
+  const { user, updateUser, signIn, toast } = useStore();
+  const [name, setName] = useState(user?.name ?? "");
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  if (!user) return null;
+  const saveName = async (e: React.FormEvent) => {
+    e.preventDefault();
+    updateUser(await api<User>("/api/me", { method: "PATCH", json: { name } }));
+    toast("Ім’я збережено");
+  };
+  const changePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    try {
+      const r = await api<{ token: string; user: User }>("/api/me/password", { method: "POST", json: { current, new: next } });
+      signIn(r.token, r.user);
+      setCurrent("");
+      setNext("");
+      toast("Пароль змінено. Інші пристрої вийшли з облікового запису.");
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+  const resend = async () => {
+    await api("/api/auth/resend-verification", { method: "POST" });
+    toast(`Лист надіслано на ${user.email}`);
+  };
+  return (
+    <section className="stack">
+      <h2>Профіль і безпека</h2>
+      {!user.email_verified && (
+        <div className="notice">Пошту {user.email} ще не підтверджено. Без цього не вийде відновити пароль. <button className="btn-sm" onClick={resend}>Надіслати лист ще раз</button></div>
+      )}
+      <div className="split">
+        <form className="panel stack" onSubmit={saveName}>
+          <h3>Ім’я</h3>
+          <div className="field"><label htmlFor="p-name">Як до вас звертатися</label><input id="p-name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} /></div>
+          <button type="submit" disabled={name === user.name}>Зберегти ім’я</button>
+        </form>
+        <form className="panel stack" onSubmit={changePassword}>
+          <h3>Зміна пароля</h3>
+          <div className="field"><label htmlFor="p-cur">Поточний пароль</label><input id="p-cur" type="password" required autoComplete="current-password" value={current} onChange={(e) => setCurrent(e.target.value)} /></div>
+          <div className="field"><label htmlFor="p-new">Новий пароль (щонайменше 8 символів)</label><input id="p-new" type="password" required minLength={8} autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} /></div>
+          {error && <p className="err">{error}</p>}
+          <button type="submit">Змінити пароль</button>
+          <p className="small muted">Після зміни пароля всі інші пристрої вийдуть з облікового запису.</p>
+        </form>
+      </div>
+    </section>
   );
 }
 
@@ -50,7 +105,7 @@ function Garage() {
   const [slug, setSlug] = useState("skoda-octavia-a7-16tdi");
   const [name, setName] = useState("");
   const [startKm, setStartKm] = useState(150000);
-  const load = useCallback(() => api<GarageCar[]>("/api/me/garage").then(setList), []);
+  const load = useCallback(() => api<GarageCar[]>("/api/me/garage").then(setList).catch(() => null), []);
   useEffect(() => { load(); }, [load]);
 
   const add = async (e: React.FormEvent) => {
@@ -119,7 +174,7 @@ export default function Account() {
   useEffect(() => {
     Promise.all(favs.map((s) => api<Car>(`/api/cars/${s}`).catch(() => null))).then((l) => setFavCars(l.filter(Boolean) as Car[]));
   }, [favs]);
-  const loadSaved = useCallback(() => { if (user) api<typeof saved>("/api/me/comparisons").then(setSaved); }, [user]);
+  const loadSaved = useCallback(() => { if (user) api<typeof saved>("/api/me/comparisons").then(setSaved).catch(() => null); }, [user]);
   useEffect(() => { loadSaved(); }, [loadSaved]);
 
   if (!ready) return <p className="loading">Завантаження…</p>;
@@ -150,6 +205,7 @@ export default function Account() {
           </section>
         )}
         {user && <Garage />}
+        {user && <Profile />}
       </div>
     </>
   );
