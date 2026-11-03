@@ -1,8 +1,9 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
+import { CarPicker } from "@/components/CarPicker";
 import { CarRow } from "@/components/CarRow";
-import { Button, Card, Chip, Field, Loading, Row, Screen, T, useToast } from "@/components/ui";
+import { Button, Card, Chip, Field, Loading, Notice, Row, Screen, T, useToast } from "@/components/ui";
 import { api } from "@/lib/api";
 import { nf } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -16,12 +17,23 @@ function Auth() {
   const t = useTheme();
   const toast = useToast();
   const { signIn } = useStore();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
+  const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const submit = async () => {
+    setError(null);
+    if (mode === "forgot") {
+      try {
+        await api("/api/auth/forgot", { method: "POST", json: { email } });
+        setSent(true);
+      } catch (e) {
+        setError((e as Error).message);
+      }
+      return;
+    }
     try {
       const r = await api<{ token: string; user: User }>(`/api/auth/${mode}`, { method: "POST", json: mode === "login" ? { email, password } : { email, password, name } });
       await signIn(r.token, r.user);
@@ -33,19 +45,76 @@ function Auth() {
   return (
     <Card>
       <Row><Chip label="Вхід" on={mode === "login"} onPress={() => setMode("login")} /><Chip label="Реєстрація" on={mode === "register"} onPress={() => setMode("register")} /></Row>
+      {mode === "forgot" && <T v="muted">Вкажіть пошту облікового запису. Ми надішлемо посилання для нового пароля; відкрийте його на телефоні чи комп’ютері. Посилання діє 1 годину.</T>}
       {mode === "register" && <Field label="Ім’я" value={name} onChangeText={setName} />}
       <Field label="Пошта" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
-      <Field label={mode === "register" ? "Пароль (щонайменше 8 символів)" : "Пароль"} value={password} onChangeText={setPassword} secureTextEntry />
+      {mode !== "forgot" && <Field label={mode === "register" ? "Пароль (щонайменше 8 символів)" : "Пароль"} value={password} onChangeText={setPassword} secureTextEntry />}
       {error && <T style={{ color: t.bad }}>{error}</T>}
-      <Button kind="primary" title={mode === "login" ? "Увійти" : "Створити обліковий запис"} onPress={submit} />
+      {mode === "forgot" && sent ? (
+        <T v="small">Якщо обліковий запис з адресою {email} існує, лист уже в дорозі. Перевірте також папку «Спам».</T>
+      ) : (
+        <Button kind="primary" title={mode === "login" ? "Увійти" : mode === "register" ? "Створити обліковий запис" : "Надіслати посилання"} onPress={submit} />
+      )}
+      {mode === "login" && <Button kind="ghost" small title="Забули пароль?" onPress={() => { setMode("forgot"); setSent(false); }} />}
+      {mode === "forgot" && <Button kind="ghost" small title="Повернутися до входу" onPress={() => setMode("login")} />}
     </Card>
+  );
+}
+
+function Profile() {
+  const t = useTheme();
+  const toast = useToast();
+  const { user, updateUser, signIn } = useStore();
+  const [name, setName] = useState(user?.name ?? "");
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  if (!user) return null;
+  const saveName = async () => {
+    updateUser(await api<User>("/api/me", { method: "PATCH", json: { name } }));
+    toast("Ім’я збережено");
+  };
+  const changePassword = async () => {
+    setError(null);
+    if (next.length < 8) return setError("Новий пароль має містити щонайменше 8 символів.");
+    try {
+      const r = await api<{ token: string; user: User }>("/api/me/password", { method: "POST", json: { current, new: next } });
+      await signIn(r.token, r.user);
+      setCurrent("");
+      setNext("");
+      toast("Пароль змінено. Інші пристрої вийшли з облікового запису.");
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+  return (
+    <View style={{ gap: 12 }}>
+      <T v="h2">Профіль і безпека</T>
+      {!user.email_verified && (
+        <Notice>
+          Пошту {user.email} ще не підтверджено. Без цього не вийде відновити пароль.{"\n"}
+          <T v="small" style={{ color: t.accent, fontWeight: "700" }} onPress={async () => { await api("/api/auth/resend-verification", { method: "POST" }); toast("Лист надіслано"); }}>Надіслати лист ще раз</T>
+        </Notice>
+      )}
+      <Card>
+        <Field label="Ім’я" value={name} onChangeText={setName} maxLength={120} />
+        <Button title="Зберегти ім’я" disabled={name === user.name} onPress={saveName} />
+      </Card>
+      <Card>
+        <T v="h3">Зміна пароля</T>
+        <Field label="Поточний пароль" value={current} onChangeText={setCurrent} secureTextEntry />
+        <Field label="Новий пароль (щонайменше 8 символів)" value={next} onChangeText={setNext} secureTextEntry />
+        {error && <T style={{ color: t.bad }}>{error}</T>}
+        <Button title="Змінити пароль" disabled={!current || !next} onPress={changePassword} />
+        <T v="muted">Після зміни пароля всі інші пристрої вийдуть з облікового запису.</T>
+      </Card>
+    </View>
   );
 }
 
 function Garage() {
   const toast = useToast();
   const { data, error, reload } = useApi<GarageCar[]>("/api/me/garage");
-  const cars = useApi<{ items: Car[] }>("/api/cars?sort=price");
   const [slug, setSlug] = useState("skoda-octavia-a7-16tdi");
   const [name, setName] = useState("");
   const [km, setKm] = useState("150000");
@@ -72,8 +141,7 @@ function Garage() {
     <View style={{ gap: 12 }}>
       <T v="h2">Мій гараж</T>
       <Card>
-        <T v="label">Модифікація</T>
-        <Row>{cars.data?.items.map((c) => <Chip key={c.slug} label={`${c.model} ${c.name}`} on={slug === c.slug} onPress={() => setSlug(c.slug)} />)}</Row>
+        <CarPicker value={slug} onChange={(c) => setSlug(c.slug)} />
         <Row style={{ alignItems: "flex-start" }}>
           <Field label="Назва" placeholder="Робоча Октавія" value={name} onChangeText={setName} />
           <Field label="Пробіг, км" keyboardType="numeric" value={km} onChangeText={setKm} />
@@ -144,6 +212,7 @@ export default function Account() {
             </Card>
           )) : <T v="muted">Збережених порівнянь поки немає.</T>}
           <Garage />
+          <Profile />
         </>
       )}
     </Screen>

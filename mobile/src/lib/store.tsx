@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Platform } from "react-native";
-import { api, setToken } from "./api";
+import { api, setToken, setUnauthorizedHandler } from "./api";
 import type { User } from "./types";
 
 interface Store {
@@ -15,6 +15,7 @@ interface Store {
   user: User | null;
   signIn: (token: string, user: User) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (user: User) => void;
 }
 
 const Ctx = createContext<Store | null>(null);
@@ -41,6 +42,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .catch(() => null);
 
   useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setToken(null);
+      setUser(null);
+      secure.del().catch(() => null);
+    });
     (async () => {
       try {
         const s = JSON.parse((await AsyncStorage.getItem(KEY)) || "{}");
@@ -99,7 +105,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ ready, compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut }}>
+    <Ctx.Provider value={{ ready, compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, updateUser: setUser }}>
       {children}
     </Ctx.Provider>
   );

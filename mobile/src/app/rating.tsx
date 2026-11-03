@@ -5,7 +5,7 @@ import { Bar, Button, Card, Chip, Loading, Row, Screen, T, useToast } from "@/co
 import { CATS, FUEL, PRESETS, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
-import type { RatingResponse } from "@/lib/types";
+import type { CategoryKey, Meta, RatingResponse } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
 
 export default function Rating() {
@@ -15,15 +15,41 @@ export default function Rating() {
   const { compare, toggleCompare } = useStore();
   const [preset, setPreset] = useState(p.preset ?? "balanced");
   const [budget, setBudget] = useState(Number(p.max_price ?? 30000));
+  const [weights, setWeights] = useState<Record<CategoryKey, number> | null>(null);
+  const [editing, setEditing] = useState(false);
+  const meta = useApi<Meta>("/api/meta");
   const filters = { max_price: budget, trans: p.trans ?? "any", drive: p.drive ?? "any", fuel: p.fuel ?? "any", body: p.body ?? "any" };
-  const { data, error } = useApi<RatingResponse>("/api/rating", { method: "POST", json: { preset, filters } });
+  const { data, error } = useApi<RatingResponse>("/api/rating", { method: "POST", json: weights ? { weights, filters } : { preset, filters } });
+  const choosePreset = (k: string) => { setPreset(k); setWeights(null); };
+  const shown = weights ?? (meta.data ? meta.data.presets[preset]?.w ?? meta.data.presets.balanced.w : null);
+  const bump = (k: CategoryKey, d: number) => {
+    if (!shown) return;
+    setWeights({ ...shown, [k]: Math.max(0, Math.min(10, shown[k] + d)) });
+  };
   const tags = p.tags ? p.tags.split("|").filter(Boolean) : [];
 
   return (
     <Screen>
       {tags.length > 0 && <Row><T v="label">З вашого запиту:</T>{tags.map((x) => <Chip key={x} label={x} on />)}</Row>}
       <T v="label">Пріоритет</T>
-      <Row>{Object.entries(PRESETS).map(([k, n]) => <Chip key={k} label={n} on={preset === k} onPress={() => setPreset(k)} />)}</Row>
+      <Row>
+        {Object.entries(PRESETS).map(([k, n]) => <Chip key={k} label={n} on={!weights && preset === k} onPress={() => choosePreset(k)} />)}
+        <Chip label={weights ? "Власні ваги ✓" : "Налаштувати ваги"} on={!!weights || editing} onPress={() => setEditing(!editing)} />
+      </Row>
+      {editing && shown && (
+        <Card>
+          <T v="muted">Вага 0 — категорія не враховується, 10 — найважливіша. Бюджет і обов’язкові умови все одно працюють як фільтри.</T>
+          {CATS.map(([k, l]) => (
+            <Row key={k} style={{ flexWrap: "nowrap", justifyContent: "space-between" }}>
+              <T v="small" style={{ flex: 1 }}>{l}</T>
+              <Button small title="−" accessibilityLabel={`Зменшити вагу: ${l}`} disabled={shown[k] <= 0} onPress={() => bump(k, -1)} />
+              <T v="h3" style={{ width: 28, textAlign: "center" }}>{shown[k]}</T>
+              <Button small title="+" accessibilityLabel={`Збільшити вагу: ${l}`} disabled={shown[k] >= 10} onPress={() => bump(k, 1)} />
+            </Row>
+          ))}
+          {weights && <Button small kind="ghost" title="Повернути профіль" onPress={() => setWeights(null)} />}
+        </Card>
+      )}
       <T v="label">Бюджет: {usd(budget)}</T>
       <Row>{[15000, 20000, 25000, 30000, 40000].map((b) => <Chip key={b} label={usd(b)} on={budget === b} onPress={() => setBudget(b)} />)}</Row>
       {!data ? <Loading error={error} /> : (

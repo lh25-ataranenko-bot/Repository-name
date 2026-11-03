@@ -108,7 +108,7 @@ export interface CheckResponse {
   disclaimer: string;
 }
 
-export interface User { id: number; email: string; name: string; role: "user" | "editor" | "admin" }
+export interface User { id: number; email: string; name: string; role: "user" | "editor" | "admin"; email_verified: boolean }
 
 export interface GarageCar {
   id: number; name: string; start_km: number;

@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
+import { CarPicker } from "@/components/CarPicker";
 import { Card, Chip, Field, Loading, Notice, Pill, Row, Screen, T } from "@/components/ui";
 import { api } from "@/lib/api";
 import { nf, usd } from "@/lib/format";
@@ -15,7 +16,6 @@ export default function Check() {
   const params = useLocalSearchParams<{ slug?: string }>();
   const [form, setForm] = useState({ slug: params.slug ?? "vw-passat-b8-20tdi", year: 2017, km: 198000, price: 13900, condition: "good", vin: "WVWZZZ3CZHE000000" });
   const [done, setDone] = useState<Record<string, boolean>>({});
-  const cars = useApi<{ items: Car[] }>("/api/cars?sort=price");
 
   useEffect(() => {
     if (!params.slug) return;
@@ -42,12 +42,11 @@ export default function Check() {
   return (
     <Screen>
       <T v="muted">Оберіть модифікацію з оголошення і вкажіть рік, пробіг та ціну.</T>
-      <T v="label">Модифікація</T>
-      <Row>{cars.data?.items.map((c) => <Chip key={c.slug} label={`${c.model} ${c.name}`} on={form.slug === c.slug} onPress={() => {
+      <CarPicker value={form.slug} onChange={(c) => {
         const year = c.year_ref ?? CURRENT_YEAR;
         setForm({ slug: c.slug, year, km: 15000 * (CURRENT_YEAR - year), price: c.price ?? 0, condition: "good", vin: "" });
         setDone({});
-      }} />)}</Row>
+      }} />
       <Row style={{ alignItems: "flex-start" }}>
         <Field label="Рік випуску" keyboardType="numeric" value={String(form.year)} onChangeText={num("year")} />
         <Field label="Пробіг, км" keyboardType="numeric" value={String(form.km)} onChangeText={num("km")} />

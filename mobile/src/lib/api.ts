@@ -27,6 +27,12 @@ export const setToken = (t: string | null) => {
   token = t;
 };
 
+// Called when the server rejects the saved session (expired, or password changed on another device).
+let onUnauthorized: ((message: string) => void) | null = null;
+export const setUnauthorizedHandler = (fn: (message: string) => void) => {
+  onUnauthorized = fn;
+};
+
 export async function api<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
   const headers: Record<string, string> = { ...(init.headers as Record<string, string>) };
   if (init.json !== undefined) headers["Content-Type"] = "application/json";
@@ -46,6 +52,7 @@ export async function api<T>(path: string, init: RequestInit & { json?: unknown 
     } catch {
       /* not JSON */
     }
+    if (res.status === 401 && token && onUnauthorized) onUnauthorized(msg);
     throw new ApiError(res.status, msg);
   }
   return res.status === 204 ? (undefined as T) : res.json();
