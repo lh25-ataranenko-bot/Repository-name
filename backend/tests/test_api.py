@@ -88,3 +88,14 @@ def test_admin_import_and_patch(client, admin_token):
     assert r["status"] == "partial"
     log = client.get("/api/admin/changelog", headers=h, params={"slug": "toyota-camry-xv70"}).json()
     assert [e["field"] for e in log[:2]] == ["status", "hp"]
+
+
+def test_offline_resend_is_idempotent(client):
+    r = client.post("/api/auth/register", json={"email": "offline@example.com", "password": "secret123"})
+    h = {"Authorization": f"Bearer {r.json()['token']}"}
+    g = client.post("/api/me/garage", headers=h, json={"name": "Авто", "start_km": 1000}).json()
+    entry = {"date": "2026-11-01", "type": "fuel", "cost_uah": 2000, "km": 1500, "note": "", "client_id": "abc12345-x"}
+    client.post(f"/api/me/garage/{g['id']}/entries", headers=h, json=entry)
+    g2 = client.post(f"/api/me/garage/{g['id']}/entries", headers=h, json=entry).json()
+    assert len(g2["entries"]) == 1 and g2["total_uah"] == 2000
+    assert client.post(f"/api/me/garage/{g['id']}/entries", headers=h, json={**entry, "client_id": "bad id!"}).status_code == 422

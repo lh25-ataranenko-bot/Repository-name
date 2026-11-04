@@ -2,15 +2,15 @@
 
 from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db import get_db
-from ..schemas import CheckIn, CompareIn, ParseIn, RatingIn, TcoIn
-from ..services import listing
+from ..schemas import AssistantIn, CheckIn, CompareIn, ParseIn, RatingIn, TcoIn
+from ..services import assistant, listing
 from ..services.calc import Env, default_inputs, tco
-from ..services.cache import catalog_cache
+from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
 from ..services.query_parser import parse_query
 from ..services.scoring import CATEGORIES, PRESETS, explain, passes, weighted
@@ -216,6 +216,33 @@ def check(body: CheckIn, db: Session = Depends(get_db)) -> dict[str, Any]:
         "disclaimer": "VIN не гарантує повної історії. Без підтверджених джерел сервіс не може стверджувати, "
                       "що авто не було в ДТП або що пробіг справжній.",
     }
+
+
+assistant_limit = Counter("assistant", 60)
+
+
+@router.post("/assistant")
+def ask_assistant(body: AssistantIn, request: Request, db: Session = Depends(get_db)) -> dict[str, Any]:
+    if body.messages[-1].role != "user":
+        raise HTTPException(422, "Останнє повідомлення має бути від користувача")
+    if body.messages[-1].text.strip() == "" or len(body.messages[-1].text) > 1000:
+        raise HTTPException(422, "Запитання має містити від 1 до 1000 символів")
+    ip = request.client.host if request.client else "unknown"
+    fwd = request.headers.get("x-forwarded-for")
+    if get_settings().trust_forwarded_for and fwd:
+        ip = fwd.split(",")[0].strip()
+    if assistant_limit.hit(ip) > get_settings().assistant_per_minute:
+        raise HTTPException(429, "Забагато запитань за хвилину. Спробуйте трохи згодом.")
+    cars = scored(db)
+    history = [t.model_dump() for t in body.messages]
+    try:
+        out = assistant.ask_claude(history, cars)
+    except assistant.AssistantUnavailable as e:
+        out = assistant.answer_with_rules(body.messages[-1].text, cars, Env.default(),
+                                          f"AI-помічник зараз недоступний ({e}). Показано підбір за правилами.")
+    by = index(db)
+    out["cars"] = [by[s] for s in out["cars"] if s in by]
+    return out
 
 
 @router.get("/health")

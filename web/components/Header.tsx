@@ -6,7 +6,7 @@ import { useStore } from "@/lib/store";
 
 const LINKS = [
   ["/", "Головна"], ["/catalog", "Каталог"], ["/compare", "Порівняння"], ["/tco", "Калькулятор"],
-  ["/rating", "Рейтинг"], ["/check", "Аналіз оголошення"], ["/account", "Кабінет"],
+  ["/rating", "Рейтинг"], ["/assistant", "AI-помічник"], ["/check", "Аналіз оголошення"], ["/account", "Кабінет"],
 ];
 
 export function Header() {

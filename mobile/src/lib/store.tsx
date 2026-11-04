@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Platform } from "react-native";
-import { api, setToken, setUnauthorizedHandler } from "./api";
+import { api, ApiError, setToken, setUnauthorizedHandler } from "./api";
 import type { User } from "./types";
 
 interface Store {
@@ -45,6 +45,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setUnauthorizedHandler(() => {
       setToken(null);
       setUser(null);
+      persist({ user: undefined });
       secure.del().catch(() => null);
     });
     (async () => {
@@ -55,12 +56,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const t = await secure.get();
         if (t) {
           setToken(t);
+          // The saved profile lets the app work offline; the server copy replaces it when reachable.
+          if (s.user) setUser(s.user);
           try {
-            setUser(await api<User>("/api/me"));
+            const u = await api<User>("/api/me");
+            setUser(u);
+            persist({ user: u });
             setFavs(await api<string[]>("/api/me/favorites"));
-          } catch {
-            setToken(null);
-            await secure.del();
+          } catch (e) {
+            // Sign out only when the server rejected the session, not when it was unreachable.
+            if (e instanceof ApiError && e.status === 401) {
+              setToken(null);
+              setUser(null);
+              persist({ user: undefined });
+              await secure.del();
+            }
           }
         }
       } finally {
@@ -93,6 +103,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setToken(t);
     await secure.set(t);
     setUser(u);
+    persist({ user: u });
     await Promise.all(favs.map((s) => api(`/api/me/favorites/${s}`, { method: "PUT" }).catch(() => null)));
     const f = await api<string[]>("/api/me/favorites").catch(() => favs);
     setFavs(f);
@@ -101,11 +112,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     setToken(null);
     setUser(null);
+    persist({ user: undefined });
     await secure.del();
   };
 
   return (
-    <Ctx.Provider value={{ ready, compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, updateUser: setUser }}>
+    <Ctx.Provider value={{ ready, compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, updateUser: (u: User) => { setUser(u); persist({ user: u }); } }}>
       {children}
     </Ctx.Provider>
   );

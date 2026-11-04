@@ -164,6 +164,7 @@ class GarageCar(Base):
 
 class GarageEntry(Base):
     __tablename__ = "garage_entries"
+    __table_args__ = (UniqueConstraint("garage_car_id", "client_id"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     garage_car_id: Mapped[int] = mapped_column(ForeignKey("garage_cars.id", ondelete="CASCADE"), index=True)
     date: Mapped[date] = mapped_column(Date)
@@ -171,6 +172,8 @@ class GarageEntry(Base):
     cost_uah: Mapped[float] = mapped_column(Float)
     km: Mapped[int] = mapped_column(Integer)
     note: Mapped[str] = mapped_column(Text, default="")
+    # Set by the app; a resend of an entry queued offline carries the same id and is ignored.
+    client_id: Mapped[str | None] = mapped_column(String(64))
     car: Mapped[GarageCar] = relationship(back_populates="entries")
 
 

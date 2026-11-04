@@ -137,6 +137,7 @@ class GarageEntryIn(BaseModel):
     cost_uah: float = Field(ge=0, le=10_000_000)
     km: int = Field(ge=0, le=2_000_000)
     note: str = Field("", max_length=500)
+    client_id: str | None = Field(None, min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
 
 
 class ImportIn(BaseModel):
@@ -215,3 +216,12 @@ class IssueIn(BaseModel):
 
 class RoleIn(BaseModel):
     role: Literal["user", "editor", "admin"]
+
+
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    text: str = Field(min_length=1, max_length=4000)
+
+
+class AssistantIn(BaseModel):
+    messages: list[ChatTurn] = Field(min_length=1, max_length=20)

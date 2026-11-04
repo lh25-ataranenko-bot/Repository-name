@@ -30,6 +30,11 @@ export default function Home() {
         </Row>
         <Button kind="primary" title="Підібрати" disabled={!parsed} onPress={() => parsed && go(parsed.filters, parsed.preset ?? "balanced", parsed.tags)} />
       </Card>
+      <Card>
+        <T v="h3">AI-помічник</T>
+        <T v="muted">Поставте запитання своїми словами: порівняння, витрати, типові несправності. Відповідь — лише за даними каталогу.</T>
+        <Button title="Запитати помічника" onPress={() => router.push("/assistant")} />
+      </Card>
       <T v="h2">Швидкий старт</T>
       <Row>
         {Object.entries(PRESETS).map(([k, name]) => <Chip key={k} label={name} onPress={() => go({ max_price: 30000 }, k)} />)}

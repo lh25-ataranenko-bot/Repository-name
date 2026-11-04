@@ -258,6 +258,8 @@ def delete_garage(gid: int, user: User = Depends(current_user), db: Session = De
 @router.post("/me/garage/{gid}/entries", status_code=201)
 def add_entry(gid: int, body: GarageEntryIn, user: User = Depends(current_user), db: Session = Depends(get_db)) -> dict[str, Any]:
     g = own_garage_car(db, user, gid)
+    if body.client_id and any(e.client_id == body.client_id for e in g.entries):
+        return garage_out(g)  # already saved: a retry from the offline queue
     g.entries.append(GarageEntry(**body.model_dump()))
     db.commit()
     db.refresh(g)

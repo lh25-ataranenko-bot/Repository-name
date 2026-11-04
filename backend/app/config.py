@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     # Keep True only while the API is reachable solely through that proxy.
     trust_forwarded_for: bool = True
 
+    # AI assistant. Without a key (here or ANTHROPIC_API_KEY) it answers with the rule-based picker.
+    anthropic_api_key: str = ""
+    assistant_model: str = "claude-opus-5-5"
+    assistant_per_minute: int = 10
+
     # Default assumptions for cost calculations (editable by the user per request)
     petrol_uah: float = 58.5
     diesel_uah: float = 55.9

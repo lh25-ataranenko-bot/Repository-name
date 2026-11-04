@@ -82,7 +82,7 @@ export function Field({ label, style, ...p }: TextInputProps & { label: string }
   return (
     <View style={[{ gap: 4, flexGrow: 1, minWidth: 140 }, style as object]}>
       <T v="label">{label}</T>
-      <TextInput placeholderTextColor={t.muted} {...p}
+      <TextInput placeholderTextColor={t.muted} accessibilityLabel={label} {...p}
         style={{ borderWidth: 1, borderColor: t.line, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, color: t.ink, backgroundColor: t.surface, fontSize: 15 }} />
     </View>
   );

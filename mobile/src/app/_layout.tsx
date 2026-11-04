@@ -17,6 +17,7 @@ export default function RootLayout() {
             <Stack.Screen name="car/[slug]" options={{ title: "Модифікація" }} />
             <Stack.Screen name="check" options={{ title: "Аналіз оголошення" }} />
             <Stack.Screen name="rating" options={{ title: "Рейтинг" }} />
+            <Stack.Screen name="assistant" options={{ title: "AI-помічник" }} />
             <Stack.Screen name="account/reset" options={{ title: "Новий пароль" }} />
             <Stack.Screen name="account/verify" options={{ title: "Підтвердження пошти" }} />
           </Stack>

@@ -1,10 +1,11 @@
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { CarPicker } from "@/components/CarPicker";
 import { CarRow } from "@/components/CarRow";
 import { Button, Card, Chip, Field, Loading, Notice, Row, Screen, T, useToast } from "@/components/ui";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import { useGarage } from "@/lib/garage";
 import { nf } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
@@ -113,33 +114,52 @@ function Profile() {
 }
 
 function Garage() {
+  const t = useTheme();
   const toast = useToast();
-  const { data, error, reload } = useApi<GarageCar[]>("/api/me/garage");
+  const { user } = useStore();
+  const garage = useGarage(user?.id);
   const [slug, setSlug] = useState("skoda-octavia-a7-16tdi");
   const [name, setName] = useState("");
   const [km, setKm] = useState("150000");
   const [entry, setEntry] = useState<Record<number, { type: string; cost: string; km: string; note: string }>>({});
+  useFocusEffect(useCallback(() => { garage.sync(); }, [garage.sync]));
 
   const add = async () => {
-    await api("/api/me/garage", { method: "POST", json: { slug, name: name || "Моє авто", start_km: parseInt(km, 10) || 0 } });
-    setName("");
-    toast("Авто додано в гараж");
-    reload();
+    try {
+      await api("/api/me/garage", { method: "POST", json: { slug, name: name || "Моє авто", start_km: parseInt(km, 10) || 0 } });
+      setName("");
+      toast("Авто додано в гараж");
+      garage.reload();
+    } catch (e) {
+      toast(e instanceof ApiError && e.status === 0 ? "Без мережі нове авто додати не вийде. Записи для наявних авто працюють офлайн." : (e as Error).message);
+    }
   };
   const addEntry = async (g: GarageCar) => {
     const e = entry[g.id] ?? { type: "fuel", cost: "", km: "", note: "" };
-    if (!e.cost) return toast("Вкажіть суму");
-    await api(`/api/me/garage/${g.id}/entries`, { method: "POST", json: {
-      date: new Date().toISOString().slice(0, 10), type: e.type, cost_uah: parseFloat(e.cost) || 0, km: parseInt(e.km, 10) || g.current_km, note: e.note,
-    } });
-    setEntry({ ...entry, [g.id]: { type: e.type, cost: "", km: "", note: "" } });
-    toast("Запис додано");
-    reload();
+    const cost = parseFloat(e.cost.replace(",", "."));
+    if (!Number.isFinite(cost) || cost < 0) return toast("Вкажіть суму");
+    try {
+      const how = await garage.addEntry(g.id, {
+        date: new Date().toISOString().slice(0, 10), type: e.type, cost_uah: cost, km: parseInt(e.km, 10) || g.current_km, note: e.note,
+      });
+      setEntry({ ...entry, [g.id]: { type: e.type, cost: "", km: "", note: "" } });
+      toast(how === "sent" ? "Запис додано" : "Немає мережі. Запис збережено на телефоні й надішлеться пізніше");
+    } catch (err) {
+      toast((err as Error).message);
+    }
   };
 
   return (
     <View style={{ gap: 12 }}>
       <T v="h2">Мій гараж</T>
+      {garage.offline && <Notice>Немає зв’язку із сервером. Показано збережені на телефоні дані.</Notice>}
+      {garage.pending > 0 && (
+        <Notice tone="info">
+          Не надіслано записів: {garage.pending}. Вони надішлються, щойно з’явиться мережа.{"\n"}
+          <T v="small" style={{ color: t.accent, fontWeight: "700" }} onPress={() => garage.sync()}>{garage.syncing ? "Надсилаємо…" : "Надіслати зараз"}</T>
+        </Notice>
+      )}
+      {garage.notice && <Notice tone="info">{garage.notice}{"\n"}<T v="small" style={{ color: t.accent }} onPress={garage.clearNotice}>Зрозуміло</T></Notice>}
       <Card>
         <CarPicker value={slug} onChange={(c) => setSlug(c.slug)} />
         <Row style={{ alignItems: "flex-start" }}>
@@ -148,14 +168,14 @@ function Garage() {
         </Row>
         <Button kind="primary" title="Додати в гараж" onPress={add} />
       </Card>
-      {!data ? <Loading error={error} /> : data.length === 0 ? <T v="muted">Гараж порожній. Додайте авто, щоб вести облік заправок, ТО і ремонтів.</T> : data.map((g) => {
+      {!garage.cars ? <Loading error={garage.error} /> : garage.cars.length === 0 ? <T v="muted">Гараж порожній. Додайте авто, щоб вести облік заправок, ТО і ремонтів.</T> : garage.cars.map((g) => {
         const e = entry[g.id] ?? { type: "fuel", cost: "", km: "", note: "" };
         const set = (patch: Partial<typeof e>) => setEntry({ ...entry, [g.id]: { ...e, ...patch } });
         return (
           <Card key={g.id}>
             <Row style={{ justifyContent: "space-between" }}>
               <View style={{ flex: 1 }}><T v="h3">{g.name}</T><T v="muted">{g.modification?.name ?? "—"}</T></View>
-              <Button small kind="ghost" title="Видалити" onPress={async () => { await api(`/api/me/garage/${g.id}`, { method: "DELETE" }); reload(); }} />
+              {!garage.offline && <Button small kind="ghost" title="Видалити" onPress={async () => { await api(`/api/me/garage/${g.id}`, { method: "DELETE" }); garage.reload(); }} />}
             </Row>
             <Row style={{ justifyContent: "space-between" }}>
               <View><T v="label">Витрачено</T><T v="h3">{nf(g.total_uah)} грн</T></View>
@@ -171,8 +191,8 @@ function Garage() {
             <Button title="Додати запис" onPress={() => addEntry(g)} />
             {[...g.entries].reverse().slice(0, 10).map((x) => (
               <Row key={x.id} style={{ justifyContent: "space-between" }}>
-                <T v="small">{x.date} · {TYPES[x.type]}{x.note ? ` · ${x.note}` : ""}</T>
-                <T v="small" style={{ fontWeight: "700" }}>{nf(x.cost_uah)} грн</T>
+                <T v="small">{x.date} · {TYPES[x.type]}{x.note ? ` · ${x.note}` : ""}{x.id < 0 ? " · не надіслано" : ""}</T>
+                <T v="small" style={{ fontWeight: "700", color: x.id < 0 ? t.muted : t.ink }}>{nf(x.cost_uah)} грн</T>
               </Row>
             ))}
           </Card>
