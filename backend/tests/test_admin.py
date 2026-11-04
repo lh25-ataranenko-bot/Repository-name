@@ -35,7 +35,7 @@ def test_issues_replace(client, admin_token):
 
 def test_create_and_delete(client, admin_token):
     h = auth(client, admin_token)
-    body = {"brand": "Opel", "model": "Astra", "generation": "K", "name": "1.6 CDTI МКП-6", "body": "hatch",
+    body = {"brand": "Fiat", "model": "Tipo", "generation": "356", "name": "1.4 МКП-6", "body": "hatch",
             "fuel": "diesel", "trans_type": "manual", "drive": "FWD", "hp": 136, "year_from": 2015, "year_to": 2021}
     r = client.post("/api/admin/cars", headers=h, json=body)
     assert r.status_code == 201
@@ -79,7 +79,7 @@ def test_xlsx_import(client, admin_token):
     h = auth(client, admin_token)
     data = _xlsx([
         ["brand", "model", "generation", "modification", "years", "fuel", "hp", "cons", "price"],
-        ["Opel", "Insignia", "B", "2.0 CDTI АКП-8", "2017–2022", "diesel", 170, 5.4, 17500],
+        ["Dacia", "Jogger", "I", "1.0 TCe МКП-6", "2022–2025", "petrol", 110, 5.4, 17500],
         ["Toyota", "Camry", "XV70", "2.5 АКП-8", "2018–2021", "petrol", 181, 9.3, 24000],
         [None, None, None, None, None, None, None, None, None],
     ])
@@ -87,8 +87,8 @@ def test_xlsx_import(client, admin_token):
     rep = client.post("/api/admin/import/xlsx/validate", headers=h, files=files).json()
     assert len(rep["rows"]) == 2 and rep["rows"][0]["errors"] == [] and "дублікат" in rep["rows"][1]["errors"][0]
     assert client.post("/api/admin/import/xlsx/apply", headers=h, files=files).json() == {"added": 1}
-    car = client.get("/api/cars/opel-insignia-b-2-0-cdti-акп-8").json()
-    assert car["hp"] == 170 and car["cons_pass"] == 5.4 and car["status"] == "unverified"
+    car = client.get("/api/cars/dacia-jogger-i-1-0-tce-мкп-6").json()
+    assert car["hp"] == 110 and car["cons_pass"] == 5.4 and car["status"] == "unverified"
     bad = {"file": ("cars.xlsx", b"not a workbook", "application/octet-stream")}
     assert client.post("/api/admin/import/xlsx/validate", headers=h, files=bad).status_code == 422
     csvf = {"file": ("cars.csv", b"a,b", "text/csv")}

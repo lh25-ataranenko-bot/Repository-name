@@ -47,6 +47,9 @@ class TcoIn(BaseModel):
 
 class Filters(BaseModel):
     max_price: float | None = Field(None, ge=0)
+    year: int | None = Field(None, ge=1950, le=2100)
+    brand: str | None = Field(None, max_length=80)
+    model: str | None = Field(None, max_length=80)
     body: str | None = None
     fuel: str | None = None
     trans: Literal["any", "automatic", "manual"] | None = None

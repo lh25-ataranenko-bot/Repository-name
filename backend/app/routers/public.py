@@ -9,7 +9,7 @@ from ..config import get_settings
 from ..db import get_db
 from ..schemas import AssistantIn, CheckIn, CompareIn, ParseIn, RatingIn, TcoIn
 from ..services import assistant, listing
-from ..services.calc import Env, default_inputs, tco
+from ..services.calc import Env, default_inputs, price_for_year, tco
 from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
 from ..services.query_parser import parse_query
@@ -90,15 +90,43 @@ def list_cars(
     trans: Literal["any", "automatic", "manual"] | None = None,
     drive: str | None = None,
     max_price: float | None = Query(None, ge=0),
+    model: str | None = Query(None, max_length=80),
+    year: int | None = Query(None, ge=1950, le=2100),
     sort: Literal["reliability", "price", "hp", "acc", "cost", "tco"] = "reliability",
     limit: int = Query(48, ge=1, le=200),
     offset: int = Query(0, ge=0),
 ) -> dict[str, Any]:
     cars = scored(db)
-    f = {"q": q, "brand": brand, "body": body, "fuel": fuel, "trans": trans, "drive": drive, "max_price": max_price}
-    items = sorted((c for c in cars if not passes(c, f)), key=SORTS[sort])
-    return {"total": len(cars), "count": len(items), "offset": offset, "limit": limit,
-            "items": items[offset:offset + limit]}
+    f = {"q": q, "brand": brand, "model": model, "year": year, "body": body, "fuel": fuel, "trans": trans,
+         "drive": drive, "max_price": max_price}
+    found = [c for c in cars if not passes(c, f)]
+    if year:
+        found = [with_year(c, year) for c in found]
+    key = SORTS[sort]
+    if year and sort == "price":  # sort by the price of a car of that year
+        key = lambda c: c["price_for_year"] if c["price_for_year"] is not None else 1e12  # noqa: E731
+    found.sort(key=key)
+    return {"total": len(cars), "count": len(found), "offset": offset, "limit": limit,
+            "items": found[offset:offset + limit]}
+
+
+def with_year(car: dict[str, Any], year: int) -> dict[str, Any]:
+    """A copy of the cached car with the estimated price for that production year."""
+    return {**car, "for_year": year, "price_for_year": price_for_year(car, year)}
+
+
+@router.get("/catalog/facets")
+def facets(db: Session = Depends(get_db)) -> dict[str, Any]:
+    """Brands with their models, and the range of production years, for the catalogue filters."""
+    def build() -> dict[str, Any]:
+        cars = scored(db)
+        brands: dict[str, set[str]] = {}
+        for c in cars:
+            brands.setdefault(c["brand"], set()).add(c["model"])
+        years = [y for c in cars for y in (c["year_from"], c["year_to"]) if y]
+        return {"brands": {b: sorted(m) for b, m in sorted(brands.items())},
+                "year_min": min(years) if years else None, "year_max": max(years) if years else None}
+    return catalog_cache.get(("facets",), build)
 
 
 @router.get("/cars/lookup")
@@ -118,9 +146,19 @@ def lookup(db: Session = Depends(get_db), q: str = Query("", max_length=100),
 
 
 @router.get("/cars/{slug}")
-def get_car(slug: str, db: Session = Depends(get_db)) -> dict[str, Any]:
+def get_car(slug: str, db: Session = Depends(get_db),
+            year: int | None = Query(None, ge=1950, le=2100)) -> dict[str, Any]:
     car = dict(pick(db, [slug])[0])  # copy: the cached dict is shared between requests
+    car["years"] = list(range(car["year_from"], car["year_to"] + 1)) if car["year_from"] and car["year_to"] else []
+    car["price_by_year"] = {str(y): price_for_year(car, y) for y in car["years"]}
     car["tco_defaults"] = default_inputs(car)
+    if year:
+        if car["years"] and year not in car["years"]:
+            raise HTTPException(422, f"Ця модифікація випускалася в {car['year_from']}–{car['year_to']} роках")
+        car.update(for_year=year, price_for_year=price_for_year(car, year))
+        if car["price_for_year"] is not None:
+            car["tco_defaults"] = {**car["tco_defaults"], "price": car["price_for_year"],
+                                   "ins": round(car["price_for_year"] * 0.03)}
     return car
 
 
@@ -155,7 +193,7 @@ def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
     for c in cars:
         ov = body.overrides.get(c["slug"])
         r = tco(c, env, ov.to_overrides() if ov else None)
-        results.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['name']}",
+        results.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['generation']} {c['name']}",
                         "defaults": default_inputs(c), "consumption_real": c["cons_real"] is not None,
                         "unit": "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км",
                         "result": r.as_dict() if r else None})
@@ -183,7 +221,7 @@ def rating(body: RatingIn, db: Session = Depends(get_db)) -> dict[str, Any]:
             excluded.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['name']}", "reasons": reasons})
             continue
         s, used = weighted(c["scores"], weights)
-        ranked.append({"car": c, "score": s, "used": used})
+        ranked.append({"car": with_year(c, f["year"]) if f.get("year") else c, "score": s, "used": used})
     ranked.sort(key=lambda r: -(r["score"] if r["score"] is not None else -1))
     top = ranked[:body.limit]
     for r in top:  # explanations only for what is shown

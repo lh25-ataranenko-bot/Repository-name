@@ -1,11 +1,11 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Bar, Button, Card, Chip, Loading, Row, Screen, T, useToast } from "@/components/ui";
 import { CATS, FUEL, PRESETS, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
-import type { CategoryKey, Meta, RatingResponse } from "@/lib/types";
+import type { CategoryKey, Facets, Meta, RatingResponse } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
 
 export default function Rating() {
@@ -18,7 +18,11 @@ export default function Rating() {
   const [weights, setWeights] = useState<Record<CategoryKey, number> | null>(null);
   const [editing, setEditing] = useState(false);
   const meta = useApi<Meta>("/api/meta");
-  const filters = { max_price: budget, trans: p.trans ?? "any", drive: p.drive ?? "any", fuel: p.fuel ?? "any", body: p.body ?? "any" };
+  const [year, setYear] = useState<number | null>(p.year ? Number(p.year) : null);
+  const facets = useApi<Facets>("/api/catalog/facets").data;
+  const yearList = facets?.year_min && facets.year_max
+    ? Array.from({ length: facets.year_max - facets.year_min + 1 }, (_, i) => facets.year_max! - i) : [];
+  const filters = { max_price: budget, year, trans: p.trans ?? "any", drive: p.drive ?? "any", fuel: p.fuel ?? "any", body: p.body ?? "any" };
   const { data, error } = useApi<RatingResponse>("/api/rating", { method: "POST", json: weights ? { weights, filters } : { preset, filters } });
   const choosePreset = (k: string) => { setPreset(k); setWeights(null); };
   const shown = weights ?? (meta.data ? meta.data.presets[preset]?.w ?? meta.data.presets.balanced.w : null);
@@ -52,6 +56,11 @@ export default function Rating() {
       )}
       <T v="label">Бюджет: {usd(budget)}</T>
       <Row>{[15000, 20000, 25000, 30000, 40000].map((b) => <Chip key={b} label={usd(b)} on={budget === b} onPress={() => setBudget(b)} />)}</Row>
+      <T v="label">Рік випуску</T>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+        <Chip label="Будь-який" on={!year} onPress={() => setYear(null)} />
+        {yearList.map((y) => <Chip key={y} label={String(y)} on={year === y} onPress={() => setYear(y)} />)}
+      </ScrollView>
       {!data ? <Loading error={error} /> : (
         <>
           <T v="muted">Підходить: {data.matched} з {data.matched + data.excluded_total}{data.matched > data.ranked.length ? `, показано найкращі ${data.ranked.length}` : ""}. Бюджет та інші умови працюють як фільтри.</T>
@@ -61,7 +70,7 @@ export default function Rating() {
                 <T v="num" style={{ color: i === 0 ? t.needle : t.muted, width: 28 }}>{i + 1}</T>
                 <View style={{ flex: 1, gap: 2 }}>
                   <T v="h3">{r.car.brand} {r.car.model} {r.car.name}</T>
-                  <T v="muted">{years(r.car)} · {FUEL[r.car.fuel]} · {usd(r.car.price)}</T>
+                  <T v="muted">{years(r.car)} · {FUEL[r.car.fuel]} · {r.car.for_year ? `${usd(r.car.price_for_year ?? null)} за авто ${r.car.for_year} р.` : usd(r.car.price)}</T>
                 </View>
                 <View style={{ alignItems: "center" }}><T v="num">{r.score ?? "—"}</T><T v="label">з 100</T></View>
               </Row>

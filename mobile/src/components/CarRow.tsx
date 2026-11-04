@@ -13,7 +13,7 @@ export function CarRow({ car: c, right }: { car: Car; right?: React.ReactNode })
   const inCmp = compare.includes(c.slug);
   const cons = c.cons_real ?? c.cons_pass;
   return (
-    <Pressable onPress={() => router.push({ pathname: "/car/[slug]", params: { slug: c.slug } })} accessibilityRole="link">
+    <Pressable onPress={() => router.push({ pathname: "/car/[slug]", params: c.for_year ? { slug: c.slug, year: String(c.for_year) } : { slug: c.slug } })} accessibilityRole="link">
       <Card>
         <Row style={{ flexWrap: "nowrap", alignItems: "flex-start" }}>
           <View style={{ flex: 1, gap: 2 }}>
@@ -30,7 +30,10 @@ export function CarRow({ car: c, right }: { car: Car; right?: React.ReactNode })
           <Stat label="Надійність" value={c.reliability != null ? `${c.reliability}/100` : ND} />
         </Row>
         <Row style={{ justifyContent: "space-between", borderTopWidth: 1, borderTopColor: t.line, paddingTop: 10 }}>
-          <T v="num" style={{ fontSize: 19 }}>{c.price != null ? usd(c.price) : ND}</T>
+          <View>
+            <T v="num" style={{ fontSize: 19 }}>{(c.for_year ? c.price_for_year : c.price) != null ? usd(c.for_year ? c.price_for_year! : c.price!) : ND}</T>
+            <T v="label">{c.for_year ? `оцінка для ${c.for_year} р.` : `ціна, ${c.year_ref ?? "—"} р.`}</T>
+          </View>
           {right ?? <Button small kind={inCmp ? "primary" : "default"} title={inCmp ? "✓ У порівнянні" : "+ Порівняти"} onPress={() => toast(toggleCompare(c.slug))} />}
         </Row>
       </Card>

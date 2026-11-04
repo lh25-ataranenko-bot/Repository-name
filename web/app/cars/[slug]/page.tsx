@@ -7,6 +7,7 @@ import { SITE_URL } from "@/lib/site";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
 import type { Car } from "@/lib/types";
 import { CarActions } from "./actions";
+import { YearPicker } from "./year";
 
 async function getCar(slug: string): Promise<Car> {
   try {
@@ -38,8 +39,12 @@ function Section({ title, rows }: { title: string; rows: [string, React.ReactNod
   );
 }
 
-export default async function CarPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CarPage({ params, searchParams }: {
+  params: Promise<{ slug: string }>; searchParams: Promise<{ year?: string }>;
+}) {
   const c = await getCar((await params).slug);
+  const asked = Number((await searchParams).year);
+  const year = c.years?.includes(asked) ? asked : null;
   const st = STATUS[c.status] ?? STATUS.unverified;
   return (
     <div className="stack-lg">
@@ -57,14 +62,15 @@ export default async function CarPage({ params }: { params: Promise<{ slug: stri
         </div>
         <div className="stack">
           <div className="stats">
-            <div className="stat"><span className="label">Ціна ({c.year_ref ?? "—"})</span><span className="big-num">{usd(c.price)}</span></div>
-            <div className="stat"><span className="label">Вартість 100 км</span><span className="big-num">{usd(c.cost_per_100km)}</span></div>
+            <div className="stat"><span className="label">Ціна ({year ?? c.year_ref ?? "—"} р.)</span><span className="big-num">{usd(year ? c.price_by_year?.[String(year)] : c.price)}</span></div>
+            <div className="stat"><span className="label">Вартість 100 км</span><span className="big-num">{c.cost_per_100km != null ? `$${nf(c.cost_per_100km, 2)}` : "—"}</span></div>
             <div className="stat"><span className="label">Володіння 5 років</span><span className="big-num">{usd(c.tco_5y)}</span><span className="small muted">15 000 км на рік</span></div>
           </div>
           <ScoreBars series={[{ color: "var(--accent)", scores: c.scores }]} />
           <p className="small muted">Оцінки 0–100. Надійність і комфорт — експертні індекси, решта — відносно автомобілів у каталозі.</p>
         </div>
       </div>
+      <YearPicker slug={c.slug} years={c.years ?? []} prices={c.price_by_year ?? {}} year={year} refYear={c.year_ref} />
       <div className="panel spec-grid">
         <Section title="Двигун і трансмісія" rows={[["Код двигуна", c.engine_code ?? ND], ["Об’єм", c.displacement != null ? `${nf(c.displacement)} см³` : isEV(c) ? "— (електро)" : ND], ["Потужність", v(c.hp, "к.с.")], ["Крутний момент", v(c.torque, "Н·м")], ["КПП", c.transmission ?? ND], ["Привід", DRIVE[c.drive]]]} />
         <Section title="Динаміка й економічність" rows={[["0–100 км/год", v(c.acc, "с", 1)], ["Макс. швидкість", v(c.vmax, "км/год")], ["Витрата (паспорт)", v(c.cons_pass, consUnit(c), 1)], ["Витрата (реальна)", v(c.cons_real, consUnit(c), 1)], [isEV(c) ? "Батарея (корисна)" : "Бак", isEV(c) ? v(c.battery, "кВт·год") : v(c.tank, "л")], ["Запас ходу (реальний)", v(c.range_km, "км")]]} />

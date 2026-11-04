@@ -1,6 +1,7 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { View } from "react-native";
-import { Button, Card, Loading, Pill, Row, ScoreBars, Screen, Silhouette, T, useToast } from "@/components/ui";
+import { useState } from "react";
+import { ScrollView, View } from "react-native";
+import { Button, Card, Chip, Loading, Pill, Row, ScoreBars, Screen, Silhouette, T, useToast } from "@/components/ui";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
@@ -8,7 +9,8 @@ import type { Car } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
 
 export default function CarScreen() {
-  const { slug } = useLocalSearchParams<{ slug: string }>();
+  const { slug, year: yearParam } = useLocalSearchParams<{ slug: string; year?: string }>();
+  const [year, setYear] = useState<number | null>(yearParam ? Number(yearParam) : null);
   const t = useTheme();
   const toast = useToast();
   const { compare, toggleCompare, favs, toggleFav } = useStore();
@@ -41,10 +43,20 @@ export default function CarScreen() {
       <Row>
         <Button kind={inCmp ? "primary" : "default"} title={inCmp ? "✓ У порівнянні" : "+ Порівняти"} onPress={() => toast(toggleCompare(c.slug))} />
         <Button title={fav ? "★ В обраному" : "☆ В обране"} onPress={() => { toggleFav(c.slug); toast(fav ? "Прибрано з обраного" : "Додано в обране"); }} />
-        <Button title="Перевірити оголошення" onPress={() => router.push({ pathname: "/check", params: { slug: c.slug } })} />
+        <Button title="Перевірити оголошення" onPress={() => router.push({ pathname: "/check", params: year ? { slug: c.slug, year: String(year) } : { slug: c.slug } })} />
       </Row>
+      {(c.years?.length ?? 0) > 0 && (
+        <Card>
+          <T v="h3">Ціна за роком випуску</T>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+            {c.years!.map((y) => <Chip key={y} label={String(y)} on={(year ?? c.year_ref) === y} onPress={() => setYear(y)} />)}
+          </ScrollView>
+          <T v="small">Орієнтовна ціна авто {year ?? c.year_ref} року: <T v="small" style={{ fontWeight: "800" }}>{usd(c.price_by_year?.[String(year ?? c.year_ref)] ?? null)}</T></T>
+          <T v="muted">Розраховано від ціни {c.year_ref} р. зі знеціненням за рік.</T>
+        </Card>
+      )}
       <Row style={{ justifyContent: "space-between" }}>
-        <View><T v="label">Ціна ({c.year_ref})</T><T v="num">{usd(c.price)}</T></View>
+        <View><T v="label">Ціна ({year ?? c.year_ref} р.)</T><T v="num">{usd(year ? c.price_by_year?.[String(year)] ?? null : c.price)}</T></View>
         <View><T v="label">100 км</T><T v="num">{c.cost_per_100km != null ? `$${nf(c.cost_per_100km, 2)}` : "—"}</T></View>
         <View><T v="label">5 років</T><T v="num">{usd(c.tco_5y)}</T></View>
       </Row>

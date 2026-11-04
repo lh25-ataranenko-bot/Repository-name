@@ -99,3 +99,37 @@ def test_offline_resend_is_idempotent(client):
     g2 = client.post(f"/api/me/garage/{g['id']}/entries", headers=h, json=entry).json()
     assert len(g2["entries"]) == 1 and g2["total_uah"] == 2000
     assert client.post(f"/api/me/garage/{g['id']}/entries", headers=h, json={**entry, "client_id": "bad id!"}).status_code == 422
+
+
+def test_year_and_model_filters(client):
+    r = client.get("/api/cars", params={"brand": "Toyota", "model": "Camry"}).json()
+    assert {c["generation"] for c in r["items"]} == {"XV50", "XV70"}
+    r = client.get("/api/cars", params={"brand": "Toyota", "model": "Camry", "year": 2014}).json()
+    assert [c["slug"] for c in r["items"]] == ["toyota-camry-xv50-25"]
+    camry = r["items"][0]
+    assert camry["for_year"] == 2014 and camry["price_for_year"] == camry["price"]  # 2014 is the reference year
+    older = client.get("/api/cars", params={"brand": "Toyota", "model": "Camry", "year": 2011}).json()["items"][0]
+    assert older["price_for_year"] < camry["price"]  # older car of the same modification is cheaper
+    # the budget is compared with the price of a car of that year
+    cheap = client.get("/api/cars", params={"year": 2011, "max_price": 13000, "model": "Camry"}).json()
+    assert cheap["count"] == 1
+
+
+def test_car_years_and_price_for_year(client):
+    c = client.get("/api/cars/toyota-camry-xv70").json()
+    assert c["years"] == [2018, 2019, 2020, 2021] and set(c["price_by_year"]) == {"2018", "2019", "2020", "2021"}
+    assert c["price_by_year"]["2018"] < c["price_by_year"]["2021"]
+    y = client.get("/api/cars/toyota-camry-xv70", params={"year": 2018}).json()
+    assert y["tco_defaults"]["price"] == y["price_for_year"] == c["price_by_year"]["2018"]
+    assert client.get("/api/cars/toyota-camry-xv70", params={"year": 2010}).status_code == 422
+
+
+def test_facets(client):
+    f = client.get("/api/catalog/facets").json()
+    assert "Camry" in f["brands"]["Toyota"] and f["year_min"] <= 2008 and f["year_max"] >= 2024
+
+
+def test_rating_with_year(client):
+    r = client.post("/api/rating", json={"filters": {"year": 2012, "max_price": 12000}}).json()
+    assert r["ranked"] and all(x["car"]["year_from"] <= 2012 <= x["car"]["year_to"] for x in r["ranked"])
+    assert all(x["car"]["price_for_year"] <= 12000 for x in r["ranked"])

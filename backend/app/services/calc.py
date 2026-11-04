@@ -133,3 +133,17 @@ def tco(car: Car, env: Env, ov: Overrides | None = None) -> TcoResult | None:
         assumptions={**d, "fuel_price_uah": energy_price_uah(car, env), "rate": env.rate,
                      "consumption_is_real": bool(consumption(car) and consumption(car)[1]) and (ov is None or ov.cons is None)},
     )
+
+
+def price_for_year(car: Car, year: int | None) -> float | None:
+    """Market price of a car of the given production year, from the reference price and yearly depreciation.
+
+    price(year) = price × (1 − d) ^ (year_ref − year). None outside the production years or without data.
+    """
+    if year is None:
+        return car.get("price")
+    if car.get("price") is None or car.get("depreciation") is None or not car.get("year_ref"):
+        return None
+    if car.get("year_from") and not car["year_from"] <= year <= (car.get("year_to") or year):
+        return None
+    return round(car["price"] * (1 - car["depreciation"]) ** (car["year_ref"] - year), -1)

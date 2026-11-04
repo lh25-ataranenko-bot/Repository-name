@@ -286,3 +286,8 @@ hr{border:0;border-top:1px solid var(--line);margin:0}
 .chat-turn{display:grid;gap:8px}
 .chat-bubble{padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;gap:6px;max-width:100%;overflow-wrap:anywhere}
 .chat-turn.user .chat-bubble{background:var(--accent-soft);border-color:var(--accent);justify-self:end;max-width:min(640px,100%)}
+.year-bars{display:flex;gap:6px;align-items:flex-end;height:120px;overflow-x:auto;padding-bottom:2px}
+.year-bar{flex:1 0 44px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;padding:0;border:0;background:transparent;border-radius:6px}
+.year-bar .year-fill{width:70%;background:var(--accent-soft);border:1px solid var(--accent);border-radius:4px 4px 0 0}
+.year-bar.on .year-fill{background:var(--needle);border-color:var(--needle)}
+.year-bar.on .small{font-weight:700}

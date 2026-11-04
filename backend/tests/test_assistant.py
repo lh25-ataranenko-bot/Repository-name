@@ -27,7 +27,7 @@ def final(text):
 
 
 def search_args(**kw):
-    base = {"text": "", "max_price": 0, "body": "any", "fuel": "any", "transmission": "any", "drive": "any",
+    base = {"text": "", "max_price": 0, "year": 0, "body": "any", "fuel": "any", "transmission": "any", "drive": "any",
             "priority": "balanced"}
     return {**base, **kw}
 

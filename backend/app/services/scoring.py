@@ -7,7 +7,7 @@ Mandatory criteria (budget, gearbox, …) are filters, never part of the score.
 
 from typing import Any
 
-from .calc import Car, Env, cost_per_100km, tco
+from .calc import Car, Env, cost_per_100km, price_for_year, tco
 
 CATEGORIES: list[tuple[str, str]] = [
     ("economy", "Економічність"),
@@ -84,12 +84,17 @@ def weighted(score: dict[str, int | None], weights: dict[str, float]) -> tuple[i
 def passes(car: Car, f: dict[str, Any]) -> list[str]:
     """Mandatory filters. Returns the reasons a car is excluded (empty list = passes)."""
     reasons: list[str] = []
+    year = f.get("year")
+    if year and car.get("year_from") and not car["year_from"] <= year <= (car.get("year_to") or year):
+        reasons.append(f"не випускалася у {year} році ({car['year_from']}–{car['year_to']})")
     max_price = f.get("max_price")
-    if max_price:
-        if car.get("price") is None:
+    if max_price and not reasons:
+        # With a year chosen the budget is compared with the price of a car of that year.
+        price = price_for_year(car, year) if year else car.get("price")
+        if price is None:
             reasons.append("немає даних про ціну")
-        elif car["price"] > max_price:
-            reasons.append(f"ціна ${car['price']:,.0f} перевищує бюджет ${max_price:,.0f}".replace(",", " "))
+        elif price > max_price:
+            reasons.append(f"ціна ${price:,.0f} перевищує бюджет ${max_price:,.0f}".replace(",", " "))
     if f.get("body") not in (None, "", "any") and car["body"] != f["body"]:
         reasons.append("інший тип кузова")
     if f.get("fuel") not in (None, "", "any") and car["fuel"] != f["fuel"]:
@@ -102,6 +107,8 @@ def passes(car: Car, f: dict[str, Any]) -> list[str]:
         reasons.append("інший привід")
     if f.get("brand") and car["brand"] != f["brand"]:
         reasons.append("інша марка")
+    if f.get("model") and car["model"] != f["model"]:
+        reasons.append("інша модель")
     q = (f.get("q") or "").strip().lower()
     if q:
         hay = " ".join(str(car.get(k) or "") for k in ("brand", "model", "generation", "name", "engine_code")).lower()
@@ -131,8 +138,9 @@ def explain(car: Car, score: dict[str, int | None], weights: dict[str, float], u
                   key=lambda k: score[k])[:2]
     for k in weak:
         out.append({"kind": "minus", "text": f"Слабке місце: {labels[k].lower()} {score[k]}/100"})
-    if max_price and car.get("price") is not None:
-        out.append({"kind": "note", "text": f"Запас бюджету: ${max_price - car['price']:,.0f}".replace(",", " ")})
+    price = car.get("price_for_year", car.get("price"))
+    if max_price and price is not None:
+        out.append({"kind": "note", "text": f"Запас бюджету: ${max_price - price:,.0f}".replace(",", " ")})
     if used < sum(1 for k, _ in CATEGORIES if weights.get(k, 0) > 0):
         out.append({"kind": "note", "text": "Оцінено не за всіма категоріями: бракує даних"})
     if car.get("reliability_confidence") == "низька":

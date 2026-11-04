@@ -15,7 +15,7 @@ from typing import Any
 import anthropic
 
 from ..config import get_settings
-from .calc import Car, Env
+from .calc import Car, Env, price_for_year
 from .query_parser import parse_query
 from .scoring import CATEGORIES, PRESETS, passes, weighted
 
@@ -31,6 +31,7 @@ SYSTEM = """Ти — помічник сервісу AutoWise, який допо
 - Факти про автомобілі (характеристики, ціни, витрати, надійність, несправності) бери лише з результатів інструментів. Не вигадуй і не доповнюй їх із загальних знань. Якщо даних немає, так і скажи: «немає даних».
 - Каталог демонстраційний і містить не всі автомобілі. Якщо потрібного авто немає в каталозі, скажи про це і запропонуй найближчі варіанти з каталогу.
 - Перш ніж рекомендувати, знайди варіанти через search_catalog. Для детальних питань про конкретну модифікацію використовуй get_car, для зіставлення двох–п’яти авто — compare_cars.
+- Якщо користувач називає рік випуску, передавай його в search_catalog і вказуй ціну саме для цього року (price_usd_for_year).
 - Ціни — у доларах США, витрата — л/100 км (для електромобілів кВт·год/100 км).
 - Пояснюй, чому варіант підходить, конкретними цифрами з результатів: ціна, вартість 100 км, надійність, витрати за 5 років.
 - Не давай юридичних чи фінансових гарантій. Для вживаних авто нагадуй про діагностику перед купівлею.
@@ -50,7 +51,8 @@ TOOLS: list[dict[str, Any]] = [
             "additionalProperties": False,
             "properties": {
                 "text": {"type": "string", "description": "Марка, модель, покоління або код двигуна, напр. «camry» чи «bmw f30». Порожній рядок — без текстового пошуку."},
-                "max_price": {"type": "number", "description": "Максимальна ціна в доларах США; 0 — без обмеження."},
+                "max_price": {"type": "number", "description": "Максимальна ціна в доларах США; 0 — без обмеження. З роком порівнюється з ціною авто цього року."},
+                "year": {"type": "integer", "description": "Рік випуску: лише модифікації, що випускалися в цьому році, з оцінкою ціни для нього; 0 — будь-який."},
                 "body": {"type": "string", "enum": ["any", "sedan", "liftback", "crossover", "hatch", "wagon"]},
                 "fuel": {"type": "string", "enum": ["any", "petrol", "diesel", "hybrid", "electric"]},
                 "transmission": {"type": "string", "enum": ["any", "automatic", "manual"]},
@@ -60,7 +62,7 @@ TOOLS: list[dict[str, Any]] = [
                     "description": "Як ранжувати: balanced, city (місто), highway (траса), family (сім’я), sport (динаміка), budget (мінімальні витрати).",
                 },
             },
-            "required": ["text", "max_price", "body", "fuel", "transmission", "drive", "priority"],
+            "required": ["text", "max_price", "year", "body", "fuel", "transmission", "drive", "priority"],
         },
     },
     {
@@ -114,17 +116,21 @@ class CatalogTools:
             if s not in self.seen:
                 self.seen.append(s)
 
-    def search_catalog(self, text: str = "", max_price: float = 0, body: str = "any", fuel: str = "any",
+    def search_catalog(self, text: str = "", max_price: float = 0, year: int = 0, body: str = "any", fuel: str = "any",
                        transmission: str = "any", drive: str = "any", priority: str = "balanced") -> dict[str, Any]:
-        f = {"q": text or None, "max_price": max_price or None, "body": body, "fuel": fuel,
+        f = {"q": text or None, "max_price": max_price or None, "year": year or None, "body": body, "fuel": fuel,
              "trans": transmission, "drive": drive}
         weights = PRESETS.get(priority, PRESETS["balanced"])["w"]
         found = [c for c in self.cars if not passes(c, f)]
         found.sort(key=lambda c: -(weighted(c["scores"], weights)[0] or -1))
         top = found[:MAX_RESULTS]
         self._note([c["slug"] for c in top])
-        return {"matched": len(found), "results": [
-            {**_brief(c), "score_0_100": weighted(c["scores"], weights)[0]} for c in top]}
+        def row(c: Car) -> dict[str, Any]:
+            r = {**_brief(c), "score_0_100": weighted(c["scores"], weights)[0]}
+            if year:
+                r.update(year=year, price_usd_for_year=price_for_year(c, year))
+            return r
+        return {"matched": len(found), "results": [row(c) for c in top]}
 
     def get_car(self, slug: str) -> dict[str, Any]:
         c = self.by_slug.get(slug)

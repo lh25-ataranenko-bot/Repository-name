@@ -29,6 +29,8 @@ function Tco() {
   useEffect(() => {
     const add = params.get("add");
     if (ready && add && !compare.includes(add)) setCompare([...compare.slice(0, 4), add]);
+    const price = Number(params.get("price"));
+    if (add && price > 0) setOv((o) => ({ ...o, [add]: { ...(o[add] ?? {}), price } }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 

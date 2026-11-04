@@ -54,7 +54,15 @@ export interface Car {
   cost_per_100km: number | null;
   range_km: number | null;
   tco_5y: number | null;
+  /** Present when a production year was requested */
+  for_year?: number;
+  price_for_year?: number | null;
+  /** Detail endpoint only */
+  years?: number[];
+  price_by_year?: Record<string, number | null>;
 }
+
+export interface Facets { brands: Record<string, string[]>; year_min: number | null; year_max: number | null }
 
 export interface Meta {
   fuel: Record<string, string>;

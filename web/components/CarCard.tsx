@@ -32,9 +32,13 @@ export function CarCard({ car: c }: { car: Car }) {
         <div><dt>Надійність</dt><dd>{c.reliability != null ? `${c.reliability}/100` : ND}</dd></div>
       </dl>
       <div />
-      <div className="car-foot"><span className="price">{c.price != null ? usd(c.price) : ND}</span><span className="small muted">ціна, {c.year_ref ?? "—"} р.</span></div>
+      {c.for_year ? (
+        <div className="car-foot"><span className="price">{c.price_for_year != null ? usd(c.price_for_year) : ND}</span><span className="small muted">оцінка для {c.for_year} р.</span></div>
+      ) : (
+        <div className="car-foot"><span className="price">{c.price != null ? usd(c.price) : ND}</span><span className="small muted">ціна, {c.year_ref ?? "—"} р.</span></div>
+      )}
       <div className="car-actions">
-        <Link className="btn" href={`/cars/${c.slug}`}>Детальніше</Link>
+        <Link className="btn" href={c.for_year ? `/cars/${c.slug}?year=${c.for_year}` : `/cars/${c.slug}`}>Детальніше</Link>
         <button className={inCmp ? "btn-primary" : ""} onClick={() => toggleCompare(c.slug)}>{inCmp ? "✓ У порівнянні" : "+ Порівняти"}</button>
       </div>
     </article>

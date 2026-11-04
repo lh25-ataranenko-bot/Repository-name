@@ -13,17 +13,18 @@ const CURRENT_YEAR = 2026;
 
 export default function Check() {
   const t = useTheme();
-  const params = useLocalSearchParams<{ slug?: string }>();
+  const params = useLocalSearchParams<{ slug?: string; year?: string }>();
   const [form, setForm] = useState({ slug: params.slug ?? "vw-passat-b8-20tdi", year: 2017, km: 198000, price: 13900, condition: "good", vin: "WVWZZZ3CZHE000000" });
   const [done, setDone] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!params.slug) return;
     api<Car>(`/api/cars/${params.slug}`).then((c) => {
-      const year = c.year_ref ?? CURRENT_YEAR;
-      setForm({ slug: c.slug, year, km: 15000 * (CURRENT_YEAR - year), price: c.price ?? 0, condition: "good", vin: "" });
+      const want = Number(params.year);
+      const year = want && c.years?.includes(want) ? want : c.year_ref ?? CURRENT_YEAR;
+      setForm({ slug: c.slug, year, km: 15000 * (CURRENT_YEAR - year), price: c.price_by_year?.[String(year)] ?? c.price ?? 0, condition: "good", vin: "" });
     }).catch(() => null);
-  }, [params.slug]);
+  }, [params.slug, params.year]);
 
   const { data, error } = useApi<CheckResponse>("/api/check", { method: "POST", json: form });
   const num = (k: "year" | "km" | "price") => (v: string) => setForm({ ...form, [k]: parseInt(v, 10) || 0 });

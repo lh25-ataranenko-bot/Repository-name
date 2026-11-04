@@ -17,15 +17,14 @@ function Check() {
   const [done, setDone] = useState<Record<string, boolean>>({});
 
   // Picking another modification resets the form to that car's typical values.
-  const pick = async (slug: string, keepExample = false) => {
-    if (keepExample) return setForm((f) => ({ ...f, slug }));
+  const pick = async (slug: string, wantYear?: number) => {
     const c = await api<Car>(`/api/cars/${slug}`);
-    const year = c.year_ref ?? c.year_from ?? CURRENT_YEAR;
-    setForm({ slug, year, km: 15000 * (CURRENT_YEAR - year), price: c.price ?? 0, condition: "good", vin: "" });
+    const year = wantYear && c.years?.includes(wantYear) ? wantYear : c.year_ref ?? c.year_from ?? CURRENT_YEAR;
+    setForm({ slug, year, km: 15000 * (CURRENT_YEAR - year), price: c.price_by_year?.[String(year)] ?? c.price ?? 0, condition: "good", vin: "" });
     setDone({});
   };
   useEffect(() => {
-    if (p.get("slug")) pick(p.get("slug")!);
+    if (p.get("slug")) pick(p.get("slug")!, Number(p.get("year")) || undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
