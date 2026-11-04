@@ -60,3 +60,36 @@ def test_roles(client, admin_token):
     assert client.delete("/api/admin/cars/mazda-6-gj-25", headers=eh).status_code == 403  # nor delete
     me = client.get("/api/me", headers=h).json()
     assert client.patch(f"/api/admin/users/{me['id']}", headers=h, json={"role": "user"}).status_code == 409
+
+
+def _xlsx(rows):
+    import io
+
+    from openpyxl import Workbook
+
+    wb = Workbook()
+    for r in rows:
+        wb.active.append(r)
+    buf = io.BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
+def test_xlsx_import(client, admin_token):
+    h = auth(client, admin_token)
+    data = _xlsx([
+        ["brand", "model", "generation", "modification", "years", "fuel", "hp", "cons", "price"],
+        ["Opel", "Insignia", "B", "2.0 CDTI АКП-8", "2017–2022", "diesel", 170, 5.4, 17500],
+        ["Toyota", "Camry", "XV70", "2.5 АКП-8", "2018–2021", "petrol", 181, 9.3, 24000],
+        [None, None, None, None, None, None, None, None, None],
+    ])
+    files = {"file": ("cars.xlsx", data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+    rep = client.post("/api/admin/import/xlsx/validate", headers=h, files=files).json()
+    assert len(rep["rows"]) == 2 and rep["rows"][0]["errors"] == [] and "дублікат" in rep["rows"][1]["errors"][0]
+    assert client.post("/api/admin/import/xlsx/apply", headers=h, files=files).json() == {"added": 1}
+    car = client.get("/api/cars/opel-insignia-b-2-0-cdti-акп-8").json()
+    assert car["hp"] == 170 and car["cons_pass"] == 5.4 and car["status"] == "unverified"
+    bad = {"file": ("cars.xlsx", b"not a workbook", "application/octet-stream")}
+    assert client.post("/api/admin/import/xlsx/validate", headers=h, files=bad).status_code == 422
+    csvf = {"file": ("cars.csv", b"a,b", "text/csv")}
+    assert client.post("/api/admin/import/xlsx/validate", headers=h, files=csvf).status_code == 422

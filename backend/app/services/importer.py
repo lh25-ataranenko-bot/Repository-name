@@ -38,13 +38,42 @@ def _existing_keys(db: Session) -> set[tuple[str, str, str, str]]:
     return {tuple(x.lower() for x in r) for r in rows}
 
 
-def validate(text: str, db: Session) -> dict[str, Any]:
+def parse_csv(text: str) -> tuple[list[str], list[dict[str, str]]]:
     lines = [ln for ln in (text or "").strip().splitlines() if ln.strip()]
-    if len(lines) < 2:
-        return {"fatal": "Потрібен рядок заголовків і хоча б один рядок даних.", "rows": []}
+    if not lines:
+        return [], []
     sep = ";" if ";" in lines[0] else ","
     reader = csv.DictReader(io.StringIO("\n".join(lines)), delimiter=sep)
-    header = [h.strip().lower() for h in (reader.fieldnames or [])]
+    return list(reader.fieldnames or []), list(reader)
+
+
+def parse_xlsx(data: bytes) -> tuple[list[str], list[dict[str, str]]]:
+    """First worksheet; the first non-empty row is the header."""
+    from openpyxl import load_workbook
+
+    try:
+        wb = load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+    except Exception as e:  # corrupt or not an xlsx
+        raise ValueError("Не вдалося прочитати файл. Збережіть його у форматі Excel (.xlsx).") from e
+    ws = wb.worksheets[0]
+    rows = [[("" if v is None else (f"{v:g}" if isinstance(v, float) else str(v))).strip() for v in r]
+            for r in ws.iter_rows(values_only=True)]
+    wb.close()
+    rows = [r for r in rows if any(r)]
+    if not rows:
+        return [], []
+    header = rows[0]
+    return header, [dict(zip(header, r)) for r in rows[1:]]
+
+
+def validate(text: str, db: Session) -> dict[str, Any]:
+    return validate_rows(*parse_csv(text), db)
+
+
+def validate_rows(fieldnames: list[str], records: list[dict[str, str]], db: Session) -> dict[str, Any]:
+    if not records:
+        return {"fatal": "Потрібен рядок заголовків і хоча б один рядок даних.", "rows": []}
+    header = [h.strip().lower() for h in fieldnames]
     missing = [r for r in REQUIRED if r not in header]
     if missing:
         return {"fatal": "Немає обов’язкових колонок: " + ", ".join(missing), "rows": []}
@@ -52,7 +81,7 @@ def validate(text: str, db: Session) -> dict[str, Any]:
     existing = _existing_keys(db)
     seen: set[tuple[str, str, str, str]] = set()
     rows = []
-    for i, raw in enumerate(reader, start=2):
+    for i, raw in enumerate(records, start=2):
         o = {k.strip().lower(): (v or "").strip() for k, v in raw.items() if k}
         errs: list[str] = []
         warns: list[str] = []
@@ -118,7 +147,10 @@ def _get_or_create(db: Session, model, **kw):
 
 
 def apply(text: str, db: Session, user_id: int | None) -> int:
-    report = validate(text, db)
+    return apply_report(validate(text, db), db, user_id)
+
+
+def apply_report(report: dict[str, Any], db: Session, user_id: int | None) -> int:
     added = 0
     for row in report["rows"]:
         if row["errors"]:

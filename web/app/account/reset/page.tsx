@@ -30,6 +30,8 @@ function Reset() {
   return (
     <>
       <div className="page-head"><p className="eyebrow">Кабінет</p><h1>Новий пароль</h1><p>Після зміни пароля всі інші пристрої вийдуть з облікового запису.</p></div>
+      {/* On a phone with the app installed, the same link opens the app's reset screen. */}
+      <p className="small" style={{ marginBottom: 16 }}>Відкрили лист на телефоні? <a href={`autowise://account/reset?token=${encodeURIComponent(token)}`}>Відкрити в застосунку AutoWise</a></p>
       <form className="panel stack" style={{ maxWidth: 440 }} onSubmit={submit}>
         <div className="field"><label htmlFor="r-p1">Новий пароль (щонайменше 8 символів)</label><input id="r-p1" type="password" minLength={8} required autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
         <div className="field"><label htmlFor="r-p2">Повторіть пароль</label><input id="r-p2" type="password" minLength={8} required autoComplete="new-password" value={repeat} onChange={(e) => setRepeat(e.target.value)} /></div>

@@ -3,7 +3,7 @@
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -69,6 +69,34 @@ def import_validate(body: ImportIn, db: Session = Depends(get_db), _: User = Dep
 @router.post("/import/apply")
 def import_apply(body: ImportIn, db: Session = Depends(get_db), user: User = Depends(require_editor)) -> dict[str, int]:
     return {"added": importer.apply(body.csv, db, user.id)}
+
+
+MAX_XLSX = 5 * 1024 * 1024
+
+
+async def read_xlsx(file: UploadFile) -> tuple[list[str], list[dict[str, str]]]:
+    if not (file.filename or "").lower().endswith(".xlsx"):
+        raise HTTPException(422, "Підтримується лише формат .xlsx. Старий .xls збережіть як .xlsx.")
+    data = await file.read(MAX_XLSX + 1)
+    if len(data) > MAX_XLSX:
+        raise HTTPException(413, "Файл більший за 5 МБ. Розділіть його на частини.")
+    try:
+        return importer.parse_xlsx(data)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from None
+
+
+@router.post("/import/xlsx/validate")
+async def import_xlsx_validate(file: UploadFile = File(...), db: Session = Depends(get_db),
+                               _: User = Depends(require_editor)) -> dict[str, Any]:
+    return importer.validate_rows(*await read_xlsx(file), db)
+
+
+@router.post("/import/xlsx/apply")
+async def import_xlsx_apply(file: UploadFile = File(...), db: Session = Depends(get_db),
+                            user: User = Depends(require_editor)) -> dict[str, int]:
+    report = importer.validate_rows(*await read_xlsx(file), db)
+    return {"added": importer.apply_report(report, db, user.id)}
 
 
 @router.post("/cars", status_code=201)

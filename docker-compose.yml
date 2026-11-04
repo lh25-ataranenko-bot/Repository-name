@@ -41,6 +41,7 @@ services:
         API_URL_INTERNAL: http://api:8000
     environment:
       API_URL_INTERNAL: http://api:8000
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
     depends_on:
       - api
     ports:

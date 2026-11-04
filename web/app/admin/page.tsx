@@ -29,6 +29,7 @@ export default function Admin() {
   const [log, setLog] = useState<Change[]>([]);
   const [csv, setCsv] = useState(SAMPLE);
   const [report, setReport] = useState<Report | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [find, setFind] = useState("");
@@ -45,9 +46,22 @@ export default function Admin() {
   if (!user || user.role === "user") {
     return <div className="empty"><b>Адмінпанель доступна редакторам і адміністраторам</b><span>Увійдіть під обліковим записом із правами редактора.</span><Link className="btn" href="/account">Увійти</Link></div>;
   }
-  const validate = async () => setReport(await api<Report>("/api/admin/import/validate", { method: "POST", json: { csv } }));
+  // With a file chosen, both steps send the .xlsx; otherwise the CSV text.
+  const body = () => {
+    if (!file) return { json: { csv } };
+    const fd = new FormData();
+    fd.append("file", file);
+    return { body: fd };
+  };
+  const validate = async () => {
+    try {
+      setReport(await api<Report>(file ? "/api/admin/import/xlsx/validate" : "/api/admin/import/validate", { method: "POST", ...body() }));
+    } catch (e) {
+      setReport({ fatal: (e as Error).message, rows: [] });
+    }
+  };
   const apply = async () => {
-    const r = await api<{ added: number }>("/api/admin/import/apply", { method: "POST", json: { csv } });
+    const r = await api<{ added: number }>(file ? "/api/admin/import/xlsx/apply" : "/api/admin/import/apply", { method: "POST", ...body() });
     toast(`Додано модифікацій: ${r.added}. Статус: не перевірено.`);
     setReport(null);
     load();
@@ -110,9 +124,16 @@ export default function Admin() {
       )}
       <section className="split" style={{ marginTop: 32 }}>
         <div className="panel stack">
-          <h3>Імпорт із CSV</h3>
+          <h3>Імпорт із CSV або Excel</h3>
           <p className="small muted">Колонки: brand, model, generation, modification, years, fuel (petrol / diesel / hybrid / electric), hp, torque, transmission (auto / robot / cvt / manual), drive (FWD / RWD / AWD), body, acc, cons, price. Роздільник — кома або крапка з комою.</p>
-          <div className="field"><label htmlFor="csvIn">Дані для імпорту</label><textarea id="csvIn" rows={8} spellCheck={false} value={csv} onChange={(e) => { setCsv(e.target.value); setReport(null); }} /></div>
+          <div className="field"><label htmlFor="xlsxIn">Файл Excel (.xlsx), перший аркуш, перший рядок — заголовки</label>
+            <input id="xlsxIn" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              onChange={(e) => { setFile(e.target.files?.[0] ?? null); setReport(null); }} /></div>
+          {file ? (
+            <div className="row"><span className="small">Обрано файл: <b>{file.name}</b></span><button className="btn-ghost btn-sm" onClick={() => { setFile(null); setReport(null); (document.getElementById("xlsxIn") as HTMLInputElement).value = ""; }}>Використати текст CSV</button></div>
+          ) : (
+            <div className="field"><label htmlFor="csvIn">Або вставте CSV</label><textarea id="csvIn" rows={8} spellCheck={false} value={csv} onChange={(e) => { setCsv(e.target.value); setReport(null); }} /></div>
+          )}
           <div className="row"><button className="btn-primary" onClick={validate}>Перевірити імпорт</button><button disabled={!okN} onClick={apply}>Додати коректні рядки ({okN})</button></div>
         </div>
         <div className="stack" style={{ minWidth: 0 }}>

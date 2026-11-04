@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ScoreBars } from "@/components/ScoreBars";
 import { Silhouette } from "@/components/Silhouette";
 import { api, ApiError } from "@/lib/api";
+import { SITE_URL } from "@/lib/site";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
 import type { Car } from "@/lib/types";
 import { CarActions } from "./actions";
@@ -18,7 +19,11 @@ async function getCar(slug: string): Promise<Car> {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const c = await getCar((await params).slug);
-  return { title: `${nameOf(c)} (${c.generation})`, description: `Характеристики, надійність і вартість володіння ${nameOf(c)}.` };
+  return {
+    title: `${nameOf(c)} (${c.generation})`,
+    description: `Характеристики, надійність і вартість володіння ${nameOf(c)}.`,
+    alternates: { canonical: `${SITE_URL}/cars/${c.slug}` },
+  };
 }
 
 const ND = <span className="nd">Немає даних</span>;
@@ -38,6 +43,7 @@ export default async function CarPage({ params }: { params: Promise<{ slug: stri
   const st = STATUS[c.status] ?? STATUS.unverified;
   return (
     <div className="stack-lg">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(c) }} />
       <div className="page-head" style={{ marginBottom: 0 }}>
         <p className="crumb">{c.brand} › {c.model} › {c.generation} › {c.name}</p>
         <h1>{nameOf(c)}</h1>
@@ -82,4 +88,36 @@ export default async function CarPage({ params }: { params: Promise<{ slug: stri
       </div>
     </div>
   );
+}
+
+const FUEL_SCHEMA: Record<string, string> = { petrol: "Gasoline", diesel: "Diesel", hybrid: "Hybrid", electric: "Electric" };
+const DRIVE_SCHEMA: Record<string, string> = { FWD: "FrontWheelDriveConfiguration", RWD: "RearWheelDriveConfiguration", AWD: "AllWheelDriveConfiguration" };
+
+/** schema.org/Car for search engines. Only known values are included. */
+function jsonLd(c: Car): string {
+  const qv = (value: number | null, unitCode: string) => (value == null ? undefined : { "@type": "QuantitativeValue", value, unitCode });
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Car",
+    name: nameOf(c),
+    brand: { "@type": "Brand", name: c.brand },
+    model: `${c.model} ${c.generation}`,
+    vehicleConfiguration: c.name,
+    url: `${SITE_URL}/cars/${c.slug}`,
+    bodyType: BODY[c.body],
+    fuelType: FUEL_SCHEMA[c.fuel],
+    driveWheelConfiguration: DRIVE_SCHEMA[c.drive] ? `https://schema.org/${DRIVE_SCHEMA[c.drive]}` : undefined,
+    vehicleTransmission: c.transmission ?? undefined,
+    productionDate: c.year_from ? String(c.year_from) : undefined,
+    vehicleEngine: c.hp != null || c.displacement != null
+      ? { "@type": "EngineSpecification", enginePower: qv(c.hp, "BHP"), engineDisplacement: qv(c.displacement, "CMQ"), torque: qv(c.torque, "NU") }
+      : undefined,
+    accelerationTime: qv(c.acc, "SEC"),
+    speed: qv(c.vmax, "KMH"),
+    cargoVolume: qv(c.trunk, "LTR"),
+    wheelbase: qv(c.wheelbase, "MMT"),
+    offers: c.price != null ? { "@type": "AggregateOffer", priceCurrency: "USD", lowPrice: c.price, highPrice: c.price } : undefined,
+  };
+  // "<" is escaped so the payload can never close the script tag.
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }
