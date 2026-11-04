@@ -66,7 +66,7 @@ function Rating() {
           ))}</div>}
         </aside>
         <section className="stack" style={{ minWidth: 0 }}>
-          <p className="muted">{data ? `Підходить: ${data.ranked.length} з ${data.ranked.length + data.excluded.length}. Пріоритет: ${(PRESETS[preset] ?? "власні ваги").toLowerCase()}.` : "Рахуємо рейтинг…"}</p>
+          <p className="muted">{data ? `Підходить: ${data.matched} з ${data.matched + data.excluded_total}${data.matched > data.ranked.length ? `, показано найкращі ${data.ranked.length}` : ""}. Пріоритет: ${(PRESETS[preset] ?? "власні ваги").toLowerCase()}.` : "Рахуємо рейтинг…"}</p>
           <div className="rank">
             {data?.ranked.map((r, i) => {
               const c = r.car;
@@ -93,7 +93,7 @@ function Rating() {
             {data && !data.ranked.length && <div className="empty"><b>Жодне авто не проходить обов’язкові умови</b><span>Збільште бюджет або змініть коробку, привід чи паливо.</span></div>}
           </div>
           {data && data.excluded.length > 0 && (
-            <details><summary>Не пройшли обов’язкові умови ({data.excluded.length})</summary>
+            <details><summary>Не пройшли обов’язкові умови ({data.excluded_total}{data.excluded_total > data.excluded.length ? `, показано ${data.excluded.length}` : ""})</summary>
               <div className="tbl-wrap" style={{ marginTop: 10 }}><table>
                 <thead><tr><th>Модифікація</th><th>Причина</th></tr></thead>
                 <tbody>{data.excluded.map((x) => <tr key={x.slug}><td>{x.name}</td><td className="small">{x.reasons.join("; ")}</td></tr>)}</tbody>

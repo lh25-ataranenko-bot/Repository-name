@@ -54,6 +54,7 @@ class Filters(BaseModel):
 
 
 class RatingIn(BaseModel):
+    limit: int = Field(50, ge=1, le=200)
     weights: dict[str, float] = {}
     preset: str | None = None
     filters: Filters = Filters()

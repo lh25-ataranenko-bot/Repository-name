@@ -95,7 +95,9 @@ export interface Reason { kind: "plus" | "minus" | "note"; text: string }
 export interface RatingResponse {
   weights: Record<CategoryKey, number>;
   ranked: { car: Car; score: number | null; used: number; reasons: Reason[] }[];
+  matched: number;
   excluded: { slug: string; name: string; reasons: string[] }[];
+  excluded_total: number;
 }
 
 export interface CheckResponse {

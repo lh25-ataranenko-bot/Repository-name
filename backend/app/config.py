@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     admin_password: str = "change-me-now"
     rate_limit_per_minute: int = 300
     login_attempts_per_15min: int = 5
+    # Optional. Shares the catalogue cache version, rate limits and login lockout between API instances.
+    redis_url: str = ""
+    catalog_cache_ttl: int = 300
 
     # Email. Without smtp_host letters are only written to the log (development).
     app_url: str = "http://localhost:3000"

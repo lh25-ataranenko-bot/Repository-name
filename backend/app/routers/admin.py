@@ -12,6 +12,7 @@ from ..models import Brand, CarModel, ChangeLog, Generation, Issue, Modification
 from ..schemas import CarCreate, CarPatch, ImportIn, IssueIn, RoleIn
 from ..security import require_admin, require_editor
 from ..services import importer
+from ..services.cache import catalog_cache
 from ..services.catalog import load_cars
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -68,7 +69,9 @@ def import_validate(body: ImportIn, db: Session = Depends(get_db), _: User = Dep
 
 @router.post("/import/apply")
 def import_apply(body: ImportIn, db: Session = Depends(get_db), user: User = Depends(require_editor)) -> dict[str, int]:
-    return {"added": importer.apply(body.csv, db, user.id)}
+    added = importer.apply(body.csv, db, user.id)
+    catalog_cache.bump()
+    return {"added": added}
 
 
 MAX_XLSX = 5 * 1024 * 1024
@@ -96,7 +99,9 @@ async def import_xlsx_validate(file: UploadFile = File(...), db: Session = Depen
 async def import_xlsx_apply(file: UploadFile = File(...), db: Session = Depends(get_db),
                             user: User = Depends(require_editor)) -> dict[str, int]:
     report = importer.validate_rows(*await read_xlsx(file), db)
-    return {"added": importer.apply_report(report, db, user.id)}
+    added = importer.apply_report(report, db, user.id)
+    catalog_cache.bump()
+    return {"added": added}
 
 
 @router.post("/cars", status_code=201)
@@ -116,6 +121,7 @@ def create_car(body: CarCreate, db: Session = Depends(get_db), user: User = Depe
     db.flush()
     log(db, m, user, "create", new=slug)
     db.commit()
+    catalog_cache.bump()
     return {"slug": slug}
 
 
@@ -146,6 +152,7 @@ def patch_car(slug: str, body: CarPatch, db: Session = Depends(get_db), user: Us
     if changed or "status" in changes:
         m.updated_at = date.today()
     db.commit()
+    catalog_cache.bump()
     return {"slug": m.slug, "status": m.status, "changed": changed}
 
 
@@ -158,6 +165,7 @@ def review_car(slug: str, db: Session = Depends(get_db), user: User = Depends(re
         m.status = "verified"
         m.updated_at = date.today()
         db.commit()
+        catalog_cache.bump()
     return {"slug": m.slug, "status": m.status}
 
 
@@ -173,6 +181,7 @@ def replace_issues(slug: str, body: list[IssueIn], db: Session = Depends(get_db)
         log(db, m, user, "update", "issues", old, new)
         m.updated_at = date.today()
         db.commit()
+        catalog_cache.bump()
     return {"slug": m.slug, "issues": len(body)}
 
 
@@ -182,6 +191,7 @@ def delete_car(slug: str, db: Session = Depends(get_db), user: User = Depends(re
     log(db, None, user, "delete", None, m.slug, None)
     db.delete(m)
     db.commit()
+    catalog_cache.bump()
     return Response(status_code=204)
 
 

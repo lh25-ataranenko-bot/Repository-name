@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { Pressable, View } from "react-native";
 import { useTheme } from "@/lib/theme";
 import type { Car } from "@/lib/types";
@@ -8,15 +9,17 @@ import { Field, Loading, T } from "./ui";
 /** Search-as-you-type picker over the whole catalogue. */
 export function CarPicker({ value, onChange, label = "Модифікація" }: { value: string; onChange: (car: Car) => void; label?: string }) {
   const t = useTheme();
-  const { data, error } = useApi<{ items: Car[] }>("/api/cars?sort=price");
+  const selected = useApi<Car>(value ? `/api/cars/${encodeURIComponent(value)}` : null).data;
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
-  const selected = data?.items.find((c) => c.slug === value);
-  const matches = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    return (data?.items ?? []).filter((c) => !s || `${c.brand} ${c.model} ${c.generation} ${c.name}`.toLowerCase().includes(s)).slice(0, 8);
-  }, [data, q]);
-  if (!data) return <Loading error={error} />;
+  const [matches, setMatches] = useState<Car[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => api<Car[]>(`/api/cars/lookup?${new URLSearchParams({ q, limit: "8" })}`)
+      .then((m) => { setMatches(m); setError(null); }).catch((e: Error) => setError(e.message)), 200);
+    return () => clearTimeout(t);
+  }, [q, open]);
 
   return (
     <View style={{ gap: 6 }}>
@@ -30,14 +33,15 @@ export function CarPicker({ value, onChange, label = "Модифікація" }:
       ) : (
         <>
           <Field label="Пошук: марка, модель, двигун" value={q} onChangeText={setQ} autoFocus autoCorrect={false} />
-          {matches.map((c) => (
+          {!matches && <Loading error={error} />}
+          {matches?.map((c) => (
             <Pressable key={c.slug} accessibilityRole="button" onPress={() => { onChange(c); setOpen(false); setQ(""); }}
               style={{ paddingVertical: 8, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: t.line }}>
               <T v="small" style={{ fontWeight: c.slug === value ? "800" : "500" }}>{c.brand} {c.model} {c.name}</T>
               <T v="muted">{c.generation} · {c.year_from}–{c.year_to}</T>
             </Pressable>
           ))}
-          {matches.length === 0 && <T v="muted">Нічого не знайдено</T>}
+          {matches?.length === 0 && <T v="muted">Нічого не знайдено</T>}
         </>
       )}
     </View>

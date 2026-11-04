@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { FlatList, View } from "react-native";
 import { CarRow } from "@/components/CarRow";
 import { Chip, Field, Loading, Row, T } from "@/components/ui";
@@ -19,13 +20,36 @@ export default function Catalog() {
   if (q) params.set("q", q);
   if (fuel !== "any") params.set("fuel", fuel);
   if (body !== "any") params.set("body", body);
+  params.set("limit", "30");
   const { data, error, loading, reload } = useApi<{ total: number; count: number; items: Car[] }>(`/api/cars?${params}`);
+  // Further pages are appended as the list scrolls.
+  const [extra, setExtra] = useState<Car[]>([]);
+  const [paging, setPaging] = useState(false);
+  useEffect(() => setExtra([]), [data]);
+  const items = [...(data?.items ?? []), ...extra];
+  const loadMore = async () => {
+    if (!data || paging || items.length >= data.count) return;
+    setPaging(true);
+    const p = new URLSearchParams(params);
+    p.set("offset", String(items.length));
+    try {
+      const next = await api<{ items: Car[] }>(`/api/cars?${p}`);
+      setExtra((e) => [...e, ...next.items]);
+    } catch {
+      /* the next scroll retries */
+    } finally {
+      setPaging(false);
+    }
+  };
 
   return (
     <FlatList
       style={{ backgroundColor: t.bg }}
       contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }}
-      data={data?.items ?? []}
+      data={items}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={paging ? <Loading /> : undefined}
       keyExtractor={(c) => c.slug}
       renderItem={({ item }) => <CarRow car={item} />}
       refreshing={loading && !!data}

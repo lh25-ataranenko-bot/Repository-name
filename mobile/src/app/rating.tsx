@@ -54,7 +54,7 @@ export default function Rating() {
       <Row>{[15000, 20000, 25000, 30000, 40000].map((b) => <Chip key={b} label={usd(b)} on={budget === b} onPress={() => setBudget(b)} />)}</Row>
       {!data ? <Loading error={error} /> : (
         <>
-          <T v="muted">Підходить: {data.ranked.length} з {data.ranked.length + data.excluded.length}. Бюджет та інші умови працюють як фільтри.</T>
+          <T v="muted">Підходить: {data.matched} з {data.matched + data.excluded_total}{data.matched > data.ranked.length ? `, показано найкращі ${data.ranked.length}` : ""}. Бюджет та інші умови працюють як фільтри.</T>
           {data.ranked.map((r, i) => (
             <Card key={r.car.slug} style={i === 0 ? { borderColor: t.needle, borderWidth: 1 } : undefined}>
               <Row style={{ flexWrap: "nowrap", alignItems: "flex-start" }}>

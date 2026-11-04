@@ -47,7 +47,7 @@ function Tco() {
       <input id={`e-${k}`} type="number" min={0} step={step} defaultValue={env[k]}
         onChange={(e) => { const v = parseFloat(e.target.value); if (Number.isFinite(v) && v >= 0) setEnv({ ...env, [k]: v }); }} /></div>
   );
-  const picker = <div className="row"><label htmlFor="tcoAdd">Додати авто</label><CarPicker id="tcoAdd" exclude={compare} placeholder="Оберіть модифікацію…" onChange={toggleCompare} /></div>;
+  const picker = <div className="row"><label htmlFor="tcoAdd">Додати авто</label><CarPicker id="tcoAdd" exclude={compare} placeholder="Пошук: марка, модель, двигун" onChange={toggleCompare} /></div>;
   const yw = `${env.years} ${yearsWord(env.years)}`;
   const max = Math.max(1, ...(data?.results ?? []).map((r) => (r.result ? SEG.reduce((s, [k]) => s + Math.max(0, r.result![k] as number), 0) : 0)));
   const byName = (slug: string) => data?.results.find((r) => r.slug === slug)?.name;

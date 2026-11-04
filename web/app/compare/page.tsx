@@ -36,7 +36,7 @@ export default function Compare() {
 
   const picker = (
     <div className="row"><label htmlFor="addCar">Додати авто</label>
-      <CarPicker id="addCar" exclude={compare} placeholder="Оберіть модифікацію…" onChange={(s) => toggleCompare(s)} /></div>
+      <CarPicker id="addCar" exclude={compare} placeholder="Пошук: марка, модель, двигун" onChange={(s) => toggleCompare(s)} /></div>
   );
   const head = (
     <div className="page-head"><p className="eyebrow">Порівняння · {compare.length} з 5</p><h1>Порівняння модифікацій</h1>

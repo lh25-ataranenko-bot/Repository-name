@@ -6,11 +6,13 @@ import { api } from "@/lib/api";
 import { BODY, DRIVE, FUEL } from "@/lib/format";
 import type { Car, TreeBrand } from "@/lib/types";
 
+const PAGE = 48;
 const INIT = { q: "", brand: "", body: "any", fuel: "any", trans: "any", drive: "any", max_price: "", sort: "reliability" };
 
 export default function Catalog() {
   const [f, setF] = useState(INIT);
   const [data, setData] = useState<{ total: number; count: number; items: Car[] } | null>(null);
+  const [more, setMore] = useState(false);
   const [brands, setBrands] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,9 +22,27 @@ export default function Catalog() {
   useEffect(() => {
     const p = new URLSearchParams();
     Object.entries(f).forEach(([k, v]) => v && v !== "any" && p.set(k, v));
+    p.set("limit", String(PAGE));
     const t = setTimeout(() => api<typeof data>(`/api/cars?${p}`).then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message)), 150);
     return () => clearTimeout(t);
   }, [f]);
+
+  const loadMore = async () => {
+    if (!data) return;
+    setMore(true);
+    const p = new URLSearchParams();
+    Object.entries(f).forEach(([k, v]) => v && v !== "any" && p.set(k, v));
+    p.set("limit", String(PAGE));
+    p.set("offset", String(data.items.length));
+    try {
+      const next = await api<NonNullable<typeof data>>(`/api/cars?${p}`);
+      setData({ ...next, items: [...data.items, ...next.items] });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setMore(false);
+    }
+  };
 
   const set = (k: keyof typeof INIT) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
   const sel = (id: string, label: string, k: keyof typeof INIT, opts: [string, string][]) => (
@@ -64,6 +84,11 @@ export default function Catalog() {
               <div className="empty" style={{ gridColumn: "1/-1" }}><b>Нічого не знайдено</b><span>Послабте фільтри або збільште максимальну ціну.</span><button onClick={() => setF(INIT)}>Скинути фільтри</button></div>
             )}
           </div>
+          {data && data.items.length < data.count && (
+            <div className="row" style={{ justifyContent: "center" }}>
+              <button onClick={loadMore} disabled={more}>{more ? "Завантаження…" : `Показати ще (показано ${data.items.length} з ${data.count})`}</button>
+            </div>
+          )}
         </section>
       </div>
     </>

@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { CarPicker } from "@/components/CarPicker";
 import { CarRow } from "@/components/CarRow";
@@ -185,10 +185,13 @@ function Garage() {
 export default function Account() {
   const { user, signOut, favs, setCompare, ready } = useStore();
   const toast = useToast();
-  const all = useApi<{ items: Car[] }>("/api/cars?sort=price");
+  const [favList, setFavList] = useState<Car[]>([]);
+  useEffect(() => {
+    Promise.all(favs.map((s) => api<Car>(`/api/cars/${encodeURIComponent(s)}`).catch(() => null)))
+      .then((l) => setFavList(l.filter((c): c is Car => c !== null)));
+  }, [favs]);
   const saved = useApi<{ id: number; name: string; slugs: string[] }[]>(user ? "/api/me/comparisons" : null, undefined, [user?.id]);
   if (!ready) return <Screen><Loading /></Screen>;
-  const favList = (all.data?.items ?? []).filter((c) => favs.includes(c.slug));
 
   return (
     <Screen>

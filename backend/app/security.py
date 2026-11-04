@@ -1,5 +1,3 @@
-import time
-from collections import defaultdict, deque
 from datetime import UTC, datetime, timedelta
 
 import bcrypt
@@ -13,6 +11,7 @@ from starlette.responses import JSONResponse
 from .config import get_settings
 from .db import get_db
 from .models import User
+from .services.cache import Counter
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -65,13 +64,13 @@ def require_admin(user: User = Depends(current_user)) -> User:
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """Simple per-IP sliding window. Behind several API instances use a shared store (Redis)."""
+    """Per-IP requests per minute. With AUTOWISE_REDIS_URL the limit is shared by all API instances."""
 
     def __init__(self, app, per_minute: int, trust_forwarded_for: bool = False):
         super().__init__(app)
         self.per_minute = per_minute
         self.trust_forwarded_for = trust_forwarded_for
-        self.hits: dict[str, deque[float]] = defaultdict(deque)
+        self.counter = Counter("rate", 60)
 
     async def dispatch(self, request: Request, call_next):
         if request.url.path.startswith("/api/"):
@@ -79,40 +78,26 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             fwd = request.headers.get("x-forwarded-for")
             if self.trust_forwarded_for and fwd:
                 ip = fwd.split(",")[0].strip()
-            now = time.monotonic()
-            q = self.hits[ip]
-            while q and now - q[0] > 60:
-                q.popleft()
-            if len(q) >= self.per_minute:
+            if self.counter.hit(ip) > self.per_minute:
                 return JSONResponse({"detail": "Забагато запитів. Спробуйте за хвилину."}, status_code=429)
-            q.append(now)
         return await call_next(request)
 
 
 class LoginGuard:
     """Blocks an email after too many failed logins in 15 minutes (brute-force protection)."""
 
-    WINDOW = 15 * 60
-
     def __init__(self) -> None:
-        self.fails: dict[str, deque[float]] = defaultdict(deque)
-
-    def _recent(self, email: str) -> deque[float]:
-        q = self.fails[email]
-        now = time.monotonic()
-        while q and now - q[0] > self.WINDOW:
-            q.popleft()
-        return q
+        self.counter = Counter("login-fail", 15 * 60)
 
     def check(self, email: str) -> None:
-        if len(self._recent(email)) >= get_settings().login_attempts_per_15min:
+        if self.counter.count(email) >= get_settings().login_attempts_per_15min:
             raise HTTPException(429, "Забагато невдалих спроб входу. Спробуйте через 15 хвилин або відновіть пароль.")
 
     def failed(self, email: str) -> None:
-        self._recent(email).append(time.monotonic())
+        self.counter.hit(email)
 
     def succeeded(self, email: str) -> None:
-        self.fails.pop(email, None)
+        self.counter.reset(email)
 
 
 login_guard = LoginGuard()
