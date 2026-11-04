@@ -7,7 +7,8 @@ import { Dial } from "@/components/ScoreBars";
 import { api } from "@/lib/api";
 import { BODY, CATS, DRIVE, FUEL, PRESETS, usd, years as yearsOf } from "@/lib/format";
 import { useStore } from "@/lib/store";
-import type { CategoryKey, Facets, Meta, RatingResponse } from "@/lib/types";
+import { ModelYearFields } from "@/components/ModelYearFields";
+import type { CategoryKey, Meta, RatingResponse } from "@/lib/types";
 
 function Rating() {
   const p = useSearchParams();
@@ -16,17 +17,12 @@ function Rating() {
   const [preset, setPreset] = useState(p.get("preset") ?? "family");
   const [w, setW] = useState<Record<CategoryKey, number> | null>(null);
   const [f, setF] = useState({
-    max_price: Number(p.get("max_price") ?? 25000), year: p.get("year") ?? "", trans: p.get("trans") ?? "any",
+    max_price: Number(p.get("max_price") ?? 25000), year: p.get("year") ?? "", brand: p.get("brand") ?? "", model: p.get("model") ?? "",
+    trans: p.get("trans") ?? "any",
     drive: p.get("drive") ?? "any", fuel: p.get("fuel") ?? "any", body: p.get("body") ?? "any",
   });
   const tags = p.get("tags")?.split("|") ?? [];
   const [data, setData] = useState<RatingResponse | null>(null);
-  const [years, setYears] = useState<number[]>([]);
-  useEffect(() => {
-    api<Facets>("/api/catalog/facets").then((fc) => {
-      if (fc.year_min && fc.year_max) setYears(Array.from({ length: fc.year_max - fc.year_min + 1 }, (_, i) => fc.year_max! - i));
-    }).catch(() => null);
-  }, []);
 
   useEffect(() => {
     api<Meta>("/api/meta").then((m) => {
@@ -37,7 +33,7 @@ function Rating() {
   }, []);
   useEffect(() => {
     if (!w) return;
-    const filters = { ...f, year: f.year ? Number(f.year) : null };
+    const filters = { ...f, year: f.year ? Number(f.year) : null, brand: f.brand || null, model: f.model || null };
     const t = setTimeout(() => api<RatingResponse>("/api/rating", { method: "POST", json: { weights: w, filters } }).then(setData), 150);
     return () => clearTimeout(t);
   }, [w, f]);
@@ -58,7 +54,7 @@ function Rating() {
           <h3>Обов’язкові умови</h3>
           <div className="field"><label htmlFor="rt-max">Максимальна ціна: <b>{usd(f.max_price)}</b></label>
             <input type="range" id="rt-max" min={10000} max={40000} step={500} value={f.max_price} onChange={(e) => setF({ ...f, max_price: +e.target.value })} /></div>
-          {sel("year", "Рік випуску", [["", "Будь-який"], ...years.map((y) => [String(y), String(y)] as [string, string])])}
+          <ModelYearFields idPrefix="rt" value={{ brand: f.brand, model: f.model, year: f.year }} onChange={(v) => setF({ ...f, ...v })} />
           {sel("trans", "Коробка", [["any", "Будь-яка"], ["automatic", "Автоматична"], ["manual", "Механіка"]])}
           {sel("drive", "Привід", [["any", "Будь-який"], ...Object.entries(DRIVE)])}
           {sel("fuel", "Паливо", [["any", "Будь-яке"], ...Object.entries(FUEL)])}

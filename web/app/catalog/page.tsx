@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { CarCard } from "@/components/CarCard";
 import { api } from "@/lib/api";
 import { BODY, DRIVE, FUEL } from "@/lib/format";
-import type { Car, Facets } from "@/lib/types";
+import { ModelYearFields } from "@/components/ModelYearFields";
+import type { Car } from "@/lib/types";
 
 const PAGE = 48;
 const INIT = { q: "", brand: "", model: "", year: "", body: "any", fuel: "any", trans: "any", drive: "any", max_price: "", sort: "reliability" };
@@ -13,11 +14,9 @@ export default function Catalog() {
   const [f, setF] = useState(INIT);
   const [data, setData] = useState<{ total: number; count: number; items: Car[] } | null>(null);
   const [more, setMore] = useState(false);
-  const [facets, setFacets] = useState<Facets | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api<Facets>("/api/catalog/facets").then(setFacets).catch(() => null);
   }, []);
   useEffect(() => {
     const p = new URLSearchParams();
@@ -59,26 +58,7 @@ export default function Catalog() {
       <div className="side-layout">
         <aside className="panel stack">
           <div className="field"><label htmlFor="f-q">Пошук</label><input id="f-q" placeholder="Модель, покоління, код двигуна" value={f.q} onChange={set("q")} /></div>
-          <div className="field"><label htmlFor="f-brand">Марка</label>
-            <select id="f-brand" value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value, model: "" })}>
-              <option value="">Усі марки</option>
-              {Object.keys(facets?.brands ?? {}).map((b) => <option key={b} value={b}>{b}</option>)}
-            </select></div>
-          <div className="field"><label htmlFor="f-model">Модель</label>
-            <select id="f-model" value={f.model} disabled={!f.brand} onChange={set("model")}>
-              <option value="">{f.brand ? "Усі моделі" : "Спершу оберіть марку"}</option>
-              {(facets?.brands[f.brand] ?? []).map((m) => <option key={m} value={m}>{m}</option>)}
-            </select></div>
-          <div className="field"><label htmlFor="f-year">Рік випуску</label>
-            <select id="f-year" value={f.year} onChange={set("year")}>
-              <option value="">Будь-який</option>
-              {facets?.year_max && facets.year_min && Array.from({ length: facets.year_max - facets.year_min + 1 }, (_, i) => facets.year_max! - i)
-                .map((y) => <option key={y} value={y}>{y}</option>)}
-            </select></div>
-          {sel("f-body", "Кузов", "body", [["any", "Будь-який"], ...Object.entries(BODY)])}
-          {sel("f-fuel", "Паливо", "fuel", [["any", "Будь-яке"], ...Object.entries(FUEL)])}
-          {sel("f-trans", "Коробка", "trans", [["any", "Будь-яка"], ["automatic", "Автоматична"], ["manual", "Механіка"]])}
-          {sel("f-drive", "Привід", "drive", [["any", "Будь-який"], ...Object.entries(DRIVE)])}
+          <ModelYearFields idPrefix="f" value={{ brand: f.brand, model: f.model, year: f.year }} onChange={(v) => setF({ ...f, ...v })} />
           {f.year && <p className="small muted">Показано модифікації, що випускалися у {f.year} році, з оцінкою ціни саме для цього року.</p>}
           <div className="field"><label htmlFor="f-max">Максимальна ціна, $</label><input id="f-max" type="number" min={0} step={500} placeholder="Без обмеження" value={f.max_price} onChange={set("max_price")} /></div>
           <button className="btn-ghost" onClick={() => setF(INIT)}>Скинути фільтри</button>

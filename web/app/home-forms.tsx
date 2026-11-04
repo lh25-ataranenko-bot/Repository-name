@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { ModelYearFields, type ModelYear } from "@/components/ModelYearFields";
 import { BODY, FUEL, PRESETS, usd } from "@/lib/format";
 
 interface Parsed { filters: Record<string, string | number>; preset: string | null; tags: string[] }
@@ -46,16 +47,20 @@ export function QuickPick() {
   const [fuel, setFuel] = useState("any");
   const [trans, setTrans] = useState("any");
   const [preset, setPreset] = useState("family");
+  const [my, setMy] = useState<ModelYear>({ brand: "", model: "", year: "" });
   const [count, setCount] = useState<number | null>(null);
   useEffect(() => {
     const p = new URLSearchParams({ max_price: String(budget), trans });
     if (body !== "any") p.set("body", body);
     if (fuel !== "any") p.set("fuel", fuel);
+    Object.entries(my).forEach(([k, v]) => v && p.set(k, v));
     api<{ count: number }>(`/api/cars?${p}`).then((r) => setCount(r.count)).catch(() => setCount(null));
-  }, [budget, body, fuel, trans]);
+  }, [budget, body, fuel, trans, my]);
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/rating?${new URLSearchParams({ max_price: String(budget), body, fuel, trans, preset })}`);
+    const p = new URLSearchParams({ max_price: String(budget), body, fuel, trans, preset });
+    Object.entries(my).forEach(([k, v]) => v && p.set(k, v));
+    router.push(`/rating?${p}`);
   };
   return (
     <form className="quick" onSubmit={submit}>
@@ -66,6 +71,7 @@ export function QuickPick() {
         <input type="range" id="qBudget" min={10000} max={35000} step={500} value={budget} onChange={(e) => setBudget(+e.target.value)} />
       </div>
       <div className="fields">
+        <ModelYearFields idPrefix="q" value={my} onChange={setMy} />
         <div className="field"><label htmlFor="qBody">Кузов</label><select id="qBody" value={body} onChange={(e) => setBody(e.target.value)}><option value="any">Будь-який</option>{Object.entries(BODY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div className="field"><label htmlFor="qFuel">Паливо</label><select id="qFuel" value={fuel} onChange={(e) => setFuel(e.target.value)}><option value="any">Будь-яке</option>{Object.entries(FUEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div className="field"><label htmlFor="qTrans">Коробка</label><select id="qTrans" value={trans} onChange={(e) => setTrans(e.target.value)}><option value="any">Будь-яка</option><option value="automatic">Автоматична</option><option value="manual">Механіка</option></select></div>
