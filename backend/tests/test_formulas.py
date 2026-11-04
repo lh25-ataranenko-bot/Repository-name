@@ -86,3 +86,14 @@ def test_parse_query():
     p = parse_query("кросовер до 25 тис $ з автоматом для сім'ї", 41.6)
     assert p["filters"] == {"max_price": 25000, "trans": "automatic", "body": "crossover"}
     assert p["preset"] == "family"
+
+
+def test_production_checks():
+    from app.config import Settings, production_problems
+
+    errors, _ = production_problems(Settings(env="production"))
+    assert len(errors) == 4  # default secret, admin password, db password, http app url
+    ok = Settings(env="production", jwt_secret="x" * 40, admin_password="a-long-admin-pass",
+                  database_url="postgresql+psycopg://autowise:S3cret@db:5432/autowise", app_url="https://autowise.ua",
+                  smtp_host="smtp.example.com", redis_url="redis://redis:6379/0")
+    assert production_problems(ok) == ([], [])

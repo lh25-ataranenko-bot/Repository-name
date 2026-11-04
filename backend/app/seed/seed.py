@@ -5,6 +5,7 @@ Idempotent: existing modifications (by slug) are left untouched.
 """
 
 import json
+import os
 from datetime import date
 from pathlib import Path
 
@@ -28,9 +29,9 @@ def get_or_create(db: Session, model, **kw):
     return obj
 
 
-def seed(db: Session) -> int:
+def seed(db: Session, demo_catalogue: bool = True) -> int:
     added = 0
-    for row in json.loads(DATA.read_text(encoding="utf-8")):
+    for row in (json.loads(DATA.read_text(encoding="utf-8")) if demo_catalogue else []):
         if db.scalar(select(Modification.id).where(Modification.slug == row["slug"])):
             continue
         row = dict(row)
@@ -53,5 +54,7 @@ def seed(db: Session) -> int:
 
 
 if __name__ == "__main__":
+    # AUTOWISE_SEED_DEMO=0 creates only the administrator (for a catalogue filled by import).
+    demo = os.environ.get("AUTOWISE_SEED_DEMO", "1") != "0"
     with SessionLocal() as session:
-        print(f"Додано модифікацій: {seed(session)}")
+        print(f"Додано модифікацій: {seed(session, demo)}")

@@ -1,0 +1,90 @@
+# Production: HTTPS on your domain, API reachable only through Caddy, daily backups.
+#   cp .env.production.example .env   # fill in every value
+#   docker compose -f docker-compose.prod.yml up -d --build
+# Full guide: docs/DEPLOY.md
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [web, api]
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: autowise
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: autowise
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autowise"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      AUTOWISE_ENV: production
+      AUTOWISE_DATABASE_URL: postgresql+psycopg://autowise:${POSTGRES_PASSWORD}@db:5432/autowise
+      AUTOWISE_REDIS_URL: redis://redis:6379/0
+      AUTOWISE_JWT_SECRET: ${AUTOWISE_JWT_SECRET:?set AUTOWISE_JWT_SECRET in .env}
+      AUTOWISE_ADMIN_EMAIL: ${AUTOWISE_ADMIN_EMAIL:?set AUTOWISE_ADMIN_EMAIL in .env}
+      AUTOWISE_ADMIN_PASSWORD: ${AUTOWISE_ADMIN_PASSWORD:?set AUTOWISE_ADMIN_PASSWORD in .env}
+      AUTOWISE_APP_URL: https://${DOMAIN}
+      AUTOWISE_CORS_ORIGINS: '["https://${DOMAIN}"]'
+      AUTOWISE_SMTP_HOST: ${AUTOWISE_SMTP_HOST:-}
+      AUTOWISE_SMTP_PORT: ${AUTOWISE_SMTP_PORT:-587}
+      AUTOWISE_SMTP_USER: ${AUTOWISE_SMTP_USER:-}
+      AUTOWISE_SMTP_PASSWORD: ${AUTOWISE_SMTP_PASSWORD:-}
+      AUTOWISE_SMTP_FROM: ${AUTOWISE_SMTP_FROM:-AutoWise <no-reply@example.com>}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AUTOWISE_SEED_DEMO: ${AUTOWISE_SEED_DEMO:-1}
+      UVICORN_WORKERS: ${UVICORN_WORKERS:-2}
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+
+  web:
+    build:
+      context: ./web
+      args:
+        API_URL_INTERNAL: http://api:8000
+    restart: unless-stopped
+    environment:
+      API_URL_INTERNAL: http://api:8000
+      SITE_URL: https://${DOMAIN}
+    depends_on: [api]
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    environment:
+      PGHOST: db
+      PGUSER: autowise
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: autowise
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - ./deploy/backup.sh:/backup.sh:ro
+      - ./backups:/backups
+    depends_on:
+      db: {condition: service_healthy}
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

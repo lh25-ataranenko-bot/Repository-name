@@ -10,13 +10,13 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.autowise.example"
+        "EXPO_PUBLIC_API_URL": "https://autowise.example"
       }
     },
     "production": {
       "autoIncrement": false,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.autowise.example"
+        "EXPO_PUBLIC_API_URL": "https://autowise.example"
       }
     }
   },

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .config import get_settings
+from .config import get_settings, production_problems
 from .db import SessionLocal
 from .routers import account, admin, public
 from .security import RateLimitMiddleware
@@ -14,6 +14,12 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if settings.env == "production":
+        errors, warnings = production_problems(settings)
+        for w in warnings:
+            logging.getLogger("autowise").warning(w)
+        if errors:
+            raise RuntimeError("Небезпечні налаштування для production:\n- " + "\n- ".join(errors))
     # Load and score the catalogue once, so the first visitor does not wait for it.
     try:
         with SessionLocal() as db:
@@ -25,6 +31,10 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
+    # Swagger is handy in development; in production the schema stays private.
+    docs_url=None if settings.env == "production" else "/docs",
+    redoc_url=None,
+    openapi_url=None if settings.env == "production" else "/openapi.json",
     title="AutoWise API",
     version="1.0.0",
     description="Каталог, порівняння модифікацій, вартість володіння, рейтинги й аналіз оголошень.",
