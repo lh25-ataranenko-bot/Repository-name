@@ -119,6 +119,7 @@ class User(Base):
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     # Bumped on password change/reset: every token issued before stops working.
     token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    email_notifications: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -156,6 +157,10 @@ class GarageCar(Base):
     modification_id: Mapped[int | None] = mapped_column(ForeignKey("modifications.id", ondelete="SET NULL"))
     name: Mapped[str] = mapped_column(String(120))
     start_km: Mapped[int] = mapped_column(Integer, default=0)
+    # Service reminder: whichever comes first, the mileage or the time since the last "service" entry.
+    service_interval_km: Mapped[int] = mapped_column(Integer, default=15000, server_default="15000")
+    service_interval_months: Mapped[int] = mapped_column(Integer, default=12, server_default="12")
+    created_at: Mapped[date] = mapped_column(Date, server_default=func.current_date())
     entries: Mapped[list["GarageEntry"]] = relationship(
         back_populates="car", cascade="all, delete-orphan", order_by="GarageEntry.date"
     )
@@ -216,3 +221,16 @@ class CarViewDay(Base):
     modification_id: Mapped[int] = mapped_column(ForeignKey("modifications.id", ondelete="CASCADE"), primary_key=True)
     day: Mapped[date] = mapped_column(Date, primary_key=True)
     views: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class Notification(Base):
+    """In-cabinet notice about a favourite: price change or a new published review."""
+    __tablename__ = "notifications"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    modification_id: Mapped[int | None] = mapped_column(ForeignKey("modifications.id", ondelete="CASCADE"))
+    kind: Mapped[str] = mapped_column(String(20))  # price | review
+    text: Mapped[str] = mapped_column(String(400))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    modification: Mapped[Modification | None] = relationship()

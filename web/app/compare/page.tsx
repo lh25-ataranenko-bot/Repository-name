@@ -21,21 +21,40 @@ function Compare() {
   const params = useSearchParams();
   useEffect(() => {
     const add = params.get("add")?.split(",").filter(Boolean) ?? [];
-    if (ready && add.length) setCompare([...new Set([...add, ...compare])].slice(0, 5));
+    if (ready && add.length) setCompare(params.get("years") !== null ? add.slice(0, 5) : [...new Set([...add, ...compare])].slice(0, 5));
+    // a shared link also carries the chosen production years: years=slug:2018,slug2:2016
+    for (const part of params.get("years")?.split(",") ?? []) {
+      const [s, y] = part.split(":");
+      if (ready && s && Number(y)) setYear(s, Number(y));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
   useEffect(() => {
     if (!ready || compare.length < 2) return setData(null);
     const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
+    let stale = false; // an older, slower answer must not overwrite a newer one
     api<CompareResult>("/api/compare", { method: "POST", json: { slugs: compare, years: chosen } })
-      .then((d) => { setData(d); setError(null); })
-      .catch((e) => setError(e.message));
+      .then((d) => { if (!stale) { setData(d); setError(null); } })
+      .catch((e) => { if (!stale) setError(e.message); });
+    return () => { stale = true; };
   }, [compare, ready, years]);
 
   const move = (i: number, d: number) => {
     const L = [...compare];
     [L[i], L[i + d]] = [L[i + d], L[i]];
     setCompare(L);
+  };
+  const [shared, setShared] = useState<string | null>(null);
+  const share = async () => {
+    const y = compare.filter((s) => years[s]).map((s) => `${s}:${years[s]}`).join(",");
+    const url = `${location.origin}/compare?add=${compare.join(",")}&years=${y}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Посилання на порівняння скопійовано");
+      setShared(null);
+    } catch {
+      setShared(url); // clipboard blocked: show the link to copy by hand
+    }
   };
   const save = async () => {
     if (!user) return toast("Увійдіть у кабінет, щоб зберігати порівняння");
@@ -104,7 +123,8 @@ function Compare() {
             </tbody>
           </table>
         </div>
-        <div className="spread">{picker}<div className="row"><PrintButton /><button onClick={save}>Зберегти порівняння</button><Link className="btn" href="/tco">Порахувати витрати →</Link></div></div>
+        <div className="spread">{picker}<div className="row"><button onClick={share}>Поділитися</button><PrintButton /><button onClick={save}>Зберегти порівняння</button><Link className="btn" href="/tco">Порахувати витрати →</Link></div></div>
+        {shared && <div className="field"><label htmlFor="share-url">Скопіюйте посилання</label><input id="share-url" readOnly value={shared} onFocus={(e) => e.target.select()} /></div>}
       </div>
       <section className="split" style={{ marginTop: 36 }}>
         <div className="panel stack">

@@ -23,8 +23,9 @@ export default function Catalog() {
     const p = new URLSearchParams();
     Object.entries(f).forEach(([k, v]) => v && v !== "any" && p.set(k, v));
     p.set("limit", String(PAGE));
-    const t = setTimeout(() => api<typeof data>(`/api/cars?${p}`).then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message)), 150);
-    return () => clearTimeout(t);
+    let stale = false; // an older, slower answer must not overwrite a newer one
+    const t = setTimeout(() => api<typeof data>(`/api/cars?${p}`).then((d) => { if (!stale) { setData(d); setError(null); } }).catch((e) => { if (!stale) setError(e.message); }), 150);
+    return () => { stale = true; clearTimeout(t); };
   }, [f]);
 
   const loadMore = async () => {

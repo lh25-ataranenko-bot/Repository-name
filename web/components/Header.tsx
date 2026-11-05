@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/lib/store";
+import { Bell } from "./Bell";
 
 const LINKS = [
   ["/", "Головна"], ["/catalog", "Каталог"], ["/models", "Моделі"], ["/compare", "Порівняння"], ["/tco", "Калькулятор"], ["/customs", "Розмитнення"],
@@ -34,6 +35,7 @@ export function Header() {
           ))}
         </nav>
         <div className="acct">
+          <Bell />
           {user ? <Link className="btn btn-sm btn-ghost" href="/account">{user.name || user.email}</Link>
                 : <Link className="btn btn-sm" href="/account">Увійти</Link>}
         </div>

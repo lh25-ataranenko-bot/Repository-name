@@ -11,7 +11,7 @@ from ..db import get_db
 from ..models import Brand, CarModel, ChangeLog, Generation, Issue, Modification, User
 from ..schemas import CarCreate, CarPatch, ImportIn, IssueIn, RoleIn
 from ..security import require_admin, require_editor
-from ..services import importer
+from ..services import importer, notify
 from ..services.cache import catalog_cache
 from ..services.catalog import load_cars
 
@@ -128,6 +128,7 @@ def create_car(body: CarCreate, db: Session = Depends(get_db), user: User = Depe
 @router.patch("/cars/{slug}")
 def patch_car(slug: str, body: CarPatch, db: Session = Depends(get_db), user: User = Depends(require_editor)) -> dict[str, Any]:
     m = get_mod(db, slug)
+    price_before = m.price
     changes = body.model_dump(exclude_unset=True)
     critical_changed = False
     changed = []
@@ -151,6 +152,11 @@ def patch_car(slug: str, body: CarPatch, db: Session = Depends(get_db), user: Us
         m.status = "partial"
     if changed or "status" in changes:
         m.updated_at = date.today()
+    if "price" in changed and m.price is not None:
+        was = price_before
+        name = f"{m.brand_name} {m.model_name} {m.name}"
+        text = (f"{name}: ціна змінилася з ${was:,.0f} на ${m.price:,.0f}" if was else f"{name}: з’явилася ціна ${m.price:,.0f}").replace(",", " ")
+        notify.notify_favoriters(db, m, "price", text)
     db.commit()
     catalog_cache.bump()
     return {"slug": m.slug, "status": m.status, "changed": changed}

@@ -1,18 +1,19 @@
 """Registration, login and the personal cabinet: favourites, saved comparisons, garage."""
 
 import hashlib
+from calendar import monthrange
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..db import get_db
 from ..config import get_settings
-from ..models import AuthToken, Favorite, GarageCar, GarageEntry, Modification, SavedComparison, User
-from ..schemas import (ForgotIn, GarageCarIn, GarageEntryIn, LoginIn, PasswordChangeIn, ProfileIn, RegisterIn, ResetIn,
+from ..models import AuthToken, Favorite, Notification, GarageCar, GarageEntry, Modification, SavedComparison, User
+from ..schemas import (ForgotIn, GarageCarIn, GarageCarPatch, GarageEntryIn, LoginIn, PasswordChangeIn, ProfileIn, RegisterIn, ResetIn,
                        SavedIn, TokenIn, TokenOut, UserOut)
 from ..security import create_token, current_user, hash_password, login_guard, verify_password
 from ..services import mailer
@@ -21,7 +22,8 @@ router = APIRouter(prefix="/api", tags=["account"])
 
 
 def user_out(u: User) -> UserOut:
-    return UserOut(id=u.id, email=u.email, name=u.name, role=u.role, email_verified=u.email_verified)
+    return UserOut(id=u.id, email=u.email, name=u.name, role=u.role, email_verified=u.email_verified,
+                   email_notifications=u.email_notifications)
 
 
 def mod_by_slug(db: Session, slug: str) -> Modification:
@@ -134,9 +136,29 @@ def me(user: User = Depends(current_user)) -> UserOut:
 
 @router.patch("/me", response_model=UserOut)
 def update_me(body: ProfileIn, user: User = Depends(current_user), db: Session = Depends(get_db)) -> UserOut:
-    user.name = body.name
+    if body.name is not None:
+        user.name = body.name
+    if body.email_notifications is not None:
+        user.email_notifications = body.email_notifications
     db.commit()
     return user_out(user)
+
+
+@router.get("/me/notifications")
+def notifications(user: User = Depends(current_user), db: Session = Depends(get_db)) -> dict[str, Any]:
+    rows = db.scalars(select(Notification).options(joinedload(Notification.modification))
+                      .where(Notification.user_id == user.id).order_by(Notification.created_at.desc(), Notification.id.desc()).limit(50)).all()
+    return {"unread": sum(1 for n in rows if n.read_at is None), "items": [
+        {"id": n.id, "kind": n.kind, "text": n.text, "slug": n.modification.slug if n.modification else None,
+         "created_at": n.created_at.isoformat(), "read": n.read_at is not None} for n in rows]}
+
+
+@router.post("/me/notifications/read", status_code=204)
+def mark_read(user: User = Depends(current_user), db: Session = Depends(get_db)) -> Response:
+    for n in db.scalars(select(Notification).where(Notification.user_id == user.id, Notification.read_at.is_(None))):
+        n.read_at = datetime.now(UTC)
+    db.commit()
+    return Response(status_code=204)
 
 
 @router.post("/me/password", response_model=TokenOut)
@@ -209,6 +231,27 @@ def delete_comparison(cid: int, user: User = Depends(current_user), db: Session 
 
 
 # ---- garage
+def add_months(d: date, months: int) -> date:
+    y, m = divmod(d.month - 1 + months, 12)
+    return date(d.year + y, m + 1, min(d.day, monthrange(d.year + y, m + 1)[1]))
+
+
+def service_due(g: GarageCar, current_km: int, today: date | None = None) -> dict[str, Any]:
+    """Next service by mileage and by date from the last "service" entry (or from when the car was added)."""
+    today = today or date.today()
+    services = [e for e in g.entries if e.type == "service"]
+    last = max(services, key=lambda e: (e.date, e.km)) if services else None
+    base_km = last.km if last else g.start_km
+    base_date = last.date if last else (g.created_at or today)
+    due_km = base_km + g.service_interval_km
+    due_date = add_months(base_date, g.service_interval_months)
+    km_left, days_left = due_km - current_km, (due_date - today).days
+    status = "overdue" if km_left <= 0 or days_left <= 0 else "soon" if km_left <= 1000 or days_left <= 30 else "ok"
+    return {"interval_km": g.service_interval_km, "interval_months": g.service_interval_months,
+            "last_km": last.km if last else None, "last_date": last.date.isoformat() if last else None,
+            "due_km": due_km, "due_date": due_date.isoformat(), "km_left": km_left, "days_left": days_left, "status": status}
+
+
 def garage_out(g: GarageCar) -> dict[str, Any]:
     total = sum(e.cost_uah for e in g.entries)
     max_km = max([g.start_km, *[e.km for e in g.entries]])
@@ -222,6 +265,7 @@ def garage_out(g: GarageCar) -> dict[str, Any]:
         "modification": {"slug": m.slug, "name": f"{m.brand_name} {m.model_name} {m.name}"} if m else None,
         "total_uah": total, "driven_km": driven, "current_km": max_km,
         "per_km_uah": total / driven if driven > 0 else None, "by_type": by_type,
+        "service": service_due(g, max_km),
         "entries": [{"id": e.id, "date": e.date.isoformat(), "type": e.type, "cost_uah": e.cost_uah,
                      "km": e.km, "note": e.note} for e in g.entries],
     }
@@ -245,6 +289,16 @@ def add_garage(body: GarageCarIn, user: User = Depends(current_user), db: Sessio
     g = GarageCar(user_id=user.id, modification_id=mid, name=body.name, start_km=body.start_km)
     db.add(g)
     db.commit()
+    return garage_out(g)
+
+
+@router.patch("/me/garage/{gid}")
+def update_garage(gid: int, body: GarageCarPatch, user: User = Depends(current_user), db: Session = Depends(get_db)) -> dict[str, Any]:
+    g = own_garage_car(db, user, gid)
+    for k, v in body.model_dump(exclude_unset=True).items():
+        setattr(g, k, v)
+    db.commit()
+    db.refresh(g)
     return garage_out(g)
 
 

@@ -47,12 +47,13 @@ function Customs() {
   }, [slug]);
 
   useEffect(() => {
+    let stale = false; // an older, slower answer must not overwrite a newer one
     const t = setTimeout(() => {
       const body = { ...form, cc: form.fuel === "petrol" || form.fuel === "diesel" ? form.cc : null,
         battery_kwh: form.fuel === "electric" ? form.battery_kwh : null, rates };
-      api<Result>("/api/customs", { method: "POST", json: body }).then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message));
+      api<Result>("/api/customs", { method: "POST", json: body }).then((d) => { if (!stale) { setData(d); setError(null); } }).catch((e) => { if (!stale) setError(e.message); });
     }, 250);
-    return () => clearTimeout(t);
+    return () => { stale = true; clearTimeout(t); };
   }, [form, rates]);
 
   const num = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: Number(e.target.value) });

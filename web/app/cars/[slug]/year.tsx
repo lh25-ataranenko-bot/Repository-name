@@ -25,11 +25,12 @@ export function YearPicker({ slug, years, prices, year, refYear }: {
           </select>
         </div>
       </div>
-      <div className="year-bars" role="img" aria-label="Оцінка ринкової ціни за роками випуску">
+      <div className="year-bars" role="group" aria-label="Оцінка ринкової ціни за роками випуску">
         {years.map((y) => {
           const p = prices[String(y)];
           return (
             <button key={y} className={`year-bar${y === chosen ? " on" : ""}`} title={`${y}: ${usd(p)}`}
+              aria-label={`${y} рік: ${usd(p)}`} aria-pressed={y === chosen}
               onClick={() => router.replace(`/cars/${slug}?year=${y}`, { scroll: false })}>
               <span className="year-fill" style={{ height: `${p ? Math.max(8, (p / max) * 100) : 0}%` }} />
               <span className="small">{y}</span>

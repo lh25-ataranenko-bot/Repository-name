@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { CarCard } from "@/components/CarCard";
 import { CarPicker } from "@/components/CarPicker";
+import { Notifications } from "@/components/Notifications";
+import { ServiceDue } from "@/components/ServiceDue";
 import { api } from "@/lib/api";
 import { nf } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -168,6 +170,7 @@ function Garage() {
             <div className="stat"><span className="label">Вартість 1 км</span><span className="big-num">{g.per_km_uah != null ? `${nf(g.per_km_uah, 2)} грн` : "—"}</span></div>
             <div className="stat"><span className="label">Пальне / ТО / ремонт</span><span className="num small">{nf(g.by_type.fuel ?? 0)} / {nf(g.by_type.service ?? 0)} / {nf(g.by_type.repair ?? 0)} грн</span></div>
           </div>
+          <ServiceDue g={g} onSaved={load} />
           <form className="fields" style={{ alignItems: "end" }} onSubmit={(e) => { e.preventDefault(); addEntry(g.id, e.currentTarget); e.currentTarget.reset(); }}>
             <div className="field"><label htmlFor={`ge-type-${g.id}`}>Запис</label><select id={`ge-type-${g.id}`} name="type">{Object.entries(TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
             <div className="field"><label htmlFor={`ge-cost-${g.id}`}>Сума, грн</label><input id={`ge-cost-${g.id}`} name="cost" type="number" min={0} step={10} required /></div>
@@ -227,6 +230,7 @@ export default function Account() {
           </section>
         )}
         {user && <Garage />}
+        {user && <Notifications />}
         {user && <MyReviews />}
         {user && <Profile />}
       </div>

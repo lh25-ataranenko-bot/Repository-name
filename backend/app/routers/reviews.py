@@ -10,6 +10,7 @@ from ..db import get_db
 from ..models import Modification, Review, User
 from ..schemas import ReviewIn, ReviewModerationIn
 from ..security import current_user, require_editor
+from ..services import notify
 from ..services.cache import Counter
 
 router = APIRouter(prefix="/api", tags=["reviews"])
@@ -105,7 +106,12 @@ def moderate(rid: int, body: ReviewModerationIn, db: Session = Depends(get_db), 
         raise HTTPException(404, "Відгук не знайдено")
     if body.status == "rejected" and not (body.reason or "").strip():
         raise HTTPException(422, "Вкажіть причину відхилення: її побачить автор")
+    was_published = r.status == "published"
     r.status = body.status
     r.reject_reason = body.reason.strip() if body.status == "rejected" and body.reason else None
+    if body.status == "published" and not was_published:
+        m = r.modification
+        notify.notify_favoriters(db, m, "review", f"Новий відгук про {m.brand_name} {m.model_name} {m.name}: {r.rating} з 5",
+                                 exclude_user_id=r.user_id)
     db.commit()
     return {"id": r.id, "status": r.status}

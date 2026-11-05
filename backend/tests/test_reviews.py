@@ -42,3 +42,28 @@ def test_review_validation(client):
     other = register(client, "owner3@example.com")
     rid = client.put(f"/api/cars/{slug}/reviews/mine", headers=h, json={**GOOD, "car_year": 2019}).json()["id"]
     assert client.delete(f"/api/me/reviews/{rid}", headers=other).status_code == 404
+
+
+def test_favourite_notifications(client, admin_token):
+    from app.services import mailer
+
+    admin = {"Authorization": f"Bearer {admin_token}"}
+    fan = register(client, "fan@example.com", "Марко")
+    author = register(client, "author@example.com", "Ольга")
+    slug = "skoda-superb-b8-20tdi"
+    for h in (fan, author):
+        client.put(f"/api/me/favorites/{slug}", headers=h)
+    price = client.get(f"/api/cars/{slug}").json()["price"]
+    client.patch(f"/api/admin/cars/{slug}", headers=admin, json={"price": price - 1000})
+    n = client.get("/api/me/notifications", headers=fan).json()
+    assert n["unread"] == 1 and n["items"][0]["kind"] == "price" and "ціна змінилася" in n["items"][0]["text"]
+    # a review notifies the other fans, not its author
+    rid = client.put(f"/api/cars/{slug}/reviews/mine", headers=author, json=GOOD).json()["id"]
+    client.patch(f"/api/admin/reviews/{rid}", headers=admin, json={"status": "published"})
+    assert client.get("/api/me/notifications", headers=fan).json()["unread"] == 2
+    assert all(x["kind"] != "review" for x in client.get("/api/me/notifications", headers=author).json()["items"])
+    # unverified addresses get no email
+    assert not any(m["To"] == "fan@example.com" and "Superb" in m["Subject"] for m in mailer.sent)
+    assert client.post("/api/me/notifications/read", headers=fan).status_code == 204
+    assert client.get("/api/me/notifications", headers=fan).json()["unread"] == 0
+    assert client.patch("/api/me", headers=fan, json={"email_notifications": False}).json()["email_notifications"] is False

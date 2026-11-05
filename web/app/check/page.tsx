@@ -28,9 +28,10 @@ function Check() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
+    let stale = false; // an older, slower answer must not overwrite a newer one
     const t = setTimeout(() => api<CheckResponse>("/api/check", { method: "POST", json: form })
-      .then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message)), 250);
-    return () => clearTimeout(t);
+      .then((d) => { if (!stale) { setData(d); setError(null); } }).catch((e) => { if (!stale) setError(e.message); }), 250);
+    return () => { stale = true; clearTimeout(t); };
   }, [form]);
 
   const num = (k: "year" | "km" | "price") => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: +e.target.value || 0 });

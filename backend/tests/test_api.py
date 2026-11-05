@@ -184,3 +184,22 @@ def test_views_and_popular(client, admin_token):
     assert client.post("/api/cars/nope/view").status_code == 404
     stats = client.get("/api/admin/popular", headers={"Authorization": f"Bearer {admin_token}"}).json()
     assert stats["per_day"][-1]["views"] >= 3
+
+
+def test_garage_service_reminder(client):
+    from datetime import date, timedelta
+
+    r = client.post("/api/auth/register", json={"email": "service@example.com", "password": "secret123"})
+    h = {"Authorization": f"Bearer {r.json()['token']}"}
+    g = client.post("/api/me/garage", headers=h, json={"name": "Авто", "start_km": 100000}).json()
+    assert g["service"]["due_km"] == 115000 and g["service"]["status"] == "ok"
+    # a service entry resets the countdown; driving close to the interval makes it "soon"
+    old = (date.today() - timedelta(days=200)).isoformat()
+    client.post(f"/api/me/garage/{g['id']}/entries", headers=h, json={"date": old, "type": "service", "cost_uah": 4000, "km": 110000, "note": ""})
+    g = client.post(f"/api/me/garage/{g['id']}/entries", headers=h,
+                    json={"date": date.today().isoformat(), "type": "fuel", "cost_uah": 2000, "km": 124500, "note": ""}).json()
+    s = g["service"]
+    assert s["last_km"] == 110000 and s["due_km"] == 125000 and s["km_left"] == 500 and s["status"] == "soon"
+    g = client.patch(f"/api/me/garage/{g['id']}", headers=h, json={"service_interval_km": 10000, "service_interval_months": 6}).json()
+    assert g["service"]["status"] == "overdue" and g["service"]["km_left"] < 0
+    assert client.patch(f"/api/me/garage/{g['id']}", headers=h, json={"service_interval_km": 10}).status_code == 422

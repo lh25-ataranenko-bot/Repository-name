@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { CarPicker } from "@/components/CarPicker";
 import { CarRow } from "@/components/CarRow";
 import { Button, Card, Chip, Field, Loading, Notice, Row, Screen, T, useToast } from "@/components/ui";
@@ -182,6 +182,14 @@ function Garage() {
               <View><T v="label">Пройдено</T><T v="h3">{nf(g.driven_km)} км</T></View>
               <View><T v="label">1 км</T><T v="h3">{g.per_km_uah != null ? `${nf(g.per_km_uah, 2)} грн` : "—"}</T></View>
             </Row>
+            {g.service && (
+              <Notice tone={g.service.status === "ok" ? "info" : "warn"}>
+                {g.service.status === "overdue" ? "ТО прострочено: " : g.service.status === "soon" ? "Скоро ТО: " : "Наступне ТО: "}
+                {g.service.status === "overdue" ? `мало бути на ${nf(g.service.due_km)} км або до ${new Date(g.service.due_date).toLocaleDateString("uk-UA")}`
+                  : `через ${nf(g.service.km_left)} км або до ${new Date(g.service.due_date).toLocaleDateString("uk-UA")}`}
+                {` (інтервал ${nf(g.service.interval_km)} км / ${g.service.interval_months} міс.)`}
+              </Notice>
+            )}
             <Row>{Object.entries(TYPES).map(([k, l]) => <Chip key={k} label={l} on={e.type === k} onPress={() => set({ type: k })} />)}</Row>
             <Row style={{ alignItems: "flex-start" }}>
               <Field label="Сума, грн" keyboardType="decimal-pad" value={e.cost} onChangeText={(cost) => set({ cost })} />
@@ -199,6 +207,29 @@ function Garage() {
         );
       })}
     </View>
+  );
+}
+
+function NotificationsBlock() {
+  const toast = useToast();
+  const { user, updateUser } = useStore();
+  const { data, reload } = useApi<{ unread: number; items: { id: number; kind: string; text: string; slug: string | null; read: boolean }[] }>("/api/me/notifications");
+  if (!user || !data) return null;
+  return (
+    <Card>
+      <Row style={{ justifyContent: "space-between" }}>
+        <T v="h3">Сповіщення{data.unread ? ` · ${data.unread} нових` : ""}</T>
+        {data.unread > 0 && <Button small kind="ghost" title="Прочитано" onPress={async () => { await api("/api/me/notifications/read", { method: "POST" }); reload(); }} />}
+      </Row>
+      {data.items.length === 0 && <T v="muted">Тут з’являться зміни цін і нові відгуки про авто з вашого обраного.</T>}
+      {data.items.slice(0, 10).map((n) => (
+        <Pressable key={n.id} onPress={() => n.slug && router.push({ pathname: "/car/[slug]", params: { slug: n.slug } })}>
+          <T v="small" style={{ fontWeight: n.read ? "400" : "700" }}>{n.kind === "price" ? "Ціна · " : "Відгук · "}{n.text}</T>
+        </Pressable>
+      ))}
+      <Chip label={user.email_notifications ? "Листи про обране: увімкнено" : "Листи про обране: вимкнено"} on={user.email_notifications}
+        onPress={async () => { const u = await api<User>("/api/me", { method: "PATCH", json: { email_notifications: !user.email_notifications } }); updateUser(u); toast("Збережено"); }} />
+    </Card>
   );
 }
 
@@ -234,6 +265,7 @@ export default function Account() {
               </Row>
             </Card>
           )) : <T v="muted">Збережених порівнянь поки немає.</T>}
+          <NotificationsBlock />
           <Garage />
           <Profile />
         </>

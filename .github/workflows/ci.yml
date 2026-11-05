@@ -115,11 +115,14 @@ jobs:
       - name: Install Playwright
         working-directory: web
         run: |
-          npm install --no-save playwright@1.63.0
+          npm install --no-save playwright@1.63.0 axe-core@4.10.3
           npx playwright install --with-deps chromium
       - name: Smoke test
         working-directory: web
         run: node e2e/smoke.cjs http://localhost:3000
+      - name: Accessibility audit (WCAG 2.1 AA, light and dark)
+        working-directory: web
+        run: node e2e/a11y.cjs http://localhost:3000
       - name: Logs on failure
         if: failure()
         run: tail -n 80 api.log web.log

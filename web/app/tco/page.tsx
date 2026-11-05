@@ -44,13 +44,14 @@ function Tco() {
 
   useEffect(() => {
     if (!ready || !compare.length) return setData(null);
+    let stale = false; // an older, slower answer must not overwrite a newer one
     const t = setTimeout(() => {
       const overrides = Object.fromEntries(Object.entries(ov).filter(([s]) => compare.includes(s)));
       const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
       api<TcoResponse>("/api/tco", { method: "POST", json: { slugs: compare, env, overrides, years: chosen, credit } })
-        .then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message));
+        .then((d) => { if (!stale) { setData(d); setError(null); } }).catch((e) => { if (!stale) setError(e.message); });
     }, 200);
-    return () => clearTimeout(t);
+    return () => { stale = true; clearTimeout(t); };
   }, [compare, env, ov, ready, years, credit]);
 
   const envField = (k: keyof Env, label: string, step: number) => (

@@ -19,10 +19,11 @@ export function Scenarios({ cars, env, years, overrides, credit }: {
   useEffect(() => { if (!cars.some((c) => c.slug === slug)) setSlug(cars[0]?.slug ?? ""); }, [cars, slug]);
   useEffect(() => {
     if (!slug) return;
+    let stale = false;
     const t = setTimeout(() => api<{ rows: Row[] }>("/api/tco/scenarios", { method: "POST", json: {
       slug, env, year: years[slug] ?? null, overrides: overrides[slug] ?? {}, credit,
-    } }).then((d) => { setRows(d.rows); setError(null); }).catch((e) => { setRows(null); setError(e.message); }), 250);
-    return () => clearTimeout(t);
+    } }).then((d) => { if (!stale) { setRows(d.rows); setError(null); } }).catch((e) => { if (!stale) { setRows(null); setError(e.message); } }), 250);
+    return () => { stale = true; clearTimeout(t); };
   }, [slug, env, years, overrides, credit]);
   if (!cars.length) return null;
   const max = Math.max(1, ...(rows ?? []).map((r) => r.per_month));

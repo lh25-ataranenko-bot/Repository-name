@@ -119,7 +119,7 @@ export interface CheckResponse {
   disclaimer: string;
 }
 
-export interface User { id: number; email: string; name: string; role: "user" | "editor" | "admin"; email_verified: boolean }
+export interface User { id: number; email: string; name: string; role: "user" | "editor" | "admin"; email_verified: boolean; email_notifications: boolean }
 
 export interface GarageCar {
   id: number; name: string; start_km: number;
@@ -127,6 +127,10 @@ export interface GarageCar {
   total_uah: number; driven_km: number; current_km: number; per_km_uah: number | null;
   by_type: Record<string, number>;
   entries: { id: number; date: string; type: string; cost_uah: number; km: number; note: string }[];
+  service: {
+    interval_km: number; interval_months: number; last_km: number | null; last_date: string | null;
+    due_km: number; due_date: string; km_left: number; days_left: number; status: "ok" | "soon" | "overdue";
+  };
 }
 
 export interface TreeBrand {

@@ -105,6 +105,7 @@ class UserOut(BaseModel):
     name: str
     role: str
     email_verified: bool = False
+    email_notifications: bool = True
 
 
 class TokenIn(BaseModel):
@@ -126,7 +127,8 @@ class PasswordChangeIn(BaseModel):
 
 
 class ProfileIn(BaseModel):
-    name: str = Field(max_length=120)
+    name: str | None = Field(None, max_length=120)
+    email_notifications: bool | None = None
 
 
 class TokenOut(BaseModel):
@@ -143,6 +145,12 @@ class GarageCarIn(BaseModel):
     slug: str | None = None
     name: str = Field(min_length=1, max_length=120)
     start_km: int = Field(0, ge=0, le=2_000_000)
+
+
+class GarageCarPatch(BaseModel):
+    name: str | None = Field(None, min_length=1, max_length=120)
+    service_interval_km: int | None = Field(None, ge=1000, le=100000)
+    service_interval_months: int | None = Field(None, ge=1, le=60)
 
 
 class GarageEntryIn(BaseModel):
