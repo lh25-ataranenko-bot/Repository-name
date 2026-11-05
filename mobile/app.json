@@ -43,7 +43,8 @@
             "backgroundColor": "#0C1117"
           }
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "scheme": "autowise",
     "experiments": {

@@ -54,6 +54,7 @@ export interface Car {
   cost_per_100km: number | null;
   range_km: number | null;
   tco_5y: number | null;
+  photo?: CarPhotoRef | null;
   /** Present when a production year was requested */
   for_year?: number;
   price_for_year?: number | null;
@@ -61,6 +62,9 @@ export interface Car {
   years?: number[];
   price_by_year?: Record<string, number | null>;
 }
+
+export interface CarPhotoRef { url: string; width: number; height: number; author: string; license: string; source_url: string | null }
+export interface CarPhoto { id: number; url: string; width: number; height: number; author: string; license: string; license_label: string; source_url: string | null; is_primary: boolean }
 
 export interface Facets { brands: Record<string, string[]>; year_min: number | null; year_max: number | null }
 

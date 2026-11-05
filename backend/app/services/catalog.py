@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
-from ..models import CarModel, Generation, Modification
+from ..models import CarModel, CarPhoto, Generation, Modification
 from .calc import Car, Env, cost_per_100km, real_range_km, tco
 from .scoring import compute_scores
 
@@ -39,7 +39,17 @@ def load_cars(db: Session) -> list[Car]:
         )
         .order_by(Modification.slug)
     )
-    return [to_dict(m) for m in db.scalars(stmt).unique()]
+    cars = [to_dict(m) for m in db.scalars(stmt).unique()]
+    # primary photo per modification, with its attribution
+    from .photos import LICENSES  # local import: photos imports settings only, avoids a cycle at startup
+    prim = {p.modification_id: p for p in db.scalars(select(CarPhoto).where(CarPhoto.is_primary.is_(True)))}
+    ids = {m_id: slug for m_id, slug in db.execute(select(Modification.id, Modification.slug))}
+    by_slug = {ids[k]: v for k, v in prim.items() if k in ids}
+    for c in cars:
+        p = by_slug.get(c["slug"])
+        c["photo"] = {"url": f"/api/media/photos/{p.filename}", "width": p.width, "height": p.height, "author": p.author,
+                      "license": LICENSES.get(p.license, p.license), "source_url": p.source_url} if p else None
+    return cars
 
 
 def with_scores(cars: list[Car], env: Env) -> list[Car]:

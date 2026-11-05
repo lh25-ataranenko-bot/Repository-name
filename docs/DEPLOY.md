@@ -53,6 +53,14 @@ docker compose -f docker-compose.prod.yml logs -f api
 Сервіс `backup` щодня зберігає дамп бази в `./backups` і видаляє копії, старші за
 `BACKUP_KEEP_DAYS` днів. Копіюйте цю папку ще й за межі сервера (інший сервер, хмарне сховище).
 
+Фото авто лежать в окремому томі `media`. Копіюйте його разом із базою:
+
+```bash
+docker run --rm -v autowise_media:/media -v "$PWD/backups":/out alpine tar czf /out/media-$(date +%F).tar.gz -C /media .
+```
+
+(назва тому — `<папка проєкту>_media`, див. `docker volume ls`).
+
 Відновлення з копії:
 
 ```bash

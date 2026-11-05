@@ -137,6 +137,9 @@ cd mobile && npx tsc --noEmit
 | POST  | `/api/assistant`             | AI-помічник за даними каталогу |
 | POST  | `/api/customs`               | Орієнтовне розмитнення: мито, акциз, ПДВ, збір до ПФ (ставки змінювані) |
 | GET   | `/api/models`, `/api/models/{brand}/{model}` | Моделі й покоління на шкалі років |
+| *     | `/api/cars/{slug}/photos`, `/api/admin/cars/{slug}/photos` | Фото з автором і ліцензією (лише редактори завантажують) |
+| GET   | `/api/me/notifications`      | Сповіщення про обране: зміна ціни, новий відгук |
+| PATCH | `/api/me/garage/{id}`        | Інтервали ТО; у відповіді — коли наступне ТО |
 | *     | `/api/cars/{slug}/reviews`, `/api/me/reviews`, `/api/admin/reviews` | Відгуки власників з модерацією |
 | GET   | `/api/cars/lookup`           | Швидкий пошук для списків вибору |
 | POST  | `/api/check`                 | Аналіз оголошення: ціна, VIN, чекліст |

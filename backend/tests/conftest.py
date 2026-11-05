@@ -2,6 +2,7 @@ import os
 
 os.environ.setdefault("AUTOWISE_DATABASE_URL", "postgresql+psycopg://autowise:autowise@localhost:5432/autowise_test")
 os.environ["AUTOWISE_RATE_LIMIT_PER_MINUTE"] = "100000"
+os.environ["AUTOWISE_MEDIA_DIR"] = __import__("tempfile").mkdtemp(prefix="autowise-media-")
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

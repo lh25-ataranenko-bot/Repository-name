@@ -3,7 +3,10 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ToastProvider } from "@/components/ui";
 import { StoreProvider } from "@/lib/store";
+import { configureNotifications } from "@/lib/serviceReminders";
 import { useTheme } from "@/lib/theme";
+
+configureNotifications();
 
 export default function RootLayout() {
   const t = useTheme();

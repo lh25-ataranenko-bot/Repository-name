@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { ACTION, ASSIST, BODY, DRIVE, FUEL, STATUS, logValue } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import type { Car, Issue } from "@/lib/types";
+import { PhotoManager } from "./PhotoManager";
 
 type Kind = "text" | "int" | "float" | "pct" | "select";
 type Def = [key: string, label: string, kind: Kind, options?: Record<string, string>];
@@ -175,6 +176,7 @@ export function CarEditor({ slug }: { slug?: string }) {
         </section>
       ))}
 
+      {car && <PhotoManager slug={car.slug} />}
       <section className="panel stack">
         <div className="spread"><h3>Типові несправності</h3><button className="btn-sm" onClick={() => setIssues([...issues, { part: "", frequency: "іноді", cost: 0 }])}>+ Додати несправність</button></div>
         {issues.length === 0 && <p className="small muted">Несправностей не додано. На сайті буде показано «Немає даних».</p>}

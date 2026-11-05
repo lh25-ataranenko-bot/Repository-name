@@ -234,3 +234,18 @@ class Notification(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     modification: Mapped[Modification | None] = relationship()
+
+
+class CarPhoto(Base):
+    """A photo of a modification. Shown only with its author and licence: no photos without rights."""
+    __tablename__ = "car_photos"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    modification_id: Mapped[int] = mapped_column(ForeignKey("modifications.id", ondelete="CASCADE"), index=True)
+    filename: Mapped[str] = mapped_column(String(80), unique=True)
+    width: Mapped[int] = mapped_column(Integer)
+    height: Mapped[int] = mapped_column(Integer)
+    author: Mapped[str] = mapped_column(String(120))
+    license: Mapped[str] = mapped_column(String(40))
+    source_url: Mapped[str | None] = mapped_column(String(500))
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

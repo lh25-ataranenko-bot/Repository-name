@@ -28,6 +28,9 @@ services:
       AUTOWISE_SMTP_USER: ${AUTOWISE_SMTP_USER:-}
       AUTOWISE_SMTP_PASSWORD: ${AUTOWISE_SMTP_PASSWORD:-}
       AUTOWISE_SMTP_FROM: ${AUTOWISE_SMTP_FROM:-AutoWise <no-reply@autowise.local>}
+      AUTOWISE_MEDIA_DIR: /app/media
+    volumes:
+      - media:/app/media
     depends_on:
       db:
         condition: service_healthy
@@ -49,3 +52,4 @@ services:
 
 volumes:
   pgdata:
+  media:

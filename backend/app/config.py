@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     # Keep True only while the API is reachable solely through that proxy.
     trust_forwarded_for: bool = True
 
+    # Uploaded car photos (a persistent volume in production).
+    media_dir: str = "media"
+
     # AI assistant. Without a key (here or ANTHROPIC_API_KEY) it answers with the rule-based picker.
     anthropic_api_key: str = ""
     assistant_model: str = "claude-opus-5-5"

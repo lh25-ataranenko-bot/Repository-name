@@ -1,5 +1,6 @@
 import { router } from "expo-router";
-import { Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
+import { API_BASE } from "@/lib/api";
 import { FUEL, isEV, nf, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
@@ -21,7 +22,9 @@ export function CarRow({ car: c, right }: { car: Car; right?: React.ReactNode })
             <T v="h3">{c.name}</T>
             <T v="muted">{years(c)} · {FUEL[c.fuel]} · {c.transmission ?? "—"}</T>
           </View>
-          <Silhouette body={c.body} width={96} />
+          {c.photo
+            ? <Image source={{ uri: API_BASE + c.photo.url }} style={{ width: 96, height: 64, borderRadius: 6 }} accessibilityLabel={`${c.brand} ${c.model}`} />
+            : <Silhouette body={c.body} width={96} />}
         </Row>
         <Row style={{ justifyContent: "space-between" }}>
           <Stat label="Потужність" value={c.hp != null ? `${nf(c.hp)} к.с.` : ND} />

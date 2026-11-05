@@ -53,6 +53,9 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       AUTOWISE_SEED_DEMO: ${AUTOWISE_SEED_DEMO:-1}
       UVICORN_WORKERS: ${UVICORN_WORKERS:-2}
+      AUTOWISE_MEDIA_DIR: /app/media
+    volumes:
+      - media:/app/media
     depends_on:
       db: {condition: service_healthy}
       redis: {condition: service_started}
@@ -86,5 +89,6 @@ services:
 
 volumes:
   pgdata:
+  media:
   caddy_data:
   caddy_config:

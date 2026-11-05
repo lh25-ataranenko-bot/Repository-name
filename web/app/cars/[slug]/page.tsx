@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ScoreBars } from "@/components/ScoreBars";
-import { Silhouette } from "@/components/Silhouette";
+import { Gallery } from "@/components/Gallery";
 import { api, ApiError } from "@/lib/api";
 import { SITE_URL } from "@/lib/site";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
@@ -60,7 +60,7 @@ export default async function CarPage({ params, searchParams }: {
       </div>
       <div className="split">
         <div className="stack">
-          <Silhouette body={c.body} />
+          <Gallery slug={c.slug} body={c.body} alt={nameOf(c)} />
           <div className="row"><span className={`pill ${st[1]}`}>{st[0]}</span><span className="small muted">Джерело: {c.source ?? "—"} · оновлено {c.updated_at ?? "—"}</span></div>
           <CarActions slug={c.slug} />
         </div>
@@ -121,6 +121,7 @@ function jsonLd(c: Car): string {
     model: `${c.model} ${c.generation}`,
     vehicleConfiguration: c.name,
     url: `${SITE_URL}/cars/${c.slug}`,
+    image: c.photo ? `${SITE_URL}${c.photo.url}` : undefined,
     bodyType: BODY[c.body],
     fuelType: FUEL_SCHEMA[c.fuel],
     driveWheelConfiguration: DRIVE_SCHEMA[c.drive] ? `https://schema.org/${DRIVE_SCHEMA[c.drive]}` : undefined,

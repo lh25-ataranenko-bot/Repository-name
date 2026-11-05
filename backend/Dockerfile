@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-RUN useradd --system --uid 10001 autowise
+RUN useradd --system --uid 10001 autowise && mkdir -p /app/media && chown autowise /app/media
 USER autowise
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \

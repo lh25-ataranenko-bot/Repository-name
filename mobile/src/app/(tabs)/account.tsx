@@ -6,6 +6,7 @@ import { CarRow } from "@/components/CarRow";
 import { Button, Card, Chip, Field, Loading, Notice, Row, Screen, T, useToast } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 import { useGarage } from "@/lib/garage";
+import { scheduleServiceReminders } from "@/lib/serviceReminders";
 import { nf } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
@@ -123,6 +124,7 @@ function Garage() {
   const [km, setKm] = useState("150000");
   const [entry, setEntry] = useState<Record<number, { type: string; cost: string; km: string; note: string }>>({});
   useFocusEffect(useCallback(() => { garage.sync(); }, [garage.sync]));
+  useEffect(() => { if (garage.cars && !garage.offline) scheduleServiceReminders(garage.cars); }, [garage.cars, garage.offline]);
 
   const add = async () => {
     try {

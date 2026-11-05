@@ -20,7 +20,9 @@ export function CarCard({ car: c }: { car: Car }) {
         <span className="crumb">{c.brand} › {c.model} › {c.generation}</span>
         <button className="icon-btn" aria-pressed={fav} aria-label="Обране" onClick={() => toggleFav(c.slug)}>{fav ? "★" : "☆"}</button>
       </div>
-      <Silhouette body={c.body} />
+      {c.photo
+        ? <img className="car-photo" src={c.photo.url} alt={`${c.brand} ${c.model} ${c.generation}`} loading="lazy" width={c.photo.width} height={c.photo.height} />
+        : <Silhouette body={c.body} />}
       <div>
         <h3>{c.name}</h3>
         <p className="sub">{years(c)} · {FUEL[c.fuel]} · {BODY[c.body]} · {DRIVE[c.drive]} привід</p>

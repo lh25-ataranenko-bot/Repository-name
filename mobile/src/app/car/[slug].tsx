@@ -1,7 +1,7 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-import { ScrollView, View } from "react-native";
+import { api, API_BASE } from "@/lib/api";
+import { Image, ScrollView, View } from "react-native";
 import { Button, Card, Chip, Loading, Pill, Row, ScoreBars, Screen, Silhouette, T, useToast } from "@/components/ui";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -43,7 +43,12 @@ export default function CarScreen() {
       <T v="eyebrow">{c.brand} › {c.model} › {c.generation}</T>
       <T v="h1">{nameOf(c)}</T>
       <T v="muted">{years(c)} · {FUEL[c.fuel]} · {BODY[c.body]} · {DRIVE[c.drive]} привід</T>
-      <View style={{ alignItems: "center" }}><Silhouette body={c.body} width={260} /></View>
+      {c.photo ? (
+        <View style={{ gap: 4 }}>
+          <Image source={{ uri: API_BASE + c.photo.url }} style={{ width: "100%", aspectRatio: c.photo.width / c.photo.height, borderRadius: 10 }} accessibilityLabel={nameOf(c)} />
+          <T v="muted">Фото: {c.photo.author} · {c.photo.license}</T>
+        </View>
+      ) : <View style={{ alignItems: "center" }}><Silhouette body={c.body} width={260} /></View>}
       <Row><Pill text={st[0]} tone={st[1] as "good"} /><T v="muted">{c.source ?? "—"} · {c.updated_at ?? "—"}</T></Row>
       <Row>
         <Button kind={inCmp ? "primary" : "default"} title={inCmp ? "✓ У порівнянні" : "+ Порівняти"} onPress={() => toast(toggleCompare(c.slug))} />

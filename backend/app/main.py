@@ -2,12 +2,14 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings, production_problems
 from .db import SessionLocal
-from .routers import account, admin, popular, public, reviews
+from .routers import account, admin, photos, popular, public, reviews
 from .security import RateLimitMiddleware
+from .services.photos import media_root
 
 settings = get_settings()
 
@@ -52,3 +54,6 @@ app.include_router(account.router)
 app.include_router(admin.router)
 app.include_router(reviews.router)
 app.include_router(popular.router)
+app.include_router(photos.router)
+# Uploaded photos. Mounted under /api so the site proxy and Caddy route them to the API as well.
+app.mount("/api/media", StaticFiles(directory=media_root(), check_dir=False), name="media")

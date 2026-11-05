@@ -73,7 +73,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.counter = Counter("rate", 60)
 
     async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/api/"):
+        if request.url.path.startswith("/api/") and not request.url.path.startswith("/api/media/"):
             ip = request.client.host if request.client else "unknown"
             fwd = request.headers.get("x-forwarded-for")
             if self.trust_forwarded_for and fwd:

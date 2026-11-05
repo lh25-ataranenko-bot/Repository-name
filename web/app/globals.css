@@ -316,3 +316,8 @@ hr{border:0;border-top:1px solid var(--line);margin:0}
   .panel, .car, .stat { break-inside: avoid; box-shadow: none; }
   a { color: inherit; text-decoration: none; }
 }
+.car-photo{width:100%;aspect-ratio:200/76;object-fit:cover;border-radius:8px;background:var(--surface-2);display:block;max-width:100%;height:auto}
+.photo-main,.photo-strip figure{margin:0;display:grid;gap:4px}
+.photo-main img{width:100%;height:auto;border-radius:10px;display:block;max-width:100%}
+.photo-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.photo-strip img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;max-width:100%;height:auto}
