@@ -135,6 +135,9 @@ cd mobile && npx tsc --noEmit
 | POST  | `/api/rating`                | Зважений рейтинг з обов’язковими фільтрами |
 | POST  | `/api/search/parse`          | Запит звичайною мовою → фільтри |
 | POST  | `/api/assistant`             | AI-помічник за даними каталогу |
+| POST  | `/api/customs`               | Орієнтовне розмитнення: мито, акциз, ПДВ, збір до ПФ (ставки змінювані) |
+| GET   | `/api/models`, `/api/models/{brand}/{model}` | Моделі й покоління на шкалі років |
+| *     | `/api/cars/{slug}/reviews`, `/api/me/reviews`, `/api/admin/reviews` | Відгуки власників з модерацією |
 | GET   | `/api/cars/lookup`           | Швидкий пошук для списків вибору |
 | POST  | `/api/check`                 | Аналіз оголошення: ціна, VIN, чекліст |
 | POST  | `/api/auth/register`, `/login` | Реєстрація і вхід (JWT); 5 невдалих спроб за 15 хв блокують вхід |
