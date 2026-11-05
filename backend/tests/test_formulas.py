@@ -97,3 +97,18 @@ def test_production_checks():
                   database_url="postgresql+psycopg://autowise:S3cret@db:5432/autowise", app_url="https://autowise.ua",
                   smtp_host="smtp.example.com", redis_url="redis://redis:6379/0")
     assert production_problems(ok) == ([], [])
+
+
+def test_credit_adds_interest_only_while_owned():
+    from app.services.calc import Credit, loan
+
+    no = tco(CAR, env(years=5))
+    cr = tco(CAR, env(years=5), credit=Credit(down_payment_pct=30, rate_pct=18, term_months=60))
+    assert cr.C > 0 and abs(cr.total - no.total - cr.C) < 1e-6
+    # annuity: 14 000 at 18 % for 60 months ≈ 355.5 a month
+    ln = loan(14000, Credit(30, 18, 60), 60)
+    assert abs(ln["monthly_payment"] - 355.5) < 0.5 and ln["balance_at_sale"] < 1
+    # selling after 2 years of a 5-year loan: less interest, the rest of the debt is repaid by the sale
+    short = loan(14000, Credit(30, 18, 60), 24)
+    assert short["interest_in_period"] < ln["interest_total"] and short["balance_at_sale"] > 0
+    assert loan(12000, Credit(0, 0, 24), 24)["monthly_payment"] == 500  # 0 % instalment plan

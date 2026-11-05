@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db import get_db
-from ..schemas import AssistantIn, CheckIn, CompareIn, CustomsIn, ParseIn, RatingIn, TcoIn
+from ..schemas import AssistantIn, CheckIn, CompareIn, CustomsIn, ScenariosIn, ParseIn, RatingIn, TcoIn
 from ..services import assistant, customs, listing
-from ..services.calc import Env, default_inputs, price_for_year, tco
+from ..services.calc import Credit, Env, Overrides, default_inputs, price_for_year, tco
 from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
 from ..services.query_parser import parse_query
@@ -256,7 +256,7 @@ def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
     results = []
     for c in cars:
         ov = body.overrides.get(c["slug"])
-        r = tco(c, env, ov.to_overrides() if ov else None)
+        r = tco(c, env, ov.to_overrides() if ov else None, Credit(**body.credit.model_dump()) if body.credit else None)
         results.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['generation']} {c['name']}",
                         "defaults": default_inputs(c), "consumption_real": c["cons_real"] is not None,
                         "unit": "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км",
@@ -270,6 +270,46 @@ def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
                "difference": ok[-1]["result"]["total"] - ok[0]["result"]["total"]}
     return {"env": env.__dict__, "results": results, "comparison": cmp,
             "missing": [r["slug"] for r in results if not r["result"]]}
+
+
+@router.post("/tco/scenarios")
+def tco_scenarios(body: ScenariosIn, db: Session = Depends(get_db)) -> dict[str, Any]:
+    """What-if table for one car: the same calculation with one assumption changed at a time."""
+    base_env = body.env.to_env()
+    car = as_of_year(pick(db, [body.slug])[0], body.year, base_env)
+    credit = Credit(**body.credit.model_dump()) if body.credit else None
+    ov = body.overrides.to_overrides()
+    base = tco(car, base_env, ov, credit)
+    if base is None:
+        raise HTTPException(422, "Для цієї модифікації бракує даних для розрахунку")
+    repair = (ov.repair if ov.repair is not None else car["repair_per_year"]) or 0
+
+    def env_with(**kw: Any) -> Env:
+        e = Env(**base_env.__dict__)
+        for k, v in kw.items():
+            setattr(e, k, v)
+        return e
+
+    def fuel_up(e: Env, k: float) -> Env:
+        return env_with(petrol=e.petrol * k, diesel=e.diesel * k, kwh=e.kwh * k)
+
+    cases = [
+        ("Як зараз", base_env, ov),
+        ("Пробіг 10 000 км на рік", env_with(km=10000), ov),
+        ("Пробіг 20 000 км на рік", env_with(km=20000), ov),
+        ("Пробіг 30 000 км на рік", env_with(km=30000), ov),
+        ("Пальне й електроенергія на 20 % дорожчі", fuel_up(base_env, 1.2), ov),
+        ("Ремонти вдвічі дорожчі (ризик)", base_env, Overrides(**{**ov.__dict__, "repair": repair * 2})),
+        ("Володіння 3 роки", env_with(years=3), ov),
+        ("Володіння 10 років", env_with(years=10), ov),
+    ]
+    rows = []
+    for label, e, o in cases:
+        r = tco(car, e, o, credit)
+        rows.append({"label": label, "years": e.years, "km_per_year": e.km, "total": r.total, "per_month": r.per_month,
+                     "per_km": r.per_km, "diff_per_month": r.per_month - base.per_month})
+    return {"slug": car["slug"], "name": f"{car['brand']} {car['model']} {car['generation']} {car['name']}",
+            "year": car.get("for_year"), "rows": rows}
 
 
 @router.post("/rating")

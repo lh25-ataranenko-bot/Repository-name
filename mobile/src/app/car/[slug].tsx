@@ -1,5 +1,6 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { ScrollView, View } from "react-native";
 import { Button, Card, Chip, Loading, Pill, Row, ScoreBars, Screen, Silhouette, T, useToast } from "@/components/ui";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
@@ -16,6 +17,7 @@ export default function CarScreen() {
   const toast = useToast();
   const { compare, toggleCompare, favs, toggleFav } = useStore();
   const { data: c, error } = useApi<Car>(`/api/cars/${encodeURIComponent(slug)}`);
+  useEffect(() => { api(`/api/cars/${encodeURIComponent(slug)}/view`, { method: "POST" }).catch(() => null); }, [slug]);
   const family = useApi<{ generations_list: { generation: string; year_from: number; year_to: number; modifications: Car[] }[] }>(
     c ? `/api/models/${encodeURIComponent(c.brand)}/${encodeURIComponent(c.model)}` : null).data;
   if (!c) return <Screen><Loading error={error} /></Screen>;
@@ -64,6 +66,21 @@ export default function CarScreen() {
         <View><T v="label">100 км</T><T v="num">{c.cost_per_100km != null ? `$${nf(c.cost_per_100km, 2)}` : "—"}</T></View>
         <View><T v="label">5 років</T><T v="num">{usd(c.tco_5y)}</T></View>
       </Row>
+      {(() => {
+        const y = year ?? c.year_ref;
+        const p = y ? c.price_by_year?.[String(y)] : null;
+        if (!p || c.depreciation == null) return null;
+        const at = (n: number) => p * Math.pow(1 - c.depreciation!, n);
+        return (
+          <Card>
+            <T v="h3">Прогноз вартості</T>
+            <T v="muted">Якщо купити авто {y} року зараз за {usd(p)}:</T>
+            <Row style={{ justifyContent: "space-between" }}>
+              {[3, 5, 10].map((n) => <View key={n}><T v="label">через {n} р.</T><T v="h3">{usd(at(n))}</T></View>)}
+            </Row>
+          </Card>
+        );
+      })()}
       <Card><T v="h3">Оцінки</T><ScoreBars series={[c.scores]} /></Card>
       {section("Двигун і трансмісія", [["Код двигуна", c.engine_code ?? "Немає даних"], ["Об’єм", c.displacement != null ? `${nf(c.displacement)} см³` : isEV(c) ? "— (електро)" : "Немає даних"], ["Потужність", v(c.hp, "к.с.")], ["Момент", v(c.torque, "Н·м")], ["КПП", c.transmission ?? "Немає даних"]])}
       {section("Динаміка й економічність", [["0–100 км/год", v(c.acc, "с", 1)], ["Макс. швидкість", v(c.vmax, "км/год")], ["Витрата (паспорт)", v(c.cons_pass, consUnit(c), 1)], ["Витрата (реальна)", v(c.cons_real, consUnit(c), 1)], ["Запас ходу", v(c.range_km, "км")]])}

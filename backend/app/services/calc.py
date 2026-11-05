@@ -1,6 +1,6 @@
 """Cost formulas from the product spec.
 
-TCO = P + F + M + R + I + O − S
+TCO = P + F + M + R + I + O + C − S   (C — loan interest paid while owning the car)
 F   = (D × C / 100) × Q
 S   = P × (1 − d) ^ years
 
@@ -43,6 +43,27 @@ class Overrides:
 
 
 @dataclass
+class Credit:
+    down_payment_pct: float = 30.0
+    rate_pct: float = 18.0  # annual
+    term_months: int = 60
+
+
+def loan(principal: float, c: Credit, months_owned: int) -> dict[str, float]:
+    """Annuity loan. Interest counts only for the months the car is owned; selling it repays the rest."""
+    r = c.rate_pct / 100 / 12
+    n = c.term_months
+    payment = principal / n if r == 0 else principal * r / (1 - (1 + r) ** -n)
+    balance, interest_owned = principal, 0.0
+    for _ in range(min(n, months_owned)):
+        interest = balance * r
+        interest_owned += interest
+        balance -= payment - interest
+    return {"principal": principal, "monthly_payment": payment, "interest_total": payment * n - principal,
+            "interest_in_period": interest_owned, "balance_at_sale": max(0.0, balance)}
+
+
+@dataclass
 class TcoResult:
     P: float
     F: float
@@ -58,6 +79,8 @@ class TcoResult:
     years: int
     km_per_year: int
     assumptions: dict[str, Any] = field(default_factory=dict)
+    C: float = 0.0
+    credit: dict[str, float] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -108,7 +131,7 @@ def default_inputs(car: Car) -> dict[str, float | None]:
     }
 
 
-def tco(car: Car, env: Env, ov: Overrides | None = None) -> TcoResult | None:
+def tco(car: Car, env: Env, ov: Overrides | None = None, credit: Credit | None = None) -> TcoResult | None:
     """Returns None when an input is missing: we never invent a value."""
     d = default_inputs(car)
     if ov:
@@ -125,9 +148,11 @@ def tco(car: Car, env: Env, ov: Overrides | None = None) -> TcoResult | None:
     I = d["ins"] * years  # noqa: E741
     O = env.other * years  # noqa: E741
     S = P * (1 - d["dep_pct"] / 100) ** years
-    total = P + F + M + R + I + O - S
+    ln = loan(P * (1 - credit.down_payment_pct / 100), credit, years * 12) if credit else None
+    C = ln["interest_in_period"] if ln else 0.0
+    total = P + F + M + R + I + O + C - S
     return TcoResult(
-        P=P, F=F, M=M, R=R, I=I, O=O, S=S, depreciation=P - S, total=total,
+        P=P, F=F, M=M, R=R, I=I, O=O, S=S, depreciation=P - S, total=total, C=C, credit=ln,
         per_month=total / (years * 12), per_km=total / distance if distance else 0,
         years=years, km_per_year=km,
         assumptions={**d, "fuel_price_uah": energy_price_uah(car, env), "rate": env.rate,

@@ -159,3 +159,28 @@ def test_compare_and_tco_with_years(client):
     assert res["year"] == 2011 and res["defaults"]["price"] == old["price"] and 2011 in res["years"]
     bad = client.post("/api/tco", json={"slugs": ["toyota-camry-xv50-25"], "years": {"toyota-camry-xv50-25": 2020}})
     assert bad.status_code == 422
+
+
+def test_tco_credit_and_scenarios(client):
+    body = {"slugs": ["toyota-camry-xv70"], "credit": {"down_payment_pct": 20, "rate_pct": 15, "term_months": 48}}
+    r = client.post("/api/tco", json=body).json()["results"][0]["result"]
+    assert r["C"] > 0 and r["credit"]["monthly_payment"] > 0
+    s = client.post("/api/tco/scenarios", json={"slug": "toyota-camry-xv70"}).json()
+    rows = {x["label"]: x for x in s["rows"]}
+    assert rows["Як зараз"]["diff_per_month"] == 0
+    assert rows["Пробіг 30 000 км на рік"]["total"] > rows["Пробіг 10 000 км на рік"]["total"]
+    assert rows["Пальне й електроенергія на 20 % дорожчі"]["diff_per_month"] > 0
+    assert rows["Ремонти вдвічі дорожчі (ризик)"]["diff_per_month"] > 0
+
+
+def test_views_and_popular(client, admin_token):
+    h1, h2 = {"X-Forwarded-For": "1.1.1.1"}, {"X-Forwarded-For": "2.2.2.2"}
+    for _ in range(3):  # the same visitor counts once an hour
+        assert client.post("/api/cars/kia-rio-fb-16/view", headers=h1).status_code == 204
+    client.post("/api/cars/kia-rio-fb-16/view", headers=h2)
+    client.post("/api/cars/mazda-3-bp-20/view", headers=h1)
+    top = client.get("/api/popular", params={"limit": 5}).json()
+    assert top[0] == {"slug": "kia-rio-fb-16", "views": 2}
+    assert client.post("/api/cars/nope/view").status_code == 404
+    stats = client.get("/api/admin/popular", headers={"Authorization": f"Bearer {admin_token}"}).json()
+    assert stats["per_day"][-1]["views"] >= 3

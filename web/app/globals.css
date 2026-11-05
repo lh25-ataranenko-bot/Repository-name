@@ -305,3 +305,14 @@ hr{border:0;border-top:1px solid var(--line);margin:0}
 .dist-row{display:grid;grid-template-columns:34px minmax(0,1fr) 28px;gap:8px;align-items:center}
 .star-btn{font-size:26px;line-height:1;padding:2px 6px;border:0;background:transparent;color:var(--line)}
 .star-btn.on{color:var(--needle)}
+/* Print and "save as PDF": content only, light colours, no navigation or controls */
+@media print {
+  :root { --bg: #fff; --surface: #fff; --surface-2: #f4f6f9; --ink: #111; --muted: #444; --line: #ccc; color-scheme: light; }
+  .top, .tray, .footer, .toast, nav, .no-print, .car-actions, .colhead .tools, button, select, input[type=range] { display: none !important; }
+  main.wrap { padding: 0 !important; max-width: none; }
+  .tbl-wrap { overflow: visible; border: 1px solid #ccc; }
+  table { font-size: 11px; }
+  .cmp th[scope=row], .cmp thead th { position: static; }
+  .panel, .car, .stat { break-inside: avoid; box-shadow: none; }
+  a { color: inherit; text-decoration: none; }
+}

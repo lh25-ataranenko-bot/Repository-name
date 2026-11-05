@@ -41,7 +41,14 @@ class CompareIn(BaseModel):
     years: dict[str, int] = Field({}, max_length=5)
 
 
+class CreditIn(BaseModel):
+    down_payment_pct: float = Field(30, ge=0, le=95)
+    rate_pct: float = Field(18, ge=0, le=100)
+    term_months: int = Field(60, ge=6, le=120)
+
+
 class TcoIn(BaseModel):
+    credit: CreditIn | None = None
     slugs: list[str] = Field(min_length=1, max_length=5)
     env: EnvIn = EnvIn()
     overrides: dict[str, OverridesIn] = {}
@@ -273,3 +280,11 @@ class ReviewIn(BaseModel):
 class ReviewModerationIn(BaseModel):
     status: Literal["published", "rejected", "pending"]
     reason: str | None = Field(None, max_length=300)
+
+
+class ScenariosIn(BaseModel):
+    slug: str
+    env: EnvIn = EnvIn()
+    year: int | None = Field(None, ge=1950, le=2100)
+    overrides: OverridesIn = OverridesIn()
+    credit: CreditIn | None = None

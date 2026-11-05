@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { CarPicker } from "@/components/CarPicker";
+import { PrintButton } from "@/components/PrintButton";
 import { api } from "@/lib/api";
 import { nf } from "@/lib/format";
 import type { Car } from "@/lib/types";
@@ -108,6 +109,7 @@ function Customs() {
                   <tr><td><b>Разом до сплати при розмитненні</b></td><td /><td className="n"><b>{nf(data.customs_total.uah)}</b></td><td className="n"><b>{nf(data.customs_total.usd)}</b></td></tr>
                 </tbody>
               </table></div>
+              <PrintButton />
               <div className="notice">Розрахунок орієнтовний. Ставки, пільги для електромобілів і правила походження змінюються: перед купівлею звірте їх з Державною митною службою або митним брокером. Не враховано послуги брокера, сертифікацію, страхування та реєстрацію в сервісному центрі МВС.</div>
             </>
           )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { PopularStats } from "@/components/PopularStats";
 import { ReviewModeration } from "@/components/ReviewModeration";
 import { ACTION, STATUS, logValue } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -151,6 +152,7 @@ export default function Admin() {
         </div>
       </section>
       <ReviewModeration />
+      <PopularStats />
       {user.role === "admin" && users.length > 0 && (
         <section className="stack" style={{ marginTop: 32 }}>
           <h3>Користувачі й ролі</h3>

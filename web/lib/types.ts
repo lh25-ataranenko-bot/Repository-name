@@ -88,7 +88,8 @@ export interface CompareResult {
 }
 
 export interface TcoNumbers {
-  P: number; F: number; M: number; R: number; I: number; O: number; S: number;
+  P: number; F: number; M: number; R: number; I: number; O: number; S: number; C: number;
+  credit: { principal: number; monthly_payment: number; interest_total: number; interest_in_period: number; balance_at_sale: number } | null;
   depreciation: number; total: number; per_month: number; per_km: number; years: number; km_per_year: number;
 }
 export interface TcoInputs { price: number | null; cons: number | null; maint: number | null; repair: number | null; ins: number | null; dep_pct: number | null }

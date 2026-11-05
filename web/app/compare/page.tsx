@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { CarPicker } from "@/components/CarPicker";
+import { PrintButton } from "@/components/PrintButton";
 import { ScoreBars } from "@/components/ScoreBars";
 import { api } from "@/lib/api";
 import { COLORS, nameOf, shortOf, usd } from "@/lib/format";
@@ -103,7 +104,7 @@ function Compare() {
             </tbody>
           </table>
         </div>
-        <div className="spread">{picker}<div className="row"><button onClick={save}>Зберегти порівняння</button><Link className="btn" href="/tco">Порахувати витрати →</Link></div></div>
+        <div className="spread">{picker}<div className="row"><PrintButton /><button onClick={save}>Зберегти порівняння</button><Link className="btn" href="/tco">Порахувати витрати →</Link></div></div>
       </div>
       <section className="split" style={{ marginTop: 36 }}>
         <div className="panel stack">

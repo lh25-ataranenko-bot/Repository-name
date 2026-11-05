@@ -208,3 +208,11 @@ class Review(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     user: Mapped[User] = relationship()
     modification: Mapped[Modification] = relationship()
+
+
+class CarViewDay(Base):
+    """Page views of a modification per day. Only counts: nothing about the visitor is stored."""
+    __tablename__ = "car_view_days"
+    modification_id: Mapped[int] = mapped_column(ForeignKey("modifications.id", ondelete="CASCADE"), primary_key=True)
+    day: Mapped[date] = mapped_column(Date, primary_key=True)
+    views: Mapped[int] = mapped_column(Integer, default=0)

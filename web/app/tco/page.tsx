@@ -3,6 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { CarPicker } from "@/components/CarPicker";
+import { PrintButton } from "@/components/PrintButton";
+import { Scenarios, type CreditInput } from "@/components/Scenarios";
 import { api } from "@/lib/api";
 import { COLORS, nf, usd, yearsWord } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -11,6 +13,7 @@ import type { Env, TcoInputs, TcoNumbers, TcoResponse } from "@/lib/types";
 const SEG: [keyof TcoNumbers, string, string][] = [
   ["depreciation", "Знецінення (P − S)", "var(--s1)"], ["F", "Пальне / енергія", "var(--s2)"], ["M", "Планове ТО", "var(--s3)"],
   ["R", "Ремонти", "var(--s4)"], ["I", "Страхування", "var(--s5)"], ["O", "Інші витрати", "var(--s6)"],
+  ["C", "Відсотки за кредитом", "var(--bad)"],
 ];
 const FIELDS: [keyof TcoInputs, string, number][] = [
   ["price", "Ціна купівлі, $", 100], ["cons", "Витрата на 100 км", 0.1], ["maint", "ТО, $/рік", 10],
@@ -23,6 +26,9 @@ function Tco() {
   const params = useSearchParams();
   const [env, setEnv] = useState<Env>(DEFAULT_ENV);
   const [ov, setOv] = useState<Record<string, Partial<TcoInputs>>>({});
+  const [loanOn, setLoanOn] = useState(false);
+  const [loanIn, setLoanIn] = useState<CreditInput>({ down_payment_pct: 30, rate_pct: 18, term_months: 60 });
+  const credit = loanOn ? loanIn : null;
   const [data, setData] = useState<TcoResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,11 +47,11 @@ function Tco() {
     const t = setTimeout(() => {
       const overrides = Object.fromEntries(Object.entries(ov).filter(([s]) => compare.includes(s)));
       const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
-      api<TcoResponse>("/api/tco", { method: "POST", json: { slugs: compare, env, overrides, years: chosen } })
+      api<TcoResponse>("/api/tco", { method: "POST", json: { slugs: compare, env, overrides, years: chosen, credit } })
         .then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message));
     }, 200);
     return () => clearTimeout(t);
-  }, [compare, env, ov, ready, years]);
+  }, [compare, env, ov, ready, years, credit]);
 
   const envField = (k: keyof Env, label: string, step: number) => (
     <div className="field"><label htmlFor={`e-${k}`}>{label}</label>
@@ -61,7 +67,7 @@ function Tco() {
     <>
       <div className="page-head"><p className="eyebrow">Калькулятор вартості володіння</p><h1>Скільки насправді коштує авто</h1>
         <p>Розрахунок за однакових умов для всіх автомобілів зі списку порівняння. Усі припущення можна змінити.</p></div>
-      <div className="formula">TCO = P + F + M + R + I + O − S &nbsp;·&nbsp; F = (D × C / 100) × Q</div>
+      <div className="formula">TCO = P + F + M + R + I + O{loanOn ? " + К" : ""} − S &nbsp;·&nbsp; F = (D × C / 100) × Q</div>
       <p className="small muted" style={{ marginTop: 6 }}>P — ціна купівлі; F — пальне; D — пробіг за період; C — витрата; Q — ціна пального; M — ТО; R — ремонти; I — страхування; O — інші витрати; S — прогнозована ціна перепродажу, S = P × (1 − d)<sup>роки</sup>.</p>
       <div className="panel stack" style={{ marginTop: 18 }}>
         <div className="row" role="group" aria-label="Строк володіння"><span className="label">Строк володіння:</span>
@@ -71,6 +77,15 @@ function Tco() {
           {envField("kwh", "Електроенергія, грн/кВт·год", 0.01)}{envField("rate", "Курс, грн за $", 0.1)}{envField("other", "Інші витрати, $/рік", 10)}
         </div>
         <p className="small muted">Інші витрати: паркування, мийка, шини, податки. Ціни на пальне типові для жовтня 2026 р., замініть на свої.</p>
+        <label className="check"><input type="checkbox" checked={loanOn} onChange={(e) => setLoanOn(e.target.checked)} /> Купую в кредит</label>
+        {loanOn && (
+          <div className="fields">
+            <div className="field"><label htmlFor="ln-down">Перший внесок, %</label><input id="ln-down" type="number" min={0} max={95} step={5} value={loanIn.down_payment_pct} onChange={(e) => setLoanIn({ ...loanIn, down_payment_pct: Number(e.target.value) })} /></div>
+            <div className="field"><label htmlFor="ln-rate">Ставка, % річних</label><input id="ln-rate" type="number" min={0} max={100} step={0.5} value={loanIn.rate_pct} onChange={(e) => setLoanIn({ ...loanIn, rate_pct: Number(e.target.value) })} /></div>
+            <div className="field"><label htmlFor="ln-term">Строк, місяців</label><input id="ln-term" type="number" min={6} max={120} step={6} value={loanIn.term_months} onChange={(e) => setLoanIn({ ...loanIn, term_months: Number(e.target.value) })} /></div>
+          </div>
+        )}
+        {loanOn && <p className="small muted">К — відсотки, сплачені, поки ви володієте авто. Якщо продаєте раніше, ніж закінчився кредит, залишок боргу гаситься з продажу.</p>}
       </div>
 
       {ready && !compare.length ? (
@@ -78,7 +93,7 @@ function Tco() {
       ) : (
         <>
           <section className="stack" style={{ marginTop: 26 }}>
-            <div className="spread"><h2>Результат</h2>{picker}</div>
+            <div className="spread"><h2>Результат</h2><div className="row"><PrintButton />{picker}</div></div>
             {error && <p className="err">{error}</p>}
             {data?.comparison && (
               <div className="notice info">За {yw} і {nf(env.km)} км на рік найдешевше обійдеться <b>{byName(data.comparison.cheapest)}</b>. Це на <b>{usd(data.comparison.difference)}</b> менше, ніж {byName(data.comparison.most_expensive)}.</div>
@@ -104,6 +119,8 @@ function Tco() {
                   {([["P — ціна купівлі", "P"], ["F — пальне / енергія", "F"], ["M — планове ТО", "M"], ["R — ремонти", "R"], ["I — страхування", "I"], ["O — інші витрати", "O"]] as [string, keyof TcoNumbers][]).map(([l, k]) => (
                     <tr key={k}><th scope="row">{l}</th>{data.results.map((r) => <td className="n" key={r.slug}>{r.result ? usd(r.result[k] as number) : "—"}</td>)}</tr>
                   ))}
+                  {loanOn && <tr><th scope="row">К — відсотки за кредитом</th>{data.results.map((r) => <td className="n" key={r.slug}>{r.result ? usd(r.result.C) : "—"}</td>)}</tr>}
+                  {loanOn && <tr><th scope="row" className="small">Щомісячний платіж за кредитом</th>{data.results.map((r) => <td className="n small" key={r.slug}>{r.result?.credit ? usd(r.result.credit.monthly_payment) : "—"}</td>)}</tr>}
                   <tr><th scope="row">S — ціна перепродажу</th>{data.results.map((r) => <td className="n" key={r.slug}>{r.result ? "−" + usd(r.result.S) : "—"}</td>)}</tr>
                   <tr><th scope="row"><b>TCO, разом</b></th>{data.results.map((r) => <td className="n" key={r.slug}><b>{r.result ? usd(r.result.total) : "—"}</b></td>)}</tr>
                   <tr><th scope="row">На місяць</th>{data.results.map((r) => <td className="n" key={r.slug}>{r.result ? usd(r.result.per_month) : "—"}</td>)}</tr>
@@ -148,6 +165,7 @@ function Tco() {
                   })}</tr>
                 ))}</tbody>
               </table></div>
+              <Scenarios cars={data.results.map((r) => ({ slug: r.slug, name: r.name }))} env={env} years={years} overrides={ov} credit={credit} />
               <p className="small muted">Рік випуску змінює ціну купівлі, страхування й ціну перепродажу. Типові значення взято з каталогу. Страхування за замовчуванням: 3 % від ціни на рік. Ремонти — середня оцінка для цієї модифікації.</p>
             </section>
           )}

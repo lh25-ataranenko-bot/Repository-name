@@ -9,6 +9,8 @@ import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, yea
 import type { Car } from "@/lib/types";
 import { CarActions } from "./actions";
 import { YearPicker } from "./year";
+import { Residual } from "@/components/Residual";
+import { ViewPing } from "@/components/ViewPing";
 import { Reviews } from "@/components/Reviews";
 
 async function getCar(slug: string): Promise<Car> {
@@ -72,7 +74,13 @@ export default async function CarPage({ params, searchParams }: {
           <p className="small muted">Оцінки 0–100. Надійність і комфорт — експертні індекси, решта — відносно автомобілів у каталозі.</p>
         </div>
       </div>
+      <ViewPing slug={c.slug} />
       <YearPicker slug={c.slug} years={c.years ?? []} prices={c.price_by_year ?? {}} year={year} refYear={c.year_ref} />
+      {(() => {
+        const y = year ?? c.year_ref;
+        const p = y ? c.price_by_year?.[String(y)] : null;
+        return p && c.depreciation != null && y ? <Residual price={p} dep={c.depreciation} buyYear={2026} carYear={y} /> : null;
+      })()}
       <div className="panel spec-grid">
         <Section title="Двигун і трансмісія" rows={[["Код двигуна", c.engine_code ?? ND], ["Об’єм", c.displacement != null ? `${nf(c.displacement)} см³` : isEV(c) ? "— (електро)" : ND], ["Потужність", v(c.hp, "к.с.")], ["Крутний момент", v(c.torque, "Н·м")], ["КПП", c.transmission ?? ND], ["Привід", DRIVE[c.drive]]]} />
         <Section title="Динаміка й економічність" rows={[["0–100 км/год", v(c.acc, "с", 1)], ["Макс. швидкість", v(c.vmax, "км/год")], ["Витрата (паспорт)", v(c.cons_pass, consUnit(c), 1)], ["Витрата (реальна)", v(c.cons_real, consUnit(c), 1)], [isEV(c) ? "Батарея (корисна)" : "Бак", isEV(c) ? v(c.battery, "кВт·год") : v(c.tank, "л")], ["Запас ходу (реальний)", v(c.range_km, "км")]]} />

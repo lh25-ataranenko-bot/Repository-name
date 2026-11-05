@@ -7,7 +7,10 @@ import { QuickPick, SmartSearch } from "./home-forms";
 const POPULAR = ["toyota-rav4-xa50-hybrid", "skoda-octavia-a8-15tsi", "bmw-f30-320d-xdrive", "mazda-cx5-kf-25awd"];
 
 export default async function Home() {
-  const cars = (await Promise.all(POPULAR.map((s) => api<Car>(`/api/cars/${s}`).catch(() => null)))).filter(Boolean) as Car[];
+  // Most viewed in the last 30 days; the editorial picks fill the row while there is little data.
+  const viewed = await api<{ slug: string; views: number }[]>("/api/popular?days=30&limit=4").catch(() => []);
+  const slugs = [...new Set([...viewed.filter((v) => v.views >= 3).map((v) => v.slug), ...POPULAR])].slice(0, 4);
+  const cars = (await Promise.all(slugs.map((s) => api<Car>(`/api/cars/${s}`).catch(() => null)))).filter(Boolean) as Car[];
   return (
     <>
       <section className="hero">
@@ -21,7 +24,7 @@ export default async function Home() {
       </section>
 
       <section className="stack" style={{ marginTop: 44 }}>
-        <div className="spread"><h2>Популярні модифікації</h2><Link href="/catalog">Весь каталог →</Link></div>
+        <div className="spread"><h2>Популярне зараз</h2><Link href="/catalog">Весь каталог →</Link></div>
         <div className="cards">{cars.map((c) => <CarCard key={c.slug} car={c} />)}</div>
       </section>
 
