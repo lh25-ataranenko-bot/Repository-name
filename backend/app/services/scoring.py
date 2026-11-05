@@ -42,7 +42,8 @@ def raw_metrics(car: Car, env: Env) -> dict[str, float | None]:
         "comfort": car["comfort"] * 10 if car.get("comfort") is not None else None,
         "safety": car["ncap"] * 12 + (car.get("airbags") or 0) * 2 + len(car.get("assists") or []) * 3
         if car.get("ncap") is not None else None,
-        "practicality": trunk / 600 * 50 + clr / 210 * 25 + wb / 2900 * 25
+        # Cargo volume counts up to 900 l, so a van's 6 m³ does not squash every other car to zero.
+        "practicality": min(trunk, 900) / 600 * 50 + clr / 210 * 25 + wb / 2900 * 25
         if None not in (trunk, clr, wb) else None,
         "tco": t.total if t else None,
     }

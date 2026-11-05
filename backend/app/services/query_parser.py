@@ -47,6 +47,8 @@ def parse_query(text: str, usd_rate: float) -> dict[str, Any]:
     for pattern, value, tag in [
         (r"кросовер|позашляхов|suv|паркетник", "crossover", "кросовер"), (r"седан", "sedan", "седан"),
         (r"хетчбек|хечбек", "hatch", "хетчбек"), (r"ліфтбек", "liftback", "ліфтбек"), (r"універсал", "wagon", "універсал"),
+        (r"мінівен|мінівэн|мікроавтобус", "minivan", "мінівен"), (r"фургон|вантажопас|комерційн", "van", "фургон"),
+        (r"пікап|пикап", "pickup", "пікап"),
     ]:
         if re.search(pattern, q):
             f["body"] = value

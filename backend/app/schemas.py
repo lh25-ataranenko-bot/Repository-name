@@ -147,7 +147,7 @@ class ImportIn(BaseModel):
     csv: str = Field(max_length=2_000_000)
 
 
-Body = Literal["sedan", "liftback", "crossover", "hatch", "wagon"]
+Body = Literal["sedan", "liftback", "crossover", "hatch", "wagon", "minivan", "van", "pickup"]
 FuelT = Literal["petrol", "diesel", "hybrid", "electric"]
 TransT = Literal["auto", "robot", "cvt", "manual", "reducer"]
 DriveT = Literal["FWD", "RWD", "AWD"]
@@ -179,7 +179,7 @@ class CarFields(BaseModel):
     height: int | None = Field(None, ge=1000, le=2500)
     wheelbase: int | None = Field(None, ge=1500, le=4500)
     clearance: int | None = Field(None, ge=80, le=400)
-    trunk: int | None = Field(None, ge=0, le=3000)
+    trunk: int | None = Field(None, ge=0, le=20000)  # vans: cargo volume
     ncap: int | None = Field(None, ge=0, le=5)
     ncap_year: int | None = Field(None, ge=1997, le=2100)
     airbags: int | None = Field(None, ge=0, le=20)

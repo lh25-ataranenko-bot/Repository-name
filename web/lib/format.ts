@@ -18,7 +18,7 @@ export const yearsWord = (y: number) => (y === 1 ? "рік" : y < 5 ? "роки"
 export const COLORS = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)"];
 
 export const FUEL: Record<string, string> = { petrol: "Бензин", diesel: "Дизель", hybrid: "Гібрид", electric: "Електро" };
-export const BODY: Record<string, string> = { sedan: "Седан", liftback: "Ліфтбек", crossover: "Кросовер", hatch: "Хетчбек", wagon: "Універсал" };
+export const BODY: Record<string, string> = { sedan: "Седан", liftback: "Ліфтбек", crossover: "Кросовер", hatch: "Хетчбек", wagon: "Універсал", minivan: "Мінівен", van: "Фургон", pickup: "Пікап" };
 export const DRIVE: Record<string, string> = { FWD: "Передній", RWD: "Задній", AWD: "Повний" };
 export const ASSIST: Record<string, string> = {
   AEB: "Автоматичне гальмування", LKA: "Утримання смуги", ACC: "Адаптивний круїз",

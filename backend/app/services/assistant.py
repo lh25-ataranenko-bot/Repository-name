@@ -53,7 +53,7 @@ TOOLS: list[dict[str, Any]] = [
                 "text": {"type": "string", "description": "Марка, модель, покоління або код двигуна, напр. «camry» чи «bmw f30». Порожній рядок — без текстового пошуку."},
                 "max_price": {"type": "number", "description": "Максимальна ціна в доларах США; 0 — без обмеження. З роком порівнюється з ціною авто цього року."},
                 "year": {"type": "integer", "description": "Рік випуску: лише модифікації, що випускалися в цьому році, з оцінкою ціни для нього; 0 — будь-який."},
-                "body": {"type": "string", "enum": ["any", "sedan", "liftback", "crossover", "hatch", "wagon"]},
+                "body": {"type": "string", "enum": ["any", "sedan", "liftback", "crossover", "hatch", "wagon", "minivan", "van", "pickup"]},
                 "fuel": {"type": "string", "enum": ["any", "petrol", "diesel", "hybrid", "electric"]},
                 "transmission": {"type": "string", "enum": ["any", "automatic", "manual"]},
                 "drive": {"type": "string", "enum": ["any", "FWD", "RWD", "AWD"]},
