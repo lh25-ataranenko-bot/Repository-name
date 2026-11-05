@@ -232,3 +232,30 @@ class ChatTurn(BaseModel):
 
 class AssistantIn(BaseModel):
     messages: list[ChatTurn] = Field(min_length=1, max_length=20)
+
+
+class CustomsRatesIn(BaseModel):
+    duty_pct: float = Field(10.0, ge=0, le=100)
+    vat_pct: float = Field(20.0, ge=0, le=100)
+    petrol_eur_per_l: float = Field(50.0, ge=0, le=10000)
+    petrol_big_eur_per_l: float = Field(100.0, ge=0, le=10000)
+    diesel_eur_per_l: float = Field(75.0, ge=0, le=10000)
+    diesel_big_eur_per_l: float = Field(150.0, ge=0, le=10000)
+    hybrid_eur: float = Field(100.0, ge=0, le=100000)
+    electric_eur_per_kwh: float = Field(1.0, ge=0, le=1000)
+    subsistence_minimum_uah: float = Field(3028.0, gt=0, le=100000)
+
+
+class CustomsIn(BaseModel):
+    price: float = Field(gt=0, le=5_000_000)
+    currency: Literal["USD", "EUR"] = "USD"
+    delivery: float = Field(0, ge=0, le=100_000)
+    production_year: int = Field(ge=1950, le=2100)
+    fuel: Literal["petrol", "diesel", "hybrid", "electric"]
+    cc: int | None = Field(None, ge=500, le=9000)
+    battery_kwh: float | None = Field(None, ge=1, le=250)
+    eu_origin: bool = False
+    eur_uah: float = Field(45.5, gt=0, le=1000)
+    usd_uah: float = Field(41.6, gt=0, le=1000)
+    include_pension: bool = True
+    rates: CustomsRatesIn = CustomsRatesIn()

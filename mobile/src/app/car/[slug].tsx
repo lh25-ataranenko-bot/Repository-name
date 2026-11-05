@@ -46,6 +46,7 @@ export default function CarScreen() {
         <Button kind={inCmp ? "primary" : "default"} title={inCmp ? "✓ У порівнянні" : "+ Порівняти"} onPress={() => toast(toggleCompare(c.slug))} />
         <Button title={fav ? "★ В обраному" : "☆ В обране"} onPress={() => { toggleFav(c.slug); toast(fav ? "Прибрано з обраного" : "Додано в обране"); }} />
         <Button title="Перевірити оголошення" onPress={() => router.push({ pathname: "/check", params: year ? { slug: c.slug, year: String(year) } : { slug: c.slug } })} />
+        <Button title="Розмитнення" onPress={() => router.push({ pathname: "/customs", params: year ? { slug: c.slug, year: String(year) } : { slug: c.slug } })} />
       </Row>
       {(c.years?.length ?? 0) > 0 && (
         <Card>

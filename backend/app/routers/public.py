@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db import get_db
-from ..schemas import AssistantIn, CheckIn, CompareIn, ParseIn, RatingIn, TcoIn
-from ..services import assistant, listing
+from ..schemas import AssistantIn, CheckIn, CompareIn, CustomsIn, ParseIn, RatingIn, TcoIn
+from ..services import assistant, customs, listing
 from ..services.calc import Env, default_inputs, price_for_year, tco
 from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
@@ -347,6 +347,21 @@ def ask_assistant(body: AssistantIn, request: Request, db: Session = Depends(get
     by = index(db)
     out["cars"] = [by[s] for s in out["cars"] if s in by]
     return out
+
+
+@router.post("/customs")
+def customs_calc(body: CustomsIn) -> dict[str, Any]:
+    """Approximate customs clearance of an imported car; every rate can be overridden."""
+    if body.production_year > get_settings().current_year:
+        raise HTTPException(422, "Рік випуску не може бути в майбутньому")
+    try:
+        return customs.calculate(
+            price=body.price, currency=body.currency, delivery=body.delivery, production_year=body.production_year,
+            fuel=body.fuel, cc=body.cc, battery_kwh=body.battery_kwh, eu_origin=body.eu_origin,
+            eur_uah=body.eur_uah, usd_uah=body.usd_uah, current_year=get_settings().current_year,
+            rates=customs.CustomsRates(**body.rates.model_dump()), include_pension=body.include_pension)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from None
 
 
 @router.get("/health")

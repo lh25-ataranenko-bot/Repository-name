@@ -35,6 +35,11 @@ export default function Home() {
         <T v="muted">Поставте запитання своїми словами: порівняння, витрати, типові несправності. Відповідь — лише за даними каталогу.</T>
         <Button title="Запитати помічника" onPress={() => router.push("/assistant")} />
       </Card>
+      <Card>
+        <T v="h3">Розмитнення</T>
+        <T v="muted">Скільки коштуватиме ввезти авто зі США чи Європи: мито, акциз, ПДВ.</T>
+        <Button title="Порахувати розмитнення" onPress={() => router.push("/customs")} />
+      </Card>
       <T v="h2">Швидкий старт</T>
       <Row>
         {Object.entries(PRESETS).map(([k, name]) => <Chip key={k} label={name} onPress={() => go({ max_price: 30000 }, k)} />)}

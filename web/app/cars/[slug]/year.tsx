@@ -42,6 +42,7 @@ export function YearPicker({ slug, years, prices, year, refYear }: {
       <div className="row">
         <Link className="btn" href={`/tco?add=${slug}&year=${chosen}`}>Витрати на авто {chosen} року</Link>
         <Link className="btn" href={`/check?slug=${slug}&year=${chosen}`}>Перевірити оголошення {chosen} року</Link>
+        <Link className="btn" href={`/customs?slug=${slug}&year=${chosen}`}>Розмитнення авто {chosen} року</Link>
       </div>
     </section>
   );

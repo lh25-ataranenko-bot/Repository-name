@@ -14,6 +14,7 @@ const PAGES = {
   "/rating": ["#rt-brand", "#rt-model", "#rt-year", "#rt-trans", "#rt-drive", "#rt-fuel", "#rt-body", ".rank-item"],
   "/check": ["#c-id", "#c-year", "#c-km", "#c-price", "#c-vin"],
   "/assistant": ["input[aria-label='Ваше запитання']"],
+  "/customs": ["#cu-price", "#cu-year", "#cu-fuel", "#cu-cc", ".stats"],
   "/account": ["#a-email", "#a-pass"],
 };
 
