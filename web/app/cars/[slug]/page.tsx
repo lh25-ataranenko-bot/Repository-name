@@ -9,6 +9,7 @@ import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, yea
 import type { Car } from "@/lib/types";
 import { CarActions } from "./actions";
 import { YearPicker } from "./year";
+import { Reviews } from "@/components/Reviews";
 
 async function getCar(slug: string): Promise<Car> {
   try {
@@ -81,6 +82,7 @@ export default async function CarPage({ params, searchParams }: {
       {c.assists.length > 0 && (
         <div><h3 style={{ marginBottom: 8 }}>Асистенти водія</h3><div className="chips">{c.assists.map((a) => <span className="chip" key={a}>{ASSIST[a] ?? a}</span>)}</div></div>
       )}
+      <Reviews slug={c.slug} years={c.years ?? []} />
       <div className="stack">
         <h3>Типові несправності цієї модифікації</h3>
         {c.issues.length ? (

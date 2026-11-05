@@ -7,6 +7,7 @@ import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import type { Car } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
+import { Reviews } from "@/components/Reviews";
 
 export default function CarScreen() {
   const { slug, year: yearParam } = useLocalSearchParams<{ slug: string; year?: string }>();
@@ -81,6 +82,7 @@ export default function CarScreen() {
           ))}
         </Card>
       )}
+      <Reviews slug={c.slug} />
       <Card>
         <T v="h3">Типові несправності</T>
         {c.issues.length ? c.issues.map((i) => (

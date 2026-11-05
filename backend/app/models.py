@@ -187,3 +187,24 @@ class ChangeLog(Base):
     old_value: Mapped[str | None] = mapped_column(Text)
     new_value: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Review(Base):
+    """An owner's review of a modification. Visible only after an editor publishes it."""
+    __tablename__ = "reviews"
+    __table_args__ = (UniqueConstraint("user_id", "modification_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    modification_id: Mapped[int] = mapped_column(ForeignKey("modifications.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    rating: Mapped[int] = mapped_column(Integer)  # 1–5
+    pros: Mapped[str] = mapped_column(Text, default="")
+    cons: Mapped[str] = mapped_column(Text, default="")
+    car_year: Mapped[int | None] = mapped_column(Integer)
+    owned_years: Mapped[float | None] = mapped_column(Float)
+    mileage_km: Mapped[int | None] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20), default="pending", index=True)  # pending | published | rejected
+    reject_reason: Mapped[str | None] = mapped_column(String(300))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    user: Mapped[User] = relationship()
+    modification: Mapped[Modification] = relationship()

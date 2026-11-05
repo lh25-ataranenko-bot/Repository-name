@@ -259,3 +259,17 @@ class CustomsIn(BaseModel):
     usd_uah: float = Field(41.6, gt=0, le=1000)
     include_pension: bool = True
     rates: CustomsRatesIn = CustomsRatesIn()
+
+
+class ReviewIn(BaseModel):
+    rating: int = Field(ge=1, le=5)
+    pros: str = Field("", max_length=2000)
+    cons: str = Field("", max_length=2000)
+    car_year: int | None = Field(None, ge=1950, le=2100)
+    owned_years: float | None = Field(None, ge=0, le=60)
+    mileage_km: int | None = Field(None, ge=0, le=2_000_000)
+
+
+class ReviewModerationIn(BaseModel):
+    status: Literal["published", "rejected", "pending"]
+    reason: str | None = Field(None, max_length=300)

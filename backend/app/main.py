@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings, production_problems
 from .db import SessionLocal
-from .routers import account, admin, public
+from .routers import account, admin, public, reviews
 from .security import RateLimitMiddleware
 
 settings = get_settings()
@@ -50,3 +50,4 @@ app.add_middleware(
 app.include_router(public.router)
 app.include_router(account.router)
 app.include_router(admin.router)
+app.include_router(reviews.router)

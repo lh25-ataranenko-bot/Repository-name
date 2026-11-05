@@ -45,6 +45,28 @@ function AuthForm() {
   );
 }
 
+interface MyReview { id: number; slug: string; car: string; rating: number; status: "pending" | "published" | "rejected"; reject_reason: string | null }
+const REVIEW_STATUS = { pending: ["На перевірці", "warn"], published: ["Опубліковано", "good"], rejected: ["Відхилено", "bad"] } as const;
+
+function MyReviews() {
+  const [items, setItems] = useState<MyReview[]>([]);
+  useEffect(() => { api<MyReview[]>("/api/me/reviews").then(setItems).catch(() => null); }, []);
+  return (
+    <section className="stack">
+      <h2>Мої відгуки</h2>
+      {items.length === 0 ? <p className="small muted">Ви ще не залишали відгуків. Відкрийте сторінку свого авто й натисніть «Залишити відгук».</p> : (
+        <div className="tbl-wrap"><table>
+          <thead><tr><th>Автомобіль</th><th>Оцінка</th><th>Статус</th></tr></thead>
+          <tbody>{items.map((r) => (
+            <tr key={r.id}><td><Link href={`/cars/${r.slug}`}>{r.car}</Link></td><td className="stars">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</td>
+              <td><span className={`pill ${REVIEW_STATUS[r.status][1]}`}>{REVIEW_STATUS[r.status][0]}</span>{r.reject_reason && <div className="small muted">{r.reject_reason}</div>}</td></tr>
+          ))}</tbody>
+        </table></div>
+      )}
+    </section>
+  );
+}
+
 function Profile() {
   const { user, updateUser, signIn, toast } = useStore();
   const [name, setName] = useState(user?.name ?? "");
@@ -205,6 +227,7 @@ export default function Account() {
           </section>
         )}
         {user && <Garage />}
+        {user && <MyReviews />}
         {user && <Profile />}
       </div>
     </>

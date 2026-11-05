@@ -300,3 +300,8 @@ hr{border:0;border-top:1px solid var(--line);margin:0}
 .tl-track{position:relative;height:28px;background:var(--surface-2);border-radius:6px}
 .tl-bar{position:absolute;top:3px;bottom:3px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:5px;font-size:12px;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
 .tl-axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stars{color:var(--needle);letter-spacing:1px}
+.dist{display:grid;gap:4px;max-width:420px}
+.dist-row{display:grid;grid-template-columns:34px minmax(0,1fr) 28px;gap:8px;align-items:center}
+.star-btn{font-size:26px;line-height:1;padding:2px 6px;border:0;background:transparent;color:var(--line)}
+.star-btn.on{color:var(--needle)}
