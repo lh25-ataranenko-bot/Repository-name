@@ -110,6 +110,22 @@ def list_cars(
             "items": found[offset:offset + limit]}
 
 
+def as_of_year(car: dict[str, Any], year: int | None, env: Env | None = None) -> dict[str, Any]:
+    """A copy of the car priced as a car of that production year (for comparison and TCO)."""
+    if not year:
+        return car
+    if car["year_from"] and not car["year_from"] <= year <= car["year_to"]:
+        raise HTTPException(422, f"{car['brand']} {car['model']} {car['name']} випускалася в {car['year_from']}–{car['year_to']} роках")
+    p = price_for_year(car, year)
+    c = {**car, "for_year": year, "price_for_year": p}
+    if p is not None:
+        c["price"] = p
+        e = env or Env.default()
+        t = tco(c, Env(e.petrol, e.diesel, e.kwh, e.rate, 15000, 5, e.other))  # same 5-year basis as the catalogue
+        c["tco_5y"] = t.total if t else None
+    return c
+
+
 def with_year(car: dict[str, Any], year: int) -> dict[str, Any]:
     """A copy of the cached car with the estimated price for that production year."""
     return {**car, "for_year": year, "price_for_year": price_for_year(car, year)}
@@ -127,6 +143,54 @@ def facets(db: Session = Depends(get_db)) -> dict[str, Any]:
         return {"brands": {b: sorted(m) for b, m in sorted(brands.items())},
                 "year_min": min(years) if years else None, "year_max": max(years) if years else None}
     return catalog_cache.get(("facets",), build)
+
+
+def _model_row(brand: str, model: str, cars: list[dict[str, Any]]) -> dict[str, Any]:
+    prices = [c["price"] for c in cars if c["price"] is not None]
+    return {
+        "brand": brand, "model": model,
+        "generations": len({c["generation"] for c in cars}), "modifications": len(cars),
+        "year_from": min((c["year_from"] for c in cars if c["year_from"]), default=None),
+        "year_to": max((c["year_to"] for c in cars if c["year_to"]), default=None),
+        "price_min": min(prices, default=None), "price_max": max(prices, default=None),
+        "bodies": sorted({c["body"] for c in cars}), "fuels": sorted({c["fuel"] for c in cars}),
+    }
+
+
+@router.get("/models")
+def models(db: Session = Depends(get_db), brand: str | None = Query(None, max_length=80)) -> list[dict[str, Any]]:
+    """Every model with its generations count, production years and price range."""
+    def build() -> list[dict[str, Any]]:
+        by: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for c in scored(db):
+            by.setdefault((c["brand"], c["model"]), []).append(c)
+        return [_model_row(b, m, cs) for (b, m), cs in sorted(by.items())]
+    rows = catalog_cache.get(("models",), build)
+    return [r for r in rows if not brand or r["brand"] == brand]
+
+
+@router.get("/models/{brand}/{model}")
+def model_page(brand: str, model: str, db: Session = Depends(get_db)) -> dict[str, Any]:
+    """One model: generations on a timeline with their modifications."""
+    cars = [c for c in scored(db) if c["brand"] == brand and c["model"] == model]
+    if not cars:
+        raise HTTPException(404, f"Модель {brand} {model} не знайдено в каталозі")
+    gens: dict[str, list[dict[str, Any]]] = {}
+    for c in cars:
+        gens.setdefault(c["generation"], []).append(c)
+    generations = sorted(
+        ({"generation": g, "year_from": min(c["year_from"] or 9999 for c in cs), "year_to": max(c["year_to"] or 0 for c in cs),
+          "modifications": sorted(cs, key=lambda c: (c["price"] is None, c["price"] or 0))} for g, cs in gens.items()),
+        key=lambda g: g["year_from"])
+    rel = [c for c in cars if c["reliability"] is not None]
+    cheap = [c for c in cars if c.get("tco_5y") is not None]
+    return {
+        **_model_row(brand, model, cars),
+        "generations_list": generations,
+        "most_reliable": max(rel, key=lambda c: c["reliability"])["slug"] if rel else None,
+        "cheapest_to_own": min(cheap, key=lambda c: c["tco_5y"])["slug"] if cheap else None,
+        "other_models": [r["model"] for r in models(db, brand) if r["model"] != model],
+    }
 
 
 @router.get("/cars/lookup")
@@ -165,7 +229,7 @@ def get_car(slug: str, db: Session = Depends(get_db),
 @router.post("/compare")
 def compare(body: CompareIn, db: Session = Depends(get_db)) -> dict[str, Any]:
     env = body.env.to_env()
-    cars = pick(db, body.slugs, env)
+    cars = [as_of_year(c, body.years.get(c["slug"]), env) for c in pick(db, body.slugs, env)]
     equal = PRESETS["balanced"]["w"]
     totals = [weighted(c["scores"], equal)[0] for c in cars]
     summary = []
@@ -188,7 +252,7 @@ def compare(body: CompareIn, db: Session = Depends(get_db)) -> dict[str, Any]:
 @router.post("/tco")
 def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
     env = body.env.to_env()
-    cars = pick(db, body.slugs)
+    cars = [as_of_year(c, body.years.get(c["slug"]), env) for c in pick(db, body.slugs)]
     results = []
     for c in cars:
         ov = body.overrides.get(c["slug"])
@@ -196,6 +260,8 @@ def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
         results.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['generation']} {c['name']}",
                         "defaults": default_inputs(c), "consumption_real": c["cons_real"] is not None,
                         "unit": "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км",
+                        "year": c.get("for_year"), "year_ref": c["year_ref"],
+                        "years": list(range(c["year_from"], c["year_to"] + 1)) if c["year_from"] and c["year_to"] else [],
                         "result": r.as_dict() if r else None})
     ok = sorted((r for r in results if r["result"]), key=lambda r: r["result"]["total"])
     cmp = None

@@ -15,6 +15,8 @@ export default function CarScreen() {
   const toast = useToast();
   const { compare, toggleCompare, favs, toggleFav } = useStore();
   const { data: c, error } = useApi<Car>(`/api/cars/${encodeURIComponent(slug)}`);
+  const family = useApi<{ generations_list: { generation: string; year_from: number; year_to: number; modifications: Car[] }[] }>(
+    c ? `/api/models/${encodeURIComponent(c.brand)}/${encodeURIComponent(c.model)}` : null).data;
   if (!c) return <Screen><Loading error={error} /></Screen>;
   const st = STATUS[c.status] ?? STATUS.unverified;
   const v = (x: number | null, u = "", d = 0) => (x != null ? `${nf(x, d)}${u ? " " + u : ""}` : "Немає даних");
@@ -64,6 +66,20 @@ export default function CarScreen() {
       {section("Двигун і трансмісія", [["Код двигуна", c.engine_code ?? "Немає даних"], ["Об’єм", c.displacement != null ? `${nf(c.displacement)} см³` : isEV(c) ? "— (електро)" : "Немає даних"], ["Потужність", v(c.hp, "к.с.")], ["Момент", v(c.torque, "Н·м")], ["КПП", c.transmission ?? "Немає даних"]])}
       {section("Динаміка й економічність", [["0–100 км/год", v(c.acc, "с", 1)], ["Макс. швидкість", v(c.vmax, "км/год")], ["Витрата (паспорт)", v(c.cons_pass, consUnit(c), 1)], ["Витрата (реальна)", v(c.cons_real, consUnit(c), 1)], ["Запас ходу", v(c.range_km, "км")]])}
       {section("Габарити й безпека", [["Багажник", v(c.trunk, "л")], ["Кліренс", v(c.clearance, "мм")], ["Euro NCAP", c.ncap != null ? `${"★".repeat(c.ncap)} (${c.ncap_year})` : "Немає даних"], ["Асистенти", c.assists.map((a) => ASSIST[a] ?? a).join(", ") || "Немає даних"]])}
+      {family && family.generations_list.reduce((n, g) => n + g.modifications.length, 0) > 1 && (
+        <Card>
+          <T v="h3">Інші версії {c.model}</T>
+          {family.generations_list.slice().reverse().map((g) => (
+            <View key={g.generation} style={{ gap: 4 }}>
+              <T v="label">{g.generation} · {g.year_from}–{g.year_to}</T>
+              <Row>{g.modifications.map((m) => (
+                <Chip key={m.slug} label={m.name} on={m.slug === c.slug}
+                  onPress={() => m.slug !== c.slug && router.push({ pathname: "/car/[slug]", params: { slug: m.slug } })} />
+              ))}</Row>
+            </View>
+          ))}
+        </Card>
+      )}
       <Card>
         <T v="h3">Типові несправності</T>
         {c.issues.length ? c.issues.map((i) => (

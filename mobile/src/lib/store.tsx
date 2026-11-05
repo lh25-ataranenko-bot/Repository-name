@@ -10,6 +10,9 @@ interface Store {
   compare: string[];
   toggleCompare: (slug: string) => string;
   setCompare: (slugs: string[]) => void;
+  /** Production year chosen per car in comparison and TCO */
+  years: Record<string, number>;
+  setYear: (slug: string, year: number | null) => void;
   favs: string[];
   toggleFav: (slug: string) => void;
   user: User | null;
@@ -34,6 +37,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [compare, setCompareState] = useState<string[]>(DEFAULT_COMPARE);
   const [favs, setFavs] = useState<string[]>([]);
+  const [years, setYears] = useState<Record<string, number>>({});
   const [user, setUser] = useState<User | null>(null);
 
   const persist = (patch: object) =>
@@ -53,6 +57,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const s = JSON.parse((await AsyncStorage.getItem(KEY)) || "{}");
         if (s.compare) setCompareState(s.compare);
         if (s.favs) setFavs(s.favs);
+        if (s.years) setYears(s.years);
         const t = await secure.get();
         if (t) {
           setToken(t);
@@ -92,6 +97,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCompare([...compare, slug]);
     return `Додано до порівняння (${compare.length + 1}/5)`;
   };
+  const setYear = (slug: string, year: number | null) => {
+    const next = { ...years };
+    if (year) next[slug] = year;
+    else delete next[slug];
+    setYears(next);
+    persist({ years: next });
+  };
   const toggleFav = (slug: string) => {
     const on = favs.includes(slug);
     const next = on ? favs.filter((s) => s !== slug) : [...favs, slug];
@@ -117,7 +129,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ ready, compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, updateUser: (u: User) => { setUser(u); persist({ user: u }); } }}>
+    <Ctx.Provider value={{ ready, compare, toggleCompare, setCompare, years, setYear, favs, toggleFav, user, signIn, signOut, updateUser: (u: User) => { setUser(u); persist({ user: u }); } }}>
       {children}
     </Ctx.Provider>
   );

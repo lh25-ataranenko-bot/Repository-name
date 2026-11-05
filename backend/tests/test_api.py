@@ -133,3 +133,29 @@ def test_rating_with_year(client):
     r = client.post("/api/rating", json={"filters": {"year": 2012, "max_price": 12000}}).json()
     assert r["ranked"] and all(x["car"]["year_from"] <= 2012 <= x["car"]["year_to"] for x in r["ranked"])
     assert all(x["car"]["price_for_year"] <= 12000 for x in r["ranked"])
+
+
+def test_models_and_model_page(client):
+    rows = client.get("/api/models", params={"brand": "Toyota"}).json()
+    camry = next(r for r in rows if r["model"] == "Camry")
+    assert camry["generations"] == 2 and camry["year_from"] == 2011 and camry["year_to"] == 2021
+    page = client.get("/api/models/Toyota/Camry").json()
+    assert [g["generation"] for g in page["generations_list"]] == ["XV50", "XV70"]  # oldest first
+    assert page["most_reliable"] and "Camry" not in page["other_models"] and "RAV4" in page["other_models"]
+    assert client.get("/api/models/Toyota/Nope").status_code == 404
+
+
+def test_compare_and_tco_with_years(client):
+    base = client.post("/api/compare", json={"slugs": ["toyota-camry-xv70", "toyota-camry-xv50-25"]}).json()
+    r = client.post("/api/compare", json={"slugs": ["toyota-camry-xv70", "toyota-camry-xv50-25"],
+                                          "years": {"toyota-camry-xv50-25": 2011}}).json()
+    old = next(c for c in r["cars"] if c["slug"] == "toyota-camry-xv50-25")
+    old_base = next(c for c in base["cars"] if c["slug"] == "toyota-camry-xv50-25")
+    assert old["for_year"] == 2011 and old["price"] < old_base["price"] and old["tco_5y"] < old_base["tco_5y"]
+    year_row = next(row for g in r["table"] for row in g["rows"] if row["label"] == "Рік, для якого ціна")
+    assert "2011" in year_row["values"]
+    t = client.post("/api/tco", json={"slugs": ["toyota-camry-xv50-25"], "years": {"toyota-camry-xv50-25": 2011}}).json()
+    res = t["results"][0]
+    assert res["year"] == 2011 and res["defaults"]["price"] == old["price"] and 2011 in res["years"]
+    bad = client.post("/api/tco", json={"slugs": ["toyota-camry-xv50-25"], "years": {"toyota-camry-xv50-25": 2020}})
+    assert bad.status_code == 422

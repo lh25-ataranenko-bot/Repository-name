@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { Card, Chip, Field, Loading, Notice, Row, Screen, T } from "@/components/ui";
+import { YearChooser } from "@/components/YearChooser";
 import { nf, usd, yearsWord } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { seriesColor, useTheme } from "@/lib/theme";
@@ -11,9 +12,10 @@ const SEG: [keyof TcoNumbers, string][] = [["depreciation", "Знеціненн�
 
 export default function Tco() {
   const t = useTheme();
-  const { compare, ready } = useStore();
+  const { compare, ready, years } = useStore();
+  const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
   const [env, setEnv] = useState<Env>({ petrol: 58.5, diesel: 55.9, kwh: 4.32, rate: 41.6, km: 15000, years: 5, other: 250 });
-  const { data, error } = useApi<TcoResponse>(ready && compare.length ? "/api/tco" : null, { method: "POST", json: { slugs: compare, env } });
+  const { data, error } = useApi<TcoResponse>(ready && compare.length ? "/api/tco" : null, { method: "POST", json: { slugs: compare, env, years: chosen } });
   const segColors = [t.muted, t.c1, t.c3, t.c2, t.c4, t.line];
   const num = (k: keyof Env) => (v: string) => { const n = parseFloat(v.replace(",", ".")); if (Number.isFinite(n) && n >= 0) setEnv({ ...env, [k]: n }); };
   const max = Math.max(1, ...(data?.results ?? []).map((r) => (r.result ? r.result.total : 0)));
@@ -37,9 +39,10 @@ export default function Tco() {
           {data.comparison && <Notice tone="info">За {env.years} {yearsWord(env.years)} найдешевше обійдеться {byName(data.comparison.cheapest)} — на {usd(data.comparison.difference)} менше, ніж {byName(data.comparison.most_expensive)}.</Notice>}
           {data.missing.length > 0 && <Notice>Не вистачає даних для розрахунку: {data.missing.map(byName).join(", ")}.</Notice>}
           <Row>{SEG.map(([k, l], i) => <Row key={k} style={{ gap: 4 }}><View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: segColors[i] }} /><T v="label">{l}</T></Row>)}</Row>
+          <YearChooser cars={data.results.map((r) => ({ slug: r.slug, name: r.name, year_from: r.years[0] ?? null, year_to: r.years[r.years.length - 1] ?? null, year_ref: r.year_ref }))} />
           {data.results.map((r, i) => (
             <Card key={r.slug}>
-              <T v="h3" style={{ color: seriesColor(t, i) }}>{r.name}</T>
+              <T v="h3" style={{ color: seriesColor(t, i) }}>{r.name}{r.year ? ` · ${r.year} р.` : ""}</T>
               {r.result ? (
                 <>
                   <View style={{ flexDirection: "row", height: 18, borderRadius: 4, overflow: "hidden", backgroundColor: t.surface2 }}>

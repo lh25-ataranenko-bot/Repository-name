@@ -63,6 +63,7 @@ ROWS: list[tuple[str, list[Row]]] = [
         ("Марка", lambda c: c["brand"], {}), ("Модель", lambda c: c["model"], {}),
         ("Покоління", lambda c: c["generation"], {}),
         ("Роки випуску", lambda c: f"{c['year_from']}–{c['year_to']}" if c["year_from"] else None, {}),
+        ("Рік, для якого ціна", lambda c: c.get("for_year") or c.get("year_ref"), {}),
         ("Кузов", lambda c: BODY.get(c["body"]), {}),
     ]),
     ("Двигун і трансмісія", [

@@ -19,7 +19,7 @@ const FIELDS: [keyof TcoInputs, string, number][] = [
 const DEFAULT_ENV: Env = { petrol: 58.5, diesel: 55.9, kwh: 4.32, rate: 41.6, km: 15000, years: 5, other: 250 };
 
 function Tco() {
-  const { compare, setCompare, toggleCompare, ready } = useStore();
+  const { compare, setCompare, toggleCompare, years, setYear, ready } = useStore();
   const params = useSearchParams();
   const [env, setEnv] = useState<Env>(DEFAULT_ENV);
   const [ov, setOv] = useState<Record<string, Partial<TcoInputs>>>({});
@@ -29,6 +29,8 @@ function Tco() {
   useEffect(() => {
     const add = params.get("add");
     if (ready && add && !compare.includes(add)) setCompare([...compare.slice(0, 4), add]);
+    const year = Number(params.get("year"));
+    if (add && year > 0) setYear(add, year);
     const price = Number(params.get("price"));
     if (add && price > 0) setOv((o) => ({ ...o, [add]: { ...(o[add] ?? {}), price } }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,11 +40,12 @@ function Tco() {
     if (!ready || !compare.length) return setData(null);
     const t = setTimeout(() => {
       const overrides = Object.fromEntries(Object.entries(ov).filter(([s]) => compare.includes(s)));
-      api<TcoResponse>("/api/tco", { method: "POST", json: { slugs: compare, env, overrides } })
+      const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
+      api<TcoResponse>("/api/tco", { method: "POST", json: { slugs: compare, env, overrides, years: chosen } })
         .then((d) => { setData(d); setError(null); }).catch((e) => setError(e.message));
     }, 200);
     return () => clearTimeout(t);
-  }, [compare, env, ov, ready]);
+  }, [compare, env, ov, ready, years]);
 
   const envField = (k: keyof Env, label: string, step: number) => (
     <div className="field"><label htmlFor={`e-${k}`}>{label}</label>
@@ -114,7 +117,20 @@ function Tco() {
               <div className="spread"><h3>Припущення для кожного авто</h3><button className="btn-ghost" onClick={() => setOv({})}>Повернути типові значення</button></div>
               <div className="tbl-wrap"><table>
                 <thead><tr><th>Параметр</th>{data.results.map((r, i) => <th key={r.slug}><span className="row" style={{ gap: 6 }}><span className="dot" style={{ background: COLORS[i] }} />{r.name}</span></th>)}</tr></thead>
-                <tbody>{FIELDS.map(([k, l, step]) => (
+                <tbody>
+                  <tr><th scope="row" className="small">Рік випуску авто</th>{data.results.map((r) => (
+                    <td key={r.slug}>
+                      <select aria-label={`Рік випуску — ${r.name}`} value={r.year ?? ""} onChange={(e) => {
+                        setYear(r.slug, e.target.value ? Number(e.target.value) : null);
+                        // a new year means a new default price: drop a hand-typed one
+                        setOv((o) => { const x = { ...(o[r.slug] ?? {}) }; delete x.price; delete x.ins; return { ...o, [r.slug]: x }; });
+                      }}>
+                        <option value="">Як у каталозі ({r.year_ref})</option>
+                        {r.years.map((y) => <option key={y} value={y}>{y}</option>)}
+                      </select>
+                    </td>
+                  ))}</tr>
+                  {FIELDS.map(([k, l, step]) => (
                   <tr key={k}><th scope="row" className="small">{l}</th>{data.results.map((r) => {
                     const val = ov[r.slug]?.[k] ?? r.defaults[k];
                     return (
@@ -132,7 +148,7 @@ function Tco() {
                   })}</tr>
                 ))}</tbody>
               </table></div>
-              <p className="small muted">Типові значення взято з каталогу. Страхування за замовчуванням: 3 % від ціни на рік. Ремонти — середня оцінка для цієї модифікації.</p>
+              <p className="small muted">Рік випуску змінює ціну купівлі, страхування й ціну перепродажу. Типові значення взято з каталогу. Страхування за замовчуванням: 3 % від ціни на рік. Ремонти — середня оцінка для цієї модифікації.</p>
             </section>
           )}
         </>

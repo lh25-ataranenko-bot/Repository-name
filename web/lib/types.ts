@@ -94,7 +94,7 @@ export interface TcoNumbers {
 export interface TcoInputs { price: number | null; cons: number | null; maint: number | null; repair: number | null; ins: number | null; dep_pct: number | null }
 export interface TcoResponse {
   env: Env;
-  results: { slug: string; name: string; defaults: TcoInputs; consumption_real: boolean; unit: string; result: TcoNumbers | null }[];
+  results: { slug: string; name: string; defaults: TcoInputs; consumption_real: boolean; unit: string; year: number | null; year_ref: number | null; years: number[]; result: TcoNumbers | null }[];
   comparison: { cheapest: string; most_expensive: string; difference: number } | null;
   missing: string[];
 }

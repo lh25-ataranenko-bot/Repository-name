@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useStore } from "@/lib/store";
 
 const LINKS = [
-  ["/", "Головна"], ["/catalog", "Каталог"], ["/compare", "Порівняння"], ["/tco", "Калькулятор"],
+  ["/", "Головна"], ["/catalog", "Каталог"], ["/models", "Моделі"], ["/compare", "Порівняння"], ["/tco", "Калькулятор"],
   ["/rating", "Рейтинг"], ["/assistant", "AI-помічник"], ["/check", "Аналіз оголошення"], ["/account", "Кабінет"],
 ];
 

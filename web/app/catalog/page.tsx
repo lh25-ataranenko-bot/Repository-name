@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CarCard } from "@/components/CarCard";
 import { api } from "@/lib/api";
@@ -59,7 +60,12 @@ export default function Catalog() {
         <aside className="panel stack">
           <div className="field"><label htmlFor="f-q">Пошук</label><input id="f-q" placeholder="Модель, покоління, код двигуна" value={f.q} onChange={set("q")} /></div>
           <ModelYearFields idPrefix="f" value={{ brand: f.brand, model: f.model, year: f.year }} onChange={(v) => setF({ ...f, ...v })} />
+          {f.brand && f.model && <Link className="btn btn-sm" href={`/models/${encodeURIComponent(f.brand)}/${encodeURIComponent(f.model)}`}>Сторінка моделі {f.model}: усі покоління</Link>}
           {f.year && <p className="small muted">Показано модифікації, що випускалися у {f.year} році, з оцінкою ціни саме для цього року.</p>}
+          {sel("f-body", "Кузов", "body", [["any", "Будь-який"], ...Object.entries(BODY)])}
+          {sel("f-fuel", "Паливо", "fuel", [["any", "Будь-яке"], ...Object.entries(FUEL)])}
+          {sel("f-trans", "Коробка", "trans", [["any", "Будь-яка"], ["automatic", "Автоматична"], ["manual", "Механіка"]])}
+          {sel("f-drive", "Привід", "drive", [["any", "Будь-який"], ...Object.entries(DRIVE)])}
           <div className="field"><label htmlFor="f-max">Максимальна ціна, $</label><input id="f-max" type="number" min={0} step={500} placeholder="Без обмеження" value={f.max_price} onChange={set("max_price")} /></div>
           <button className="btn-ghost" onClick={() => setF(INIT)}>Скинути фільтри</button>
         </aside>

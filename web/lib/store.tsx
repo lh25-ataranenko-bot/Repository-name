@@ -8,6 +8,9 @@ interface Store {
   compare: string[];
   toggleCompare: (slug: string) => void;
   setCompare: (slugs: string[]) => void;
+  /** Production year chosen per car in comparison and TCO */
+  years: Record<string, number>;
+  setYear: (slug: string, year: number | null) => void;
   favs: string[];
   toggleFav: (slug: string) => void;
   user: User | null;
@@ -22,7 +25,7 @@ const Ctx = createContext<Store | null>(null);
 const KEY = "autowise-web-v1";
 const DEFAULT_COMPARE = ["toyota-camry-xv70", "vw-passat-b8-20tdi", "bmw-f30-320d-xdrive"];
 
-function read(): { compare?: string[]; favs?: string[]; token?: string; user?: User } {
+function read(): { compare?: string[]; favs?: string[]; token?: string; user?: User; years?: Record<string, number> } {
   try {
     return JSON.parse(localStorage.getItem(KEY) || "{}");
   } catch {
@@ -40,6 +43,7 @@ function write(patch: object) {
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [compare, setCompareState] = useState<string[]>(DEFAULT_COMPARE);
   const [favs, setFavs] = useState<string[]>([]);
+  const [years, setYears] = useState<Record<string, number>>({});
   const [user, setUser] = useState<User | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -59,6 +63,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const s = read();
     if (s.compare) setCompareState(s.compare);
     if (s.favs) setFavs(s.favs);
+    if (s.years) setYears(s.years);
     if (s.token && s.user) {
       setToken(s.token);
       setUser(s.user);
@@ -112,6 +117,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .catch(() => null);
   };
 
+  const setYear = (slug: string, year: number | null) => {
+    const next = { ...years };
+    if (year) next[slug] = year;
+    else delete next[slug];
+    setYears(next);
+    write({ years: next });
+  };
+
   const updateUser = (u: User) => {
     setUser(u);
     write({ user: u });
@@ -125,7 +138,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ compare, toggleCompare, setCompare, favs, toggleFav, user, signIn, signOut, updateUser, toast, ready }}>
+    <Ctx.Provider value={{ compare, toggleCompare, setCompare, years, setYear, favs, toggleFav, user, signIn, signOut, updateUser, toast, ready }}>
       {children}
       {msg && (
         <div className="toast" role="status">

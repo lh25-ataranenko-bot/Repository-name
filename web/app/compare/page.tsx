@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { CarPicker } from "@/components/CarPicker";
 import { ScoreBars } from "@/components/ScoreBars";
 import { api } from "@/lib/api";
@@ -9,19 +10,26 @@ import { COLORS, nameOf, shortOf, usd } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import type { CompareResult } from "@/lib/types";
 
-export default function Compare() {
-  const { compare, setCompare, toggleCompare, user, toast, ready } = useStore();
+function Compare() {
+  const { compare, setCompare, toggleCompare, years, setYear, user, toast, ready } = useStore();
   const [data, setData] = useState<CompareResult | null>(null);
   const [group, setGroup] = useState("all");
   const [hideSame, setHideSame] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const params = useSearchParams();
+  useEffect(() => {
+    const add = params.get("add")?.split(",").filter(Boolean) ?? [];
+    if (ready && add.length) setCompare([...new Set([...add, ...compare])].slice(0, 5));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
   useEffect(() => {
     if (!ready || compare.length < 2) return setData(null);
-    api<CompareResult>("/api/compare", { method: "POST", json: { slugs: compare } })
+    const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
+    api<CompareResult>("/api/compare", { method: "POST", json: { slugs: compare, years: chosen } })
       .then((d) => { setData(d); setError(null); })
       .catch((e) => setError(e.message));
-  }, [compare, ready]);
+  }, [compare, ready, years]);
 
   const move = (i: number, d: number) => {
     const L = [...compare];
@@ -66,6 +74,13 @@ export default function Compare() {
             <thead><tr><th>Характеристика</th>{cars.map((c, i) => (
               <th key={c.slug}><div className="colhead">
                 <span className="row" style={{ gap: 6 }}><span className="dot" style={{ background: COLORS[i] }} /><span className="nm">{c.brand} {shortOf(c)}</span></span>
+                {c.year_from && c.year_to && (
+                  <select aria-label={`Рік випуску ${c.brand} ${shortOf(c)}`} value={c.for_year ?? ""} style={{ width: "auto", padding: "3px 6px", fontSize: 13 }}
+                    onChange={(e) => setYear(c.slug, e.target.value ? Number(e.target.value) : null)}>
+                    <option value="">Рік ціни: {c.year_ref}</option>
+                    {Array.from({ length: c.year_to - c.year_from + 1 }, (_, k) => c.year_from! + k).map((y) => <option key={y} value={y}>Авто {y} року</option>)}
+                  </select>
+                )}
                 <span className="tools">
                   <button className="icon-btn btn-sm" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Посунути ліворуч">←</button>
                   <button className="icon-btn btn-sm" disabled={i === cars.length - 1} onClick={() => move(i, 1)} aria-label="Посунути праворуч">→</button>
@@ -117,4 +132,8 @@ export default function Compare() {
       </section>
     </>
   );
+}
+
+export default function ComparePage() {
+  return <Suspense fallback={<p className="loading">Завантаження…</p>}><Compare /></Suspense>;
 }

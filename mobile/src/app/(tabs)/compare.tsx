@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { Button, Card, Loading, Notice, Row, ScoreBars, Screen, T, useToast } from "@/components/ui";
+import { YearChooser } from "@/components/YearChooser";
 import { api } from "@/lib/api";
 import { nameOf, shortOf, usd } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -13,8 +14,9 @@ const COL = 150;
 export default function Compare() {
   const t = useTheme();
   const toast = useToast();
-  const { compare, toggleCompare, user, ready } = useStore();
-  const { data, error } = useApi<CompareResult>(ready && compare.length >= 2 ? "/api/compare" : null, { method: "POST", json: { slugs: compare } });
+  const { compare, toggleCompare, user, ready, years } = useStore();
+  const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
+  const { data, error } = useApi<CompareResult>(ready && compare.length >= 2 ? "/api/compare" : null, { method: "POST", json: { slugs: compare, years: chosen } });
 
   if (ready && compare.length < 2) {
     return (
@@ -66,6 +68,7 @@ export default function Compare() {
           ))}
         </View>
       </ScrollView>
+      <YearChooser cars={cars.map((c) => ({ slug: c.slug, name: `${c.brand} ${shortOf(c)}`, year_from: c.year_from, year_to: c.year_to, year_ref: c.year_ref }))} />
       <Card>
         <T v="h3">Оцінки за категоріями</T>
         <Row>{cars.map((c, i) => <Row key={c.slug} style={{ gap: 4 }}><View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: seriesColor(t, i) }} /><T v="small">{shortOf(c)}</T></Row>)}</Row>

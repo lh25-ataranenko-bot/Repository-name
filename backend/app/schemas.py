@@ -37,12 +37,16 @@ class OverridesIn(BaseModel):
 class CompareIn(BaseModel):
     slugs: list[str] = Field(min_length=2, max_length=5)
     env: EnvIn = EnvIn()
+    # Production year per car: price, resale and insurance are then counted from a car of that year.
+    years: dict[str, int] = Field({}, max_length=5)
 
 
 class TcoIn(BaseModel):
     slugs: list[str] = Field(min_length=1, max_length=5)
     env: EnvIn = EnvIn()
     overrides: dict[str, OverridesIn] = {}
+    # Production year per car: price, resale and insurance are then counted from a car of that year.
+    years: dict[str, int] = Field({}, max_length=5)
 
 
 class Filters(BaseModel):

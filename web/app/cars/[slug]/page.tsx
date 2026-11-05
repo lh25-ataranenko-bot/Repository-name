@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ScoreBars } from "@/components/ScoreBars";
 import { Silhouette } from "@/components/Silhouette";
@@ -50,7 +51,7 @@ export default async function CarPage({ params, searchParams }: {
     <div className="stack-lg">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(c) }} />
       <div className="page-head" style={{ marginBottom: 0 }}>
-        <p className="crumb">{c.brand} › {c.model} › {c.generation} › {c.name}</p>
+        <p className="crumb"><Link href="/models">Моделі</Link> › {c.brand} › <Link href={`/models/${encodeURIComponent(c.brand)}/${encodeURIComponent(c.model)}`}>{c.model}</Link> › {c.generation} › {c.name}</p>
         <h1>{nameOf(c)}</h1>
         <p>{years(c)} · {FUEL[c.fuel]} · {BODY[c.body]} · {DRIVE[c.drive]} привід</p>
       </div>
