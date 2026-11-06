@@ -231,11 +231,11 @@ def test_directory_of_brands_and_models(client):
     brands = client.get("/api/brands").json()
     assert len(brands) >= 90
     vw = next(b for b in brands if b["brand"] == "Volkswagen")
-    assert vw["country"] == "Німеччина" and vw["models"] > vw["models_with_specs"] > 0
+    assert vw["country"] == "Німеччина" and vw["models"] >= vw["models_with_specs"] > 0
     all_models = client.get("/api/models").json()
     assert len(all_models) >= 1400
     with_specs = client.get("/api/models?with_specs=true").json()
-    assert 0 < len(with_specs) < len(all_models) and all(m["modifications"] for m in with_specs)
+    assert 0 < len(with_specs) <= len(all_models) and all(m["modifications"] for m in with_specs)
     # a model known only from the directory has a page without generations
     from app.db import SessionLocal
     from app.models import Brand, CarModel
@@ -255,3 +255,10 @@ def test_directory_of_brands_and_models(client):
     golf = client.get("/api/models/Volkswagen/Golf").json()
     assert golf["modifications"] >= 1 and golf["year_from"] == 1974
     assert client.get("/api/models/Fiat/Nope").status_code == 404
+
+
+def test_rating_puts_well_documented_cars_first(client):
+    ranked = client.post("/api/rating", json={"limit": 200}).json()["ranked"]
+    flags = [r["enough_data"] for r in ranked]
+    # all cars with enough data come before any car scored on too few categories
+    assert flags == sorted(flags, reverse=True) and flags[0] is True

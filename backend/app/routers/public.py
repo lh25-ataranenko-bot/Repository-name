@@ -1,5 +1,6 @@
 """Public API: catalogue, comparison, TCO, rating, smart search, listing check."""
 
+import math
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -432,7 +433,12 @@ def rating(body: RatingIn, db: Session = Depends(get_db)) -> dict[str, Any]:
             continue
         s, used = weighted(c["scores"], weights)
         ranked.append({"car": with_year(c, f["year"]) if f.get("year") else c, "score": s, "used": used})
-    ranked.sort(key=lambda r: -(r["score"] if r["score"] is not None else -1))
+    # A car scored on too few categories (no reliability, safety or running costs yet) must not outrank
+    # a well-documented one: cars with data for at least 70 % of the weighted categories come first.
+    needed = math.ceil(0.7 * sum(1 for k, _ in CATEGORIES if weights.get(k, 0) > 0))
+    for r in ranked:
+        r["enough_data"] = r["used"] >= needed
+    ranked.sort(key=lambda r: (not r["enough_data"], -(r["score"] if r["score"] is not None else -1)))
     top = ranked[:body.limit]
     for r in top:  # explanations only for what is shown
         r["reasons"] = explain(r["car"], r["car"]["scores"], weights, r["used"], f.get("max_price"), env)
