@@ -13,6 +13,8 @@ class Brand(Base):
     __tablename__ = "brands"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(80), unique=True)
+    country: Mapped[str | None] = mapped_column(String(60))
+    alias: Mapped[str | None] = mapped_column(String(80))  # other market name, e.g. KGM for SsangYong
     models: Mapped[list["CarModel"]] = relationship(back_populates="brand", order_by="CarModel.name")
 
 
@@ -22,6 +24,13 @@ class CarModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     brand_id: Mapped[int] = mapped_column(ForeignKey("brands.id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column(String(80))
+    # Directory of every model since 1990 (filled even without modifications in the catalogue).
+    alias: Mapped[str | None] = mapped_column(String(120))  # other market names: "Optima" for Kia K5
+    year_from: Mapped[int | None] = mapped_column(Integer)
+    year_to: Mapped[int | None] = mapped_column(Integer)  # empty = still in production
+    body: Mapped[str | None] = mapped_column(String(20))
+    years_note: Mapped[str | None] = mapped_column(String(200))  # breaks in production or regional versions
+    wikidata: Mapped[str | None] = mapped_column(String(20))  # Wikidata item the name was checked against
     brand: Mapped[Brand] = relationship(back_populates="models")
     generations: Mapped[list["Generation"]] = relationship(back_populates="model", order_by="Generation.name")
 

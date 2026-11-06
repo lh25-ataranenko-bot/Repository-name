@@ -5,7 +5,7 @@ import { CarCard } from "@/components/CarCard";
 import { api, ApiError } from "@/lib/api";
 import { BODY, FUEL, span, usd } from "@/lib/format";
 import type { Car } from "@/lib/types";
-import { modelHref, type ModelRow } from "../../page";
+import { brandHref, modelHref, type ModelRow } from "../../page";
 
 interface ModelPage extends ModelRow {
   generations_list: { generation: string; year_from: number; year_to: number; in_production?: boolean; modifications: Car[] }[];
@@ -42,12 +42,24 @@ export default async function Model({ params }: { params: Params }) {
   return (
     <div className="stack-lg">
       <div className="page-head" style={{ marginBottom: 0 }}>
-        <p className="crumb"><Link href="/models">Моделі</Link> › {d.brand} › {d.model}</p>
+        <p className="crumb"><Link href="/models">Марки й моделі</Link> › <Link href={brandHref(d.brand)}>{d.brand}</Link> › {d.model}</p>
         <h1>{d.brand} {d.model}</h1>
-        <p>{span(d.year_from, d.year_to, d.in_production)} · поколінь у каталозі: {d.generations} · модифікацій: {d.modifications} ·
-          {" "}{[...new Set(all.map((c) => FUEL[c.fuel]))].join(", ")}</p>
+        <p>{span(d.year_from, d.year_to, d.in_production)}{d.years_note ? ` (${d.years_note})` : ""}
+          {d.alias ? ` · також відома як ${d.alias}` : ""}
+          {d.modifications ? <> · поколінь у каталозі: {d.generations} · модифікацій: {d.modifications} · {[...new Set(all.map((c) => FUEL[c.fuel]))].join(", ")}</>
+            : d.bodies.length ? ` · ${d.bodies.map((x) => BODY[x] ?? x).join(", ")}` : ""}</p>
+        {d.wikidata && <p className="small muted">Назву й роки звірено з <a href={`https://www.wikidata.org/wiki/${d.wikidata}`} rel="noopener" target="_blank">Wikidata ({d.wikidata})</a>.</p>}
       </div>
+      {!d.modifications && (
+        <div className="notice info stack">
+          <b>Характеристики цієї моделі ще не додані</b>
+          <span>У довіднику є роки випуску й тип кузова. Двигуни, витрата, надійність і ціни з’являться, коли редактори додадуть модифікації.
+            Поки що можна переглянути інші моделі {d.brand} або схожі авто в каталозі.</span>
+          <div className="row"><Link className="btn btn-sm" href={brandHref(d.brand)}>Усі моделі {d.brand}</Link><Link className="btn btn-sm" href="/catalog">Каталог з характеристиками</Link></div>
+        </div>
+      )}
 
+      {d.modifications > 0 && <>
       <div className="stats">
         <div className="stat"><span className="label">Ціни</span><span className="big-num">{d.price_min === d.price_max ? usd(d.price_min) : `${usd(d.price_min)} – ${usd(d.price_max)}`}</span><span className="small muted">за роком, до якого належить ціна</span></div>
         {reliable && <div className="stat"><span className="label">Найнадійніша версія</span><Link href={`/cars/${reliable.slug}`}><b>{reliable.generation} · {reliable.name}</b></Link><span className="small muted">надійність {reliable.reliability}/100</span></div>}
@@ -80,6 +92,7 @@ export default async function Model({ params }: { params: Params }) {
           )}
         </section>
       ))}
+      </>}
 
       {d.other_models.length > 0 && (
         <section className="stack"><h3>Інші моделі {d.brand}</h3>

@@ -12,6 +12,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
   try {
     const models = await api<{ brand: string; model: string }[]>("/api/models");
+    for (const b of new Set(models.map((m) => m.brand))) {
+      pages.push({ url: `${SITE_URL}/models/${encodeURIComponent(b)}`, changeFrequency: "monthly", priority: 0.6 });
+    }
     for (const m of models) {
       pages.push({ url: `${SITE_URL}/models/${encodeURIComponent(m.brand)}/${encodeURIComponent(m.model)}`, changeFrequency: "monthly", priority: 0.7 });
     }

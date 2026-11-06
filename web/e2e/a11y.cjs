@@ -4,7 +4,7 @@ const { chromium } = require("playwright");
 const axePath = require.resolve("axe-core/axe.min.js");
 
 const BASE = process.argv[2] ?? "http://localhost:3000";
-const PAGES = ["/", "/catalog", "/models", "/models/Toyota/Camry", "/cars/toyota-camry-xv70", "/compare", "/tco", "/customs",
+const PAGES = ["/", "/catalog", "/models", "/models/Toyota/Camry", "/models/Fiat", "/models/Fiat/Panda", "/cars/toyota-camry-xv70", "/compare", "/tco", "/customs",
   "/rating", "/check", "/assistant", "/account"];
 
 (async () => {

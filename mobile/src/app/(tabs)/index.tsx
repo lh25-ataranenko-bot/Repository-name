@@ -36,6 +36,11 @@ export default function Home() {
         <Button title="Запитати помічника" onPress={() => router.push("/assistant")} />
       </Card>
       <Card>
+        <T v="h3">Марки й моделі</T>
+        <T v="muted">Усі моделі з 1990 року: роки випуску, тип кузова, а де є — модифікації з характеристиками.</T>
+        <Button title="Відкрити довідник" onPress={() => router.push("/brands")} />
+      </Card>
+      <Card>
         <T v="h3">Розмитнення</T>
         <T v="muted">Скільки коштуватиме ввезти авто зі США чи Європи: мито, акциз, ПДВ.</T>
         <Button title="Порахувати розмитнення" onPress={() => router.push("/customs")} />

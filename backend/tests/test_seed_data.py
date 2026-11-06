@@ -31,3 +31,19 @@ def test_consistent_values():
             assert c["battery"] and c["tank"] is None and c["trans_type"] == "reducer", c["slug"]
         else:
             assert c["tank"] and (c["cons_real"] or 0) <= 25 and (c["cons_pass"] or 0) <= 25, c["slug"]
+
+
+def test_directory_is_consistent():
+    from app.schemas import Body
+    from typing import get_args
+    data = json.loads(DATA.with_name("models.json").read_text(encoding="utf-8"))
+    names = [b["name"] for b in data["brands"]]
+    assert len(names) == len(set(names))
+    keys = [(m["brand"], m["name"]) for m in data["models"]]
+    assert len(keys) == len(set(keys))
+    for m in data["models"]:
+        assert m["brand"] in names and m["body"] in get_args(Body), m
+        assert m["year_to"] is None or (m["year_from"] <= m["year_to"] and m["year_to"] >= MIN_YEAR), m  # produced since 1990
+        assert m["wikidata"] is None or m["wikidata"].startswith("Q"), m
+    # every catalogue model is in the directory under the same name
+    assert {(c["brand"], c["model"]) for c in CARS} <= set(keys)

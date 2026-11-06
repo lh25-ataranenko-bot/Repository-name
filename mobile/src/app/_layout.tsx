@@ -22,6 +22,9 @@ export default function RootLayout() {
             <Stack.Screen name="rating" options={{ title: "Рейтинг" }} />
             <Stack.Screen name="assistant" options={{ title: "AI-помічник" }} />
             <Stack.Screen name="customs" options={{ title: "Розмитнення" }} />
+            <Stack.Screen name="brands" options={{ title: "Марки й моделі" }} />
+            <Stack.Screen name="brand/[name]" options={{ title: "Марка" }} />
+            <Stack.Screen name="model" options={{ title: "Модель" }} />
             <Stack.Screen name="account/reset" options={{ title: "Новий пароль" }} />
             <Stack.Screen name="account/verify" options={{ title: "Підтвердження пошти" }} />
           </Stack>

@@ -12,7 +12,8 @@ from .scoring import compute_scores
 from ..years import span, this_year
 
 FUEL = {"petrol": "Бензин", "diesel": "Дизель", "hybrid": "Гібрид", "electric": "Електро"}
-BODY = {"sedan": "Седан", "liftback": "Ліфтбек", "crossover": "Кросовер", "hatch": "Хетчбек", "wagon": "Універсал", "minivan": "Мінівен", "van": "Фургон", "pickup": "Пікап"}
+BODY = {"sedan": "Седан", "liftback": "Ліфтбек", "crossover": "Кросовер", "hatch": "Хетчбек", "wagon": "Універсал", "minivan": "Мінівен", "van": "Фургон", "pickup": "Пікап",
+        "coupe": "Купе", "cabrio": "Кабріолет / родстер"}
 DRIVE = {"FWD": "Передній", "RWD": "Задній", "AWD": "Повний"}
 TRANS = {"auto": "Автомат (АКП)", "robot": "Робот (DSG/DCT)", "cvt": "Варіатор", "manual": "Механіка", "reducer": "Редуктор (електро)"}
 ASSIST = {"AEB": "Автоматичне гальмування", "LKA": "Утримання смуги", "ACC": "Адаптивний круїз",

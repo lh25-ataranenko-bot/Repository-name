@@ -1,0 +1,23 @@
+Toyota;Японія;4Runner:1984-:c|86 (GT86):2012-2021:k|GR86:2021-:k|Alphard:2002-:m|Auris:2006-2018:h|Avalon:1994-2022:s|Avensis:1997-2018:s|Avensis Verso:2001-2009:m|Aygo:2005-2022:h|Aygo X:2022-:c|bZ4X:2022-:c|bZ3:2023-:s|C-HR:2016-:c|C-HR+:2025-:c|Camry:1982-:s|Carina E:1992-1997:s|Celica:1970-2006:k|Corolla:1966-:s|Corolla Cross:2020-:c|Corolla Verso:2001-2009:m|Corona:1957-2001:s|Crown:1955-:s|FJ Cruiser:2006-2022:c|Fortuner:2005-:c|GR Supra:2019-:k|GR Yaris:2020-:h|Hiace:1967-:v|Highlander:2000-:c|Grand Highlander:2023-:c|Hilux:1968-:p|iQ:2008-2015:h|Land Cruiser:1951-:c|Land Cruiser Prado:1990-:c|Mark II:1968-2004:s|Mark X:2004-2019:s|Matrix:2002-2014:h|Mirai:2014-:s|MR2:1984-2007:r|Paseo:1991-1999:k|Picnic:1996-2001:m|Previa:1990-2019:m|Prius:1997-:l|Prius+ (Prius v):2011-2021:m|ProAce:2013-:v|ProAce City:2019-:v|RAV4:1994-:c|Sequoia:2000-:c|Sienna:1997-:m|Starlet:1973-1999:h|Supra:1978-2002:k|Tacoma:1995-:p|Tercel:1978-1999:s|Tundra:1999-:p|Urban Cruiser:2008-2014:c|Urban Cruiser:2024-:c|Venza:2008-2017:c|Venza:2020-:c|Verso:2009-2018:m|Verso-S:2010-2015:m|Yaris:1999-:h|Yaris Cross:2020-:c|Camry Solara:1998-2008:k|Echo:1999-2005:s|Granvia:1995-2002:m|Harrier:1997-:c|Wish:2003-2017:m|Land Cruiser 250:2024-:c
+Volkswagen;Німеччина;Amarok:2010-:p|Arteon:2017-2024:l|Atlas (Teramont):2017-:c|Beetle:1997-2019:h|Bora:1998-2005:s|Caddy:1980-:v|California:1988-:m|Corrado:1988-1995:k|Crafter:2006-:v|Eos:2006-2015:r|Fox:2003-2011:h|Golf:1974-:h|Golf Plus:2005-2014:m|Golf Sportsvan:2014-2020:m|ID.3:2019-:h|ID.4:2020-:c|ID.5:2021-:c|ID.6:2021-:c|ID.7:2023-:l|ID. Buzz:2022-:m|Jetta:1979-:s|Lupo:1998-2005:h|Multivan:1990-:m|Passat:1973-:s|Passat CC (CC):2008-2017:l|Phaeton:2002-2016:s|Polo:1975-:h|Scirocco:1974-1992:k|Scirocco:2008-2017:k|Sharan:1995-2022:m|T-Cross:2018-:c|T-Roc:2017-:c|Taigo:2021-:c|Tiguan:2007-:c|Tiguan Allspace:2017-2024:c|Touareg:2002-:c|Touran:2003-:m|Transporter:1950-:v|Up!:2011-2023:h|Vento:1991-1998:s|Taos:2021-:c|Atlas Cross Sport:2019-:c|XL1:2013-2016:k|Golf Cabriolet:1979-2016:r|Tayron:2024-:c
+Volvo;Швеція;240:1974-1993:s|440/460:1987-1996:h|480:1986-1995:k|850:1991-1997:w|940/960:1990-1998:s|C30:2006-2013:h|C40:2021-:c|C70:1996-2013:r|EX30:2023-:c|EX90:2024-:c|EX40:2024-:c|S40:1995-2012:s|S60:2000-:s|S70:1996-2000:s|S80:1998-2016:s|S90:1996-1998:s|S90:2016-:s|V40:1995-2019:h|V50:2004-2012:w|V60:2010-:w|V70:1996-2016:w|V90:1996-1998:w|V90:2016-:w|XC40:2017-:c|XC60:2008-:c|XC70:1997-2016:w|XC90:2002-:c|ES90:2025-:s
+ZAZ;Україна;Таврія (1102):1987-2007:h|Славута (1103):1999-2011:l|Таврія Нова:1998-2007:h|Сенс:2002-2014:s|Шанс:2009-2014:s|Forza:2011-2016:l|Vida:2012-2018:s|Lanos:2009-2017:s|Таврія Пікап:1993-2007:p
+UAZ;Росія;469 (Hunter):1972-:c|Patriot:2005-:c|Буханка (452):1965-:v|Pickup:2008-:p
+GAZ;Росія;Волга (3110):1997-2004:s|Волга (31105):2004-2010:s|Volga Siber:2008-2010:s|Газель:1994-:v|Соболь:1998-:v
+Moskvich;Росія;2141:1986-1998:h|Святогор (2141-02):1997-2002:h|Князь Владимир:1997-2001:s|3:2022-:c
+Zeekr;Китай;001:2021-:w|007:2023-:s|009:2022-:m|7X:2024-:c|X:2023-:c
+Omoda;Китай;C5 (5):2022-:c|E5:2023-:c
+JAC;Китай;J5:2011-2017:s|J7:2020-:l|JS4:2020-:c|S2:2015-:c|S3:2014-:c|S5:2013-2019:c|T6:2015-:p|T8:2018-:p|e-JS4:2021-:c|Refine M5:2011-:m
+Leapmotor;Китай;C10:2023-:c|C11:2021-:c|C16:2024-:c|T03:2020-:h|B10:2025-:c
+Xpeng;Китай;G3:2018-2023:c|G6:2023-:c|G9:2022-:c|P5:2021-:s|P7:2020-:s|X9:2024-:m|Mona M03:2024-:l
+Nio;Китай;EC6:2020-:c|EL6 (ES6):2018-:c|EL7 (ES7):2022-:c|EL8 (ES8):2018-:c|ET5:2022-:s|ET7:2021-:s|ET5 Touring:2023-:w
+Li Auto;Китай;L6:2024-:c|L7:2023-:c|L8:2022-:c|L9:2022-:c|One:2019-2022:c|Mega:2024-:m
+Jetour;Китай;Dashing:2022-:c|T2:2023-:c|X70:2018-:c|X90:2019-:c
+Voyah;Китай;Free:2021-:c|Dream:2022-:m|Passion:2023-:s
+Hongqi;Китай;E-HS9:2020-:c|H5:2017-:s|H9:2020-:s|HS5:2019-:c
+Lynk & Co;Китай;01:2017-:c|02:2018-:h|03:2018-:s|05:2019-:c|06:2020-:c|08:2023-:c|09:2021-:c
+Dongfeng;Китай;580:2016-:c|AX7:2014-:c|Aeolus Shine:2019-:s|H30 Cross:2011-2017:h
+Proton;Малайзія;Persona:1993-:s|Saga:1985-:s|Wira:1993-2009:s|X50:2020-:c|X70:2018-:c
+Tata;Індія;Indica:1998-2018:h|Nexon:2017-:c|Safari:1998-:c|Xenon:2006-2016:p|Harrier:2019-:c
+Mahindra;Індія;Scorpio:2002-:c|XUV500:2011-2021:c|XUV700:2021-:c|Thar:1985-:c|Pik Up:2006-:p
+Iveco;Італія;Daily:1978-:v

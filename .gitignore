@@ -14,3 +14,4 @@ next-env.d.ts
 *.tsbuildinfo
 backups/
 media/
+scripts/.wikidata-cache.json

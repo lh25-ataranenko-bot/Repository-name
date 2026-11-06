@@ -168,7 +168,7 @@ class ImportIn(BaseModel):
     csv: str = Field(max_length=2_000_000)
 
 
-Body = Literal["sedan", "liftback", "crossover", "hatch", "wagon", "minivan", "van", "pickup"]
+Body = Literal["sedan", "liftback", "crossover", "hatch", "wagon", "minivan", "van", "pickup", "coupe", "cabrio"]
 FuelT = Literal["petrol", "diesel", "hybrid", "electric"]
 TransT = Literal["auto", "robot", "cvt", "manual", "reducer"]
 DriveT = Literal["FWD", "RWD", "AWD"]

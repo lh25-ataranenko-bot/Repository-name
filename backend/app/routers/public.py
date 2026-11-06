@@ -3,6 +3,7 @@
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..config import get_settings
@@ -12,6 +13,7 @@ from ..services import assistant, customs, listing
 from ..services.calc import Credit, Env, Overrides, default_inputs, price_for_year, tco
 from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
+from ..models import Brand, CarModel
 from ..services.query_parser import parse_query
 from ..services.scoring import CATEGORIES, PRESETS, explain, passes, weighted
 from ..years import MIN_YEAR, max_year, span, this_year
@@ -160,23 +162,79 @@ def _model_row(brand: str, model: str, cars: list[dict[str, Any]]) -> dict[str, 
     }
 
 
+def directory(db: Session) -> dict[tuple[str, str], dict[str, Any]]:
+    """Every brand and model since 1990 from the directory, with or without modifications in the catalogue."""
+    def build() -> dict[tuple[str, str], dict[str, Any]]:
+        q = select(Brand.name, Brand.country, Brand.alias, CarModel.name, CarModel.alias, CarModel.year_from,
+                   CarModel.year_to, CarModel.body, CarModel.years_note, CarModel.wikidata).join(CarModel.brand)
+        return {(b, m): {"brand": b, "country": country, "brand_alias": b_alias, "model": m, "alias": alias,
+                         "year_from": yf, "year_to": yt, "body": body, "years_note": note, "wikidata": wd}
+                for b, country, b_alias, m, alias, yf, yt, body, note, wd in db.execute(q)}
+    return catalog_cache.get(("directory",), build)
+
+
+def _directory_row(d: dict[str, Any] | None, cars: list[dict[str, Any]], brand: str, model: str) -> dict[str, Any]:
+    """A model for the lists: the directory gives the production years of the whole model line,
+    the catalogue gives generations, modifications and prices."""
+    row = _model_row(brand, model, cars) if cars else {
+        "brand": brand, "model": model, "generations": 0, "modifications": 0, "year_from": None, "year_to": None,
+        "in_production": False, "price_min": None, "price_max": None, "bodies": [], "fuels": []}
+    if d:
+        if d["year_from"]:
+            ongoing = d["year_to"] is None
+            row.update(year_from=d["year_from"], year_to=max(this_year(), d["year_from"]) if ongoing else d["year_to"],
+                       in_production=ongoing)
+        if not row["bodies"] and d["body"]:
+            row["bodies"] = [d["body"]]
+        row.update(alias=d["alias"], years_note=d["years_note"], wikidata=d["wikidata"], country=d["country"])
+    return row
+
+
+@router.get("/brands")
+def brands(db: Session = Depends(get_db)) -> list[dict[str, Any]]:
+    """Every brand: country, how many models the directory knows and how many have modifications in the catalogue."""
+    def build() -> list[dict[str, Any]]:
+        out: dict[str, dict[str, Any]] = {}
+        for (b, _), d in directory(db).items():
+            r = out.setdefault(b, {"brand": b, "country": d["country"], "alias": d["brand_alias"], "models": 0,
+                                   "models_in_production": 0, "models_with_specs": 0, "modifications": 0})
+            r["models"] += 1
+            r["models_in_production"] += d["year_to"] is None and d["year_from"] is not None
+        with_specs: dict[str, set[str]] = {}
+        for c in scored(db):
+            r = out.setdefault(c["brand"], {"brand": c["brand"], "country": None, "alias": None, "models": 0,
+                                            "models_in_production": 0, "models_with_specs": 0, "modifications": 0})
+            r["modifications"] += 1
+            with_specs.setdefault(c["brand"], set()).add(c["model"])
+        for r in out.values():
+            r["models_with_specs"] = len(with_specs.get(r["brand"], ()))
+        return sorted(out.values(), key=lambda r: r["brand"].casefold())
+    return catalog_cache.get(("brands",), build)
+
+
 @router.get("/models")
-def models(db: Session = Depends(get_db), brand: str | None = Query(None, max_length=80)) -> list[dict[str, Any]]:
-    """Every model with its generations count, production years and price range."""
+def models(db: Session = Depends(get_db), brand: str | None = Query(None, max_length=80),
+           with_specs: bool = False) -> list[dict[str, Any]]:
+    """Every model since 1990: production years from the directory, generations, modifications and prices
+    from the catalogue. with_specs=true keeps only models with modifications in the catalogue."""
     def build() -> list[dict[str, Any]]:
         by: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for c in scored(db):
             by.setdefault((c["brand"], c["model"]), []).append(c)
-        return [_model_row(b, m, cs) for (b, m), cs in sorted(by.items(), key=lambda kv: (kv[0][0].casefold(), kv[0][1].casefold()))]
+        d = directory(db)
+        keys = sorted(set(by) | set(d), key=lambda k: (k[0].casefold(), k[1].casefold()))
+        return [_directory_row(d.get(k), by.get(k, []), *k) for k in keys]
     rows = catalog_cache.get(("models",), build)
-    return [r for r in rows if not brand or r["brand"] == brand]
+    return [r for r in rows if (not brand or r["brand"] == brand) and (not with_specs or r["modifications"])]
 
 
 @router.get("/models/{brand}/{model}")
 def model_page(brand: str, model: str, db: Session = Depends(get_db)) -> dict[str, Any]:
-    """One model: generations on a timeline with their modifications."""
+    """One model: generations on a timeline with their modifications. A model known only from the
+    directory comes back with an empty generations list."""
     cars = [c for c in scored(db) if c["brand"] == brand and c["model"] == model]
-    if not cars:
+    d = directory(db).get((brand, model))
+    if not cars and d is None:
         raise HTTPException(404, f"Модель {brand} {model} не знайдено в каталозі")
     gens: dict[str, list[dict[str, Any]]] = {}
     for c in cars:
@@ -189,7 +247,7 @@ def model_page(brand: str, model: str, db: Session = Depends(get_db)) -> dict[st
     rel = [c for c in cars if c["reliability"] is not None]
     cheap = [c for c in cars if c.get("tco_5y") is not None]
     return {
-        **_model_row(brand, model, cars),
+        **_directory_row(d, cars, brand, model),
         "generations_list": generations,
         "most_reliable": max(rel, key=lambda c: c["reliability"])["slug"] if rel else None,
         "cheapest_to_own": min(cheap, key=lambda c: c["tco_5y"])["slug"] if cheap else None,

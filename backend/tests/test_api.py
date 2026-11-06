@@ -138,7 +138,8 @@ def test_rating_with_year(client):
 def test_models_and_model_page(client):
     rows = client.get("/api/models", params={"brand": "Toyota"}).json()
     camry = next(r for r in rows if r["model"] == "Camry")
-    assert camry["generations"] == 2 and camry["year_from"] == 2011 and camry["year_to"] == 2021
+    # years of the whole model line come from the directory; generations from the catalogue
+    assert camry["generations"] == 2 and camry["year_from"] == 1982 and camry["in_production"]
     page = client.get("/api/models/Toyota/Camry").json()
     assert [g["generation"] for g in page["generations_list"]] == ["XV50", "XV70"]  # oldest first
     assert page["most_reliable"] and "Camry" not in page["other_models"] and "RAV4" in page["other_models"]
@@ -222,3 +223,25 @@ def test_in_production_filter(client):
     all_ = client.get("/api/cars?limit=200").json()
     now = client.get("/api/cars?limit=200&in_production=true").json()
     assert 0 < now["count"] < all_["count"] and all(c["in_production"] for c in now["items"])
+
+
+def test_directory_of_brands_and_models(client):
+    brands = client.get("/api/brands").json()
+    assert len(brands) >= 90
+    vw = next(b for b in brands if b["brand"] == "Volkswagen")
+    assert vw["country"] == "Німеччина" and vw["models"] > vw["models_with_specs"] > 0
+    all_models = client.get("/api/models").json()
+    assert len(all_models) >= 1400
+    with_specs = client.get("/api/models?with_specs=true").json()
+    assert 0 < len(with_specs) < len(all_models) and all(m["modifications"] for m in with_specs)
+    # a model known only from the directory has a page without generations
+    page = client.get("/api/models/Fiat/Panda").json()
+    assert page["modifications"] == 0 and page["generations_list"] == [] and page["year_from"] == 1980
+    assert page["in_production"] is True and page["year_to"] >= 2026
+    # a revived model keeps its break in production
+    integra = client.get("/api/models/Acura/Integra").json()
+    assert integra["years_note"] == "1986–2006, 2022–досі"
+    # catalogue models keep their modifications and get the production years of the whole model line
+    golf = client.get("/api/models/Volkswagen/Golf").json()
+    assert golf["modifications"] >= 1 and golf["year_from"] == 1974
+    assert client.get("/api/models/Fiat/Nope").status_code == 404

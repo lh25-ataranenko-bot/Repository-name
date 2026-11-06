@@ -293,7 +293,7 @@ hr{border:0;border-top:1px solid var(--line);margin:0}
 .year-bar .year-fill{width:70%;background:var(--accent-soft);border:1px solid var(--accent);border-radius:4px 4px 0 0}
 .year-bar.on .year-fill{background:var(--needle);border-color:var(--needle)}
 .year-bar.on .small{font-weight:700}
-.model-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.model-grid,.brand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .model-tile{display:grid;gap:4px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);text-decoration:none}
 .model-tile:hover{border-color:var(--accent)}
 .model-tile b{font-family:var(--f-display);font-size:17px}
