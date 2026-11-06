@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { CarPicker } from "@/components/CarPicker";
 import { PrintButton } from "@/components/PrintButton";
 import { api } from "@/lib/api";
-import { nf } from "@/lib/format";
+import { MIN_YEAR, nf, thisYear } from "@/lib/format";
 import type { Car } from "@/lib/types";
 
 interface Money { uah: number; usd: number; eur: number }
@@ -20,7 +20,7 @@ const RATE_FIELDS: [string, string, number][] = [
   ["hybrid_eur", "Акциз гібрид, € за авто", 100], ["electric_eur_per_kwh", "Акциз електро, € за 1 кВт·год", 1],
   ["subsistence_minimum_uah", "Прожитковий мінімум для збору до ПФ, грн", 3028],
 ];
-const CURRENT_YEAR = 2026;
+const CURRENT_YEAR = thisYear();
 
 function Customs() {
   const params = useSearchParams();
@@ -71,7 +71,7 @@ function Customs() {
             <div className="field"><label htmlFor="cu-price">Ціна авто</label><input id="cu-price" type="number" min={1} step={100} value={form.price} onChange={num("price")} /></div>
             <div className="field"><label htmlFor="cu-cur">Валюта</label><select id="cu-cur" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })}><option value="USD">Долар США</option><option value="EUR">Євро</option></select></div>
             <div className="field"><label htmlFor="cu-del">Доставка до кордону, {cur}</label><input id="cu-del" type="number" min={0} step={50} value={form.delivery} onChange={num("delivery")} /></div>
-            <div className="field"><label htmlFor="cu-year">Рік випуску</label><input id="cu-year" type="number" min={1980} max={CURRENT_YEAR} value={form.production_year} onChange={num("production_year")} /></div>
+            <div className="field"><label htmlFor="cu-year">Рік випуску</label><input id="cu-year" type="number" min={MIN_YEAR} max={CURRENT_YEAR} value={form.production_year} onChange={num("production_year")} /></div>
             <div className="field"><label htmlFor="cu-fuel">Двигун</label><select id="cu-fuel" value={form.fuel} onChange={(e) => setForm({ ...form, fuel: e.target.value })}>
               <option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select></div>
             {(form.fuel === "petrol" || form.fuel === "diesel") && <div className="field"><label htmlFor="cu-cc">Об’єм двигуна, см³</label><input id="cu-cc" type="number" min={500} max={9000} step={1} value={form.cc} onChange={num("cc")} /></div>}

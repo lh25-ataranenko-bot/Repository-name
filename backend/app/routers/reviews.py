@@ -12,6 +12,7 @@ from ..schemas import ReviewIn, ReviewModerationIn
 from ..security import current_user, require_editor
 from ..services import notify
 from ..services.cache import Counter
+from ..years import span
 
 router = APIRouter(prefix="/api", tags=["reviews"])
 write_limit = Counter("review-write", 3600)
@@ -61,7 +62,7 @@ def write_review(slug: str, body: ReviewIn, user: User = Depends(current_user), 
         raise HTTPException(429, "Забагато змін відгуків за годину. Спробуйте пізніше.")
     m = mod_by_slug(db, slug)
     if body.car_year and m.year_from and not m.year_from <= body.car_year <= (m.year_to or body.car_year):
-        raise HTTPException(422, f"Ця модифікація випускалася в {m.year_from}–{m.year_to} роках")
+        raise HTTPException(422, f"Ця модифікація випускалася в {span(m.year_from, m.year_to, m.year_to is None)} роках")
     r = db.scalar(select(Review).where(Review.user_id == user.id, Review.modification_id == m.id))
     if r is None:
         r = Review(user_id=user.id, modification_id=m.id)

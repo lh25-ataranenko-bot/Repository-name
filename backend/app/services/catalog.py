@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 from ..models import CarModel, CarPhoto, Generation, Modification
 from .calc import Car, Env, cost_per_100km, real_range_km, tco
 from .scoring import compute_scores
+from ..years import span, this_year
 
 FUEL = {"petrol": "Бензин", "diesel": "Дизель", "hybrid": "Гібрид", "electric": "Електро"}
 BODY = {"sedan": "Седан", "liftback": "Ліфтбек", "crossover": "Кросовер", "hatch": "Хетчбек", "wagon": "Універсал", "minivan": "Мінівен", "van": "Фургон", "pickup": "Пікап"}
@@ -27,6 +28,10 @@ def to_dict(m: Modification) -> Car:
     d["brand"], d["model"], d["generation"] = m.brand_name, m.model_name, m.generation_name
     d["issues"] = [{"part": i.part, "frequency": i.frequency, "cost": i.cost} for i in m.issues]
     d["assists"] = list(m.assists or [])
+    # No end year = still in production: the year list then reaches the current year, every year anew.
+    d["in_production"] = bool(m.year_from) and m.year_to is None
+    if d["in_production"]:
+        d["year_to"] = max(this_year(), m.year_from)
     return d
 
 
@@ -72,7 +77,7 @@ ROWS: list[tuple[str, list[Row]]] = [
     ("Ідентифікація", [
         ("Марка", lambda c: c["brand"], {}), ("Модель", lambda c: c["model"], {}),
         ("Покоління", lambda c: c["generation"], {}),
-        ("Роки випуску", lambda c: f"{c['year_from']}–{c['year_to']}" if c["year_from"] else None, {}),
+        ("Роки випуску", lambda c: span(c["year_from"], c["year_to"], c.get("in_production", False)), {}),
         ("Рік, для якого ціна", lambda c: c.get("for_year") or c.get("year_ref"), {}),
         ("Кузов", lambda c: BODY.get(c["body"]), {}),
     ]),

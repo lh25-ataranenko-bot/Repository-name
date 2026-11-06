@@ -7,6 +7,7 @@ that a car had no accidents or that its mileage is genuine.
 import re
 from typing import Any
 
+from ..years import MIN_YEAR, max_year
 from .calc import Car
 
 WMI = {
@@ -29,8 +30,21 @@ WMI = {
     "Y6D": "ЗАЗ/Daewoo (Україна)", "LGX": "BYD (Китай)", "LSJ": "MG/SAIC (Китай)", "LVV": "Chery (Китай)",
     "L6T": "Geely (Китай)", "LGW": "Great Wall/Haval (Китай)",
 }
-VIN_YEAR = {"D": 2013, "E": 2014, "F": 2015, "G": 2016, "H": 2017, "J": 2018, "K": 2019, "L": 2020,
-            "M": 2021, "N": 2022, "P": 2023, "R": 2024, "S": 2025, "T": 2026}
+# The 10th VIN character repeats every 30 years (A = 1980 and 2010, L = 1990 and 2020, ...).
+VIN_YEAR_CODES = "ABCDEFGHJKLMNPRSTVWXY123456789"
+
+
+def vin_year(code: str, claimed_year: int | None = None) -> int | None:
+    """Model year for the 10th VIN character within 1990..next year; the one closest to the claimed year wins."""
+    i = VIN_YEAR_CODES.find(code)
+    if i < 0:
+        return None
+    options = [y for y in range(1980 + i, max_year() + 1, 30) if y >= MIN_YEAR]
+    if not options:
+        return None
+    if claimed_year:
+        return min(options, key=lambda y: abs(y - claimed_year))
+    return options[-1]
 CONDITION = {"excellent": 1.04, "good": 1.0, "needs": 0.88}
 
 
@@ -47,7 +61,7 @@ def decode_vin(vin: str, brand: str | None = None, claimed_year: int | None = No
     if re.search(r"[^A-HJ-NPR-Z0-9]", re.sub(r"[IOQ]", "", v)):
         errors.append("VIN містить недопустимі символи.")
     maker = WMI.get(v[:3])
-    year = VIN_YEAR.get(v[9]) if len(v) >= 10 else None
+    year = vin_year(v[9], claimed_year) if len(v) >= 10 else None
     if not errors:
         if maker:
             notes.append(f"Виробник за кодом WMI {v[:3]}: {maker}")

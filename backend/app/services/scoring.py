@@ -7,6 +7,7 @@ Mandatory criteria (budget, gearbox, …) are filters, never part of the score.
 
 from typing import Any
 
+from ..years import span
 from .calc import Car, Env, cost_per_100km, price_for_year, tco
 
 CATEGORIES: list[tuple[str, str]] = [
@@ -87,7 +88,7 @@ def passes(car: Car, f: dict[str, Any]) -> list[str]:
     reasons: list[str] = []
     year = f.get("year")
     if year and car.get("year_from") and not car["year_from"] <= year <= (car.get("year_to") or year):
-        reasons.append(f"не випускалася у {year} році ({car['year_from']}–{car['year_to']})")
+        reasons.append(f"не випускалася у {year} році ({span(car['year_from'], car['year_to'], car.get('in_production', False))})")
     max_price = f.get("max_price")
     if max_price and not reasons:
         # With a year chosen the budget is compared with the price of a car of that year.

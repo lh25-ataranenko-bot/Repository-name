@@ -2,9 +2,10 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { api } from "@/lib/api";
+import { years } from "@/lib/format";
 import type { Car } from "@/lib/types";
 
-type Hit = Pick<Car, "slug" | "brand" | "model" | "generation" | "name" | "year_from" | "year_to">;
+type Hit = Pick<Car, "slug" | "brand" | "model" | "generation" | "name" | "year_from" | "year_to" | "in_production">;
 
 /** Search box over the catalogue (server-side, so it works with any catalogue size). */
 export function CarPicker({ id, value, onChange, exclude = [], placeholder }: {
@@ -59,7 +60,7 @@ export function CarPicker({ id, value, onChange, exclude = [], placeholder }: {
           {hits.map((h, i) => (
             <li key={h.slug} role="option" aria-selected={i === active} className={i === active ? "on" : ""}
               onMouseDown={(e) => { e.preventDefault(); choose(h); }} onMouseEnter={() => setActive(i)}>
-              <b>{h.brand} {h.model} {h.name}</b><span className="small muted">{h.generation} · {h.year_from}–{h.year_to}</span>
+              <b>{h.brand} {h.model} {h.name}</b><span className="small muted">{h.generation} · {years(h)}</span>
             </li>
           ))}
           {!hits.length && <li className="small muted">Нічого не знайдено</li>}

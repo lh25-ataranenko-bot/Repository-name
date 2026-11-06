@@ -52,7 +52,8 @@ class Settings(BaseSettings):
     usd_rate: float = 41.6
     km_per_year: int = 15000
     other_per_year: float = 250
-    current_year: int = 2026
+    # Empty: the calendar year. Set only to pin a year (tests, recalculating old reports).
+    current_year: int | None = None
 
 
 def production_problems(s: Settings) -> tuple[list[str], list[str]]:

@@ -16,7 +16,7 @@ const TRANS_TYPE = { auto: "Автомат (АКП)", robot: "Робот (DSG/DC
 const LEVEL = { "висока": "Висока", "середня": "Середня", "низька": "Низька" };
 
 const GROUPS: [string, Def[]][] = [
-  ["Ідентифікація", [["name", "Назва модифікації", "text"], ["year_from", "Рік початку", "int"], ["year_to", "Рік завершення", "int"],
+  ["Ідентифікація", [["name", "Назва модифікації", "text"], ["year_from", "Рік початку", "int"], ["year_to", "Рік завершення (порожньо — випускається досі)", "int"],
     ["body", "Кузов", "select", BODY], ["source", "Джерело даних", "text"]]],
   ["Двигун і трансмісія", [["fuel", "Паливо", "select", FUEL], ["engine_code", "Код двигуна", "text"], ["displacement", "Об’єм, см³", "int"],
     ["hp", "Потужність, к.с.", "int"], ["torque", "Момент, Н·м", "int"], ["transmission", "КПП (назва)", "text"],
@@ -66,7 +66,10 @@ export function CarEditor({ slug }: { slug?: string }) {
 
   const load = () => {
     if (!slug) return;
-    api<Car>(`/api/cars/${slug}`).then((c) => { setCar(c); setForm(toForm(c)); setAssists(c.assists); setIssues(c.issues); }).catch((e) => setError(e.message));
+    api<Car>(`/api/cars/${slug}`).then((loaded) => {
+      // the API fills year_to with the current year for cars still in production; the editor shows it empty
+      const c = loaded.in_production ? { ...loaded, year_to: null } : loaded;
+      setCar(c); setForm(toForm(c)); setAssists(c.assists); setIssues(c.issues); }).catch((e) => setError(e.message));
     api<Change[]>(`/api/admin/changelog?slug=${slug}`).then(setLog).catch(() => null);
   };
   useEffect(load, [slug]);

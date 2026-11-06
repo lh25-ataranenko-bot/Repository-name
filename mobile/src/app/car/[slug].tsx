@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, API_BASE } from "@/lib/api";
 import { Image, ScrollView, View } from "react-native";
 import { Button, Card, Chip, Loading, Pill, Row, ScoreBars, Screen, Silhouette, T, useToast } from "@/components/ui";
-import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
+import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, span, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import type { Car } from "@/lib/types";
@@ -18,7 +18,7 @@ export default function CarScreen() {
   const { compare, toggleCompare, favs, toggleFav } = useStore();
   const { data: c, error } = useApi<Car>(`/api/cars/${encodeURIComponent(slug)}`);
   useEffect(() => { api(`/api/cars/${encodeURIComponent(slug)}/view`, { method: "POST" }).catch(() => null); }, [slug]);
-  const family = useApi<{ generations_list: { generation: string; year_from: number; year_to: number; modifications: Car[] }[] }>(
+  const family = useApi<{ generations_list: { generation: string; year_from: number; year_to: number; in_production?: boolean; modifications: Car[] }[] }>(
     c ? `/api/models/${encodeURIComponent(c.brand)}/${encodeURIComponent(c.model)}` : null).data;
   if (!c) return <Screen><Loading error={error} /></Screen>;
   const st = STATUS[c.status] ?? STATUS.unverified;
@@ -95,7 +95,7 @@ export default function CarScreen() {
           <T v="h3">Інші версії {c.model}</T>
           {family.generations_list.slice().reverse().map((g) => (
             <View key={g.generation} style={{ gap: 4 }}>
-              <T v="label">{g.generation} · {g.year_from}–{g.year_to}</T>
+              <T v="label">{g.generation} · {span(g.year_from, g.year_to, g.in_production)}</T>
               <Row>{g.modifications.map((m) => (
                 <Chip key={m.slug} label={m.name} on={m.slug === c.slug}
                   onPress={() => m.slug !== c.slug && router.push({ pathname: "/car/[slug]", params: { slug: m.slug } })} />

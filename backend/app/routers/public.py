@@ -14,6 +14,7 @@ from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
 from ..services.query_parser import parse_query
 from ..services.scoring import CATEGORIES, PRESETS, explain, passes, weighted
+from ..years import MIN_YEAR, max_year, span, this_year
 
 router = APIRouter(prefix="/api", tags=["public"])
 
@@ -47,7 +48,7 @@ def meta() -> dict[str, Any]:
     return {
         "fuel": FUEL, "body": BODY, "drive": DRIVE, "trans": TRANS, "assists": ASSIST, "status": STATUS,
         "categories": CATEGORIES, "presets": PRESETS,
-        "env": {**env.__dict__}, "current_year": get_settings().current_year,
+        "env": {**env.__dict__}, "current_year": this_year(), "year_min": MIN_YEAR, "year_max": max_year(),
     }
 
 
@@ -91,7 +92,7 @@ def list_cars(
     drive: str | None = None,
     max_price: float | None = Query(None, ge=0),
     model: str | None = Query(None, max_length=80),
-    year: int | None = Query(None, ge=1950, le=2100),
+    year: int | None = Query(None, ge=MIN_YEAR, le=2100),
     sort: Literal["reliability", "price", "hp", "acc", "cost", "tco"] = "reliability",
     limit: int = Query(48, ge=1, le=200),
     offset: int = Query(0, ge=0),
@@ -115,7 +116,7 @@ def as_of_year(car: dict[str, Any], year: int | None, env: Env | None = None) ->
     if not year:
         return car
     if car["year_from"] and not car["year_from"] <= year <= car["year_to"]:
-        raise HTTPException(422, f"{car['brand']} {car['model']} {car['name']} випускалася в {car['year_from']}–{car['year_to']} роках")
+        raise HTTPException(422, f"{car['brand']} {car['model']} {car['name']} випускалася в {span(car['year_from'], car['year_to'], car.get('in_production', False))} роках")
     p = price_for_year(car, year)
     c = {**car, "for_year": year, "price_for_year": p}
     if p is not None:
@@ -152,6 +153,7 @@ def _model_row(brand: str, model: str, cars: list[dict[str, Any]]) -> dict[str, 
         "generations": len({c["generation"] for c in cars}), "modifications": len(cars),
         "year_from": min((c["year_from"] for c in cars if c["year_from"]), default=None),
         "year_to": max((c["year_to"] for c in cars if c["year_to"]), default=None),
+        "in_production": any(c.get("in_production") for c in cars),
         "price_min": min(prices, default=None), "price_max": max(prices, default=None),
         "bodies": sorted({c["body"] for c in cars}), "fuels": sorted({c["fuel"] for c in cars}),
     }
@@ -180,6 +182,7 @@ def model_page(brand: str, model: str, db: Session = Depends(get_db)) -> dict[st
         gens.setdefault(c["generation"], []).append(c)
     generations = sorted(
         ({"generation": g, "year_from": min(c["year_from"] or 9999 for c in cs), "year_to": max(c["year_to"] or 0 for c in cs),
+          "in_production": any(c.get("in_production") for c in cs),
           "modifications": sorted(cs, key=lambda c: (c["price"] is None, c["price"] or 0))} for g, cs in gens.items()),
         key=lambda g: g["year_from"])
     rel = [c for c in cars if c["reliability"] is not None]
@@ -203,7 +206,7 @@ def lookup(db: Session = Depends(get_db), q: str = Query("", max_length=100),
         hay = f"{c['brand']} {c['model']} {c['generation']} {c['name']} {c['engine_code'] or ''}".lower()
         if all(w in hay for w in words):
             out.append({k: c[k] for k in ("slug", "brand", "model", "generation", "name", "year_from", "year_to",
-                                         "year_ref", "price", "body", "fuel")})
+                                         "in_production", "year_ref", "price", "body", "fuel")})
             if len(out) >= limit:
                 break
     return out
@@ -211,14 +214,14 @@ def lookup(db: Session = Depends(get_db), q: str = Query("", max_length=100),
 
 @router.get("/cars/{slug}")
 def get_car(slug: str, db: Session = Depends(get_db),
-            year: int | None = Query(None, ge=1950, le=2100)) -> dict[str, Any]:
+            year: int | None = Query(None, ge=MIN_YEAR, le=2100)) -> dict[str, Any]:
     car = dict(pick(db, [slug])[0])  # copy: the cached dict is shared between requests
     car["years"] = list(range(car["year_from"], car["year_to"] + 1)) if car["year_from"] and car["year_to"] else []
     car["price_by_year"] = {str(y): price_for_year(car, y) for y in car["years"]}
     car["tco_defaults"] = default_inputs(car)
     if year:
         if car["years"] and year not in car["years"]:
-            raise HTTPException(422, f"Ця модифікація випускалася в {car['year_from']}–{car['year_to']} роках")
+            raise HTTPException(422, f"Ця модифікація випускалася в {span(car['year_from'], car['year_to'], car.get('in_production', False))} роках")
         car.update(for_year=year, price_for_year=price_for_year(car, year))
         if car["price_for_year"] is not None:
             car["tco_defaults"] = {**car["tco_defaults"], "price": car["price_for_year"],
@@ -346,9 +349,9 @@ def check(body: CheckIn, db: Session = Depends(get_db)) -> dict[str, Any]:
     car = pick(db, [body.slug])[0]
     warnings = []
     if car["year_from"] and not car["year_from"] <= body.year <= car["year_to"]:
-        warnings.append(f"Модифікація випускалася в {car['year_from']}–{car['year_to']}, а в оголошенні вказано "
+        warnings.append(f"Модифікація випускалася в {span(car['year_from'], car['year_to'], car.get('in_production', False))}, а в оголошенні вказано "
                         f"{body.year} рік. Уточніть покоління і двигун.")
-    mv = listing.market_value(car, body.year, body.km, body.condition, get_settings().current_year)
+    mv = listing.market_value(car, body.year, body.km, body.condition, this_year())
     return {
         "car": {"slug": car["slug"], "name": f"{car['brand']} {car['model']} {car['generation']} {car['name']}",
                 "price": car["price"], "year_ref": car["year_ref"]},
@@ -392,13 +395,13 @@ def ask_assistant(body: AssistantIn, request: Request, db: Session = Depends(get
 @router.post("/customs")
 def customs_calc(body: CustomsIn) -> dict[str, Any]:
     """Approximate customs clearance of an imported car; every rate can be overridden."""
-    if body.production_year > get_settings().current_year:
+    if body.production_year > this_year():
         raise HTTPException(422, "Рік випуску не може бути в майбутньому")
     try:
         return customs.calculate(
             price=body.price, currency=body.currency, delivery=body.delivery, production_year=body.production_year,
             fuel=body.fuel, cc=body.cc, battery_kwh=body.battery_kwh, eu_origin=body.eu_origin,
-            eur_uah=body.eur_uah, usd_uah=body.usd_uah, current_year=get_settings().current_year,
+            eur_uah=body.eur_uah, usd_uah=body.usd_uah, current_year=this_year(),
             rates=customs.CustomsRates(**body.rates.model_dump()), include_pension=body.include_pension)
     except ValueError as e:
         raise HTTPException(422, str(e)) from None

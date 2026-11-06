@@ -4,10 +4,10 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { CarPicker } from "@/components/CarPicker";
 import { api } from "@/lib/api";
-import { nf, usd } from "@/lib/format";
+import { MIN_YEAR, nf, thisYear, usd } from "@/lib/format";
 import type { Car, CheckResponse } from "@/lib/types";
 
-const CURRENT_YEAR = 2026;
+const CURRENT_YEAR = thisYear();
 
 function Check() {
   const p = useSearchParams();
@@ -61,7 +61,7 @@ function Check() {
         <form className="panel stack" onSubmit={(e) => e.preventDefault()}>
           <div className="field"><label htmlFor="c-id">Модифікація</label><CarPicker id="c-id" value={form.slug} onChange={(s) => pick(s)} /></div>
           <div className="fields">
-            <div className="field"><label htmlFor="c-year">Рік випуску</label><input id="c-year" type="number" min={1980} max={CURRENT_YEAR} value={form.year} onChange={num("year")} /></div>
+            <div className="field"><label htmlFor="c-year">Рік випуску</label><input id="c-year" type="number" min={MIN_YEAR} max={CURRENT_YEAR + 1} value={form.year} onChange={num("year")} /></div>
             <div className="field"><label htmlFor="c-km">Пробіг, км</label><input id="c-km" type="number" min={0} step={1000} value={form.km} onChange={num("km")} /></div>
             <div className="field"><label htmlFor="c-price">Ціна в оголошенні, $</label><input id="c-price" type="number" min={0} step={100} value={form.price} onChange={num("price")} /></div>
             <div className="field"><label htmlFor="c-cond">Заявлений стан</label>

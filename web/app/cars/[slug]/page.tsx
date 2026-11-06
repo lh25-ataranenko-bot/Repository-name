@@ -5,7 +5,7 @@ import { ScoreBars } from "@/components/ScoreBars";
 import { Gallery } from "@/components/Gallery";
 import { api, ApiError } from "@/lib/api";
 import { SITE_URL } from "@/lib/site";
-import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, usd, years } from "@/lib/format";
+import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, thisYear, usd, years } from "@/lib/format";
 import type { Car } from "@/lib/types";
 import { CarActions } from "./actions";
 import { YearPicker } from "./year";
@@ -79,7 +79,7 @@ export default async function CarPage({ params, searchParams }: {
       {(() => {
         const y = year ?? c.year_ref;
         const p = y ? c.price_by_year?.[String(y)] : null;
-        return p && c.depreciation != null && y ? <Residual price={p} dep={c.depreciation} buyYear={2026} carYear={y} /> : null;
+        return p && c.depreciation != null && y ? <Residual price={p} dep={c.depreciation} buyYear={thisYear()} carYear={y} /> : null;
       })()}
       <div className="panel spec-grid">
         <Section title="Двигун і трансмісія" rows={[["Код двигуна", c.engine_code ?? ND], ["Об’єм", c.displacement != null ? `${nf(c.displacement)} см³` : isEV(c) ? "— (електро)" : ND], ["Потужність", v(c.hp, "к.с.")], ["Крутний момент", v(c.torque, "Н·м")], ["КПП", c.transmission ?? ND], ["Привід", DRIVE[c.drive]]]} />

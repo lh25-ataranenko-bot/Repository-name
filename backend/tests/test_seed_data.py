@@ -4,6 +4,7 @@ import json
 
 from app.schemas import CarCreate, IssueIn
 from app.seed.seed import DATA
+from app.years import MIN_YEAR, max_year
 
 CARS = json.loads(DATA.read_text(encoding="utf-8"))
 
@@ -23,7 +24,8 @@ def test_unique_slugs_and_names():
 
 def test_consistent_values():
     for c in CARS:
-        assert c["year_from"] <= c["year_ref"] <= c["year_to"], c["slug"]
+        # year_to empty = still in production
+        assert MIN_YEAR <= c["year_from"] <= c["year_ref"] <= (c["year_to"] or max_year()), c["slug"]
         assert (c["ncap"] is None) == (c["ncap_year"] is None), c["slug"]
         if c["fuel"] == "electric":
             assert c["battery"] and c["tank"] is None and c["trans_type"] == "reducer", c["slug"]

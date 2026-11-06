@@ -4,12 +4,12 @@ import { Pressable, View } from "react-native";
 import { CarPicker } from "@/components/CarPicker";
 import { Card, Chip, Field, Loading, Notice, Pill, Row, Screen, T } from "@/components/ui";
 import { api } from "@/lib/api";
-import { nf, usd } from "@/lib/format";
+import { nf, thisYear, usd } from "@/lib/format";
 import { useTheme } from "@/lib/theme";
 import type { Car, CheckResponse } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
 
-const CURRENT_YEAR = 2026;
+const CURRENT_YEAR = thisYear();
 
 export default function Check() {
   const t = useTheme();

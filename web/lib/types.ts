@@ -12,6 +12,8 @@ export interface Car {
   name: string;
   year_from: number | null;
   year_to: number | null;
+  /** No end year in the catalogue: year_to is then the current year. */
+  in_production?: boolean;
   year_ref: number | null;
   body: string;
   fuel: Fuel;

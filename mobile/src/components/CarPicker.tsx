@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Pressable, View } from "react-native";
 import { useTheme } from "@/lib/theme";
+import { years } from "@/lib/format";
 import type { Car } from "@/lib/types";
 import { useApi } from "@/lib/useApi";
 import { Field, Loading, T } from "./ui";
@@ -38,7 +39,7 @@ export function CarPicker({ value, onChange, label = "Модифікація" }:
             <Pressable key={c.slug} accessibilityRole="button" onPress={() => { onChange(c); setOpen(false); setQ(""); }}
               style={{ paddingVertical: 8, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: t.line }}>
               <T v="small" style={{ fontWeight: c.slug === value ? "800" : "500" }}>{c.brand} {c.model} {c.name}</T>
-              <T v="muted">{c.generation} · {c.year_from}–{c.year_to}</T>
+              <T v="muted">{c.generation} · {years(c)}</T>
             </Pressable>
           ))}
           {matches?.length === 0 && <T v="muted">Нічого не знайдено</T>}

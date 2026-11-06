@@ -14,6 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..models import Brand, CarModel, ChangeLog, Generation, Modification
+from ..years import max_year, this_year, year_problem
 from .catalog import BODY, DRIVE, FUEL, TRANS
 
 REQUIRED = ["brand", "model", "generation", "modification", "fuel"]
@@ -117,15 +118,23 @@ def validate_rows(fieldnames: list[str], records: list[dict[str, str]], db: Sess
         elif key4 in seen:
             errs.append("дублікат усередині файлу")
         seen.add(key4)
-        years = [int(y) for y in re.findall(r"\d{4}", o.get("years", ""))]
+        # "2018–2021", "2021" or, for a car still in production, "2021–досі" / "2021–"
+        years_txt = o.get("years", "")
+        years = [int(y) for y in re.findall(r"\d{4}", years_txt)]
+        ongoing = len(years) == 1 and bool(re.search(r"[–-]\s*(досі|н\.?\s*в\.?|now|present)?\s*$", years_txt, re.I))
+        for y in years:
+            if (p := year_problem(y)) is not None:
+                errs.append(f"роки випуску: {p}")
+        if len(years) > 1 and years[0] > years[-1]:
+            errs.append("роки випуску: рік початку пізніший за рік завершення")
         rows.append({
             "line": i, "errors": errs, "warnings": warns,
             "label": f"{o.get('brand', '')} {o.get('model', '')} {o.get('modification', '')}".strip(),
             "data": {
                 "brand": o.get("brand"), "model": o.get("model"), "generation": o.get("generation"),
                 "name": o.get("modification"), "fuel": o.get("fuel"),
-                "year_from": years[0] if years else None, "year_to": years[-1] if years else None,
-                "year_ref": years[-1] if years else None,
+                "year_from": years[0] if years else None, "year_to": None if ongoing or not years else years[-1],
+                "year_ref": (max(years[0], min(this_year(), max_year())) if ongoing else years[-1]) if years else None,
                 "body": o.get("body") if o.get("body") in BODY else "sedan",
                 "trans_type": o.get("transmission") if o.get("transmission") in TRANS else "auto",
                 "transmission": TRANS.get(o.get("transmission", ""), o.get("transmission") or None),

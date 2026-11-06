@@ -11,6 +11,7 @@ from ..db import get_db
 from ..models import Brand, CarModel, ChangeLog, Generation, Issue, Modification, User
 from ..schemas import CarCreate, CarPatch, ImportIn, IssueIn, RoleIn
 from ..security import require_admin, require_editor
+from ..years import max_year
 from ..services import importer, notify
 from ..services.cache import catalog_cache
 from ..services.catalog import load_cars
@@ -40,6 +41,9 @@ def check_values(m: Modification) -> None:
     """Cross-field checks the schema ranges cannot express."""
     if m.year_from and m.year_to and m.year_from > m.year_to:
         raise HTTPException(422, "Рік початку випуску не може бути пізнішим за рік завершення")
+    # year_to empty = still in production, so the price year may be any year from the start up to next year
+    if m.year_ref and m.year_from and not m.year_from <= m.year_ref <= (m.year_to or max_year()):
+        raise HTTPException(422, "Рік, до якого належить ціна, має бути в межах років випуску")
     if m.fuel != "electric":
         for field in ("cons_pass", "cons_real"):
             v = getattr(m, field)

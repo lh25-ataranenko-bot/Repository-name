@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, EmailStr, Field
 
 from .services.calc import Env, Overrides
+from .years import Year
 
 
 class EnvIn(BaseModel):
@@ -38,7 +39,7 @@ class CompareIn(BaseModel):
     slugs: list[str] = Field(min_length=2, max_length=5)
     env: EnvIn = EnvIn()
     # Production year per car: price, resale and insurance are then counted from a car of that year.
-    years: dict[str, int] = Field({}, max_length=5)
+    years: dict[str, Year] = Field({}, max_length=5)
 
 
 class CreditIn(BaseModel):
@@ -53,12 +54,12 @@ class TcoIn(BaseModel):
     env: EnvIn = EnvIn()
     overrides: dict[str, OverridesIn] = {}
     # Production year per car: price, resale and insurance are then counted from a car of that year.
-    years: dict[str, int] = Field({}, max_length=5)
+    years: dict[str, Year] = Field({}, max_length=5)
 
 
 class Filters(BaseModel):
     max_price: float | None = Field(None, ge=0)
-    year: int | None = Field(None, ge=1950, le=2100)
+    year: Year | None = None
     brand: str | None = Field(None, max_length=80)
     model: str | None = Field(None, max_length=80)
     body: str | None = None
@@ -81,7 +82,7 @@ class ParseIn(BaseModel):
 
 class CheckIn(BaseModel):
     slug: str
-    year: int = Field(ge=1980, le=2100)
+    year: Year
     km: int = Field(ge=0, le=2_000_000)
     price: float = Field(ge=0)
     condition: Literal["excellent", "good", "needs"] = "good"
@@ -175,9 +176,9 @@ DriveT = Literal["FWD", "RWD", "AWD"]
 class CarFields(BaseModel):
     """Every editable characteristic. Ranges catch unit mistakes (mpg instead of l/100 km, etc.)."""
     name: str | None = Field(None, min_length=1, max_length=120)
-    year_from: int | None = Field(None, ge=1950, le=2100)
-    year_to: int | None = Field(None, ge=1950, le=2100)
-    year_ref: int | None = Field(None, ge=1950, le=2100)
+    year_from: Year | None = None
+    year_to: Year | None = None
+    year_ref: Year | None = None
     body: Body | None = None
     fuel: FuelT | None = None
     engine_code: str | None = Field(None, max_length=80)
@@ -265,7 +266,7 @@ class CustomsIn(BaseModel):
     price: float = Field(gt=0, le=5_000_000)
     currency: Literal["USD", "EUR"] = "USD"
     delivery: float = Field(0, ge=0, le=100_000)
-    production_year: int = Field(ge=1950, le=2100)
+    production_year: Year
     fuel: Literal["petrol", "diesel", "hybrid", "electric"]
     cc: int | None = Field(None, ge=500, le=9000)
     battery_kwh: float | None = Field(None, ge=1, le=250)
@@ -280,7 +281,7 @@ class ReviewIn(BaseModel):
     rating: int = Field(ge=1, le=5)
     pros: str = Field("", max_length=2000)
     cons: str = Field("", max_length=2000)
-    car_year: int | None = Field(None, ge=1950, le=2100)
+    car_year: Year | None = None
     owned_years: float | None = Field(None, ge=0, le=60)
     mileage_km: int | None = Field(None, ge=0, le=2_000_000)
 
@@ -293,6 +294,6 @@ class ReviewModerationIn(BaseModel):
 class ScenariosIn(BaseModel):
     slug: str
     env: EnvIn = EnvIn()
-    year: int | None = Field(None, ge=1950, le=2100)
+    year: Year | None = None
     overrides: OverridesIn = OverridesIn()
     credit: CreditIn | None = None

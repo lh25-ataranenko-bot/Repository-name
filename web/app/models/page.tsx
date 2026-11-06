@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { BODY, usd } from "@/lib/format";
+import { BODY, span, usd } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Моделі", description: "Усі моделі каталогу AutoWise за марками: покоління, роки випуску, ціни." };
 export const dynamic = "force-dynamic";
 
 export interface ModelRow {
   brand: string; model: string; generations: number; modifications: number;
-  year_from: number | null; year_to: number | null; price_min: number | null; price_max: number | null;
+  year_from: number | null; year_to: number | null; in_production?: boolean; price_min: number | null; price_max: number | null;
   bodies: string[]; fuels: string[];
 }
 export const modelHref = (brand: string, model: string) => `/models/${encodeURIComponent(brand)}/${encodeURIComponent(model)}`;
@@ -31,7 +31,7 @@ export default async function Models() {
               {rows.filter((r) => r.brand === b).map((r) => (
                 <Link key={r.model} className="model-tile" href={modelHref(r.brand, r.model)}>
                   <b>{r.model}</b>
-                  <span className="small muted">{r.year_from}–{r.year_to} · поколінь: {r.generations} · модифікацій: {r.modifications}</span>
+                  <span className="small muted">{span(r.year_from, r.year_to, r.in_production)} · поколінь: {r.generations} · модифікацій: {r.modifications}</span>
                   <span className="small">{r.bodies.map((x) => BODY[x] ?? x).join(", ")}</span>
                   <span className="num small">{r.price_min === r.price_max ? usd(r.price_min) : `${usd(r.price_min)} – ${usd(r.price_max)}`}</span>
                 </Link>

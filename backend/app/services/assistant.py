@@ -17,6 +17,7 @@ import anthropic
 from ..config import get_settings
 from .calc import Car, Env, price_for_year
 from .query_parser import parse_query
+from ..years import span
 from .scoring import CATEGORIES, PRESETS, passes, weighted
 
 log = logging.getLogger("autowise.assistant")
@@ -91,7 +92,7 @@ TOOLS: list[dict[str, Any]] = [
 def _brief(c: Car) -> dict[str, Any]:
     return {
         "slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['generation']} {c['name']}",
-        "years": f"{c['year_from']}–{c['year_to']}" if c["year_from"] else None,
+        "years": span(c["year_from"], c["year_to"], c.get("in_production", False)),
         "body": c["body"], "fuel": c["fuel"], "transmission": c["transmission"], "drive": c["drive"],
         "hp": c["hp"], "acc_0_100_s": c["acc"],
         "consumption_real": c["cons_real"], "consumption_passport": c["cons_pass"],
