@@ -203,3 +203,22 @@ def test_garage_service_reminder(client):
     g = client.patch(f"/api/me/garage/{g['id']}", headers=h, json={"service_interval_km": 10000, "service_interval_months": 6}).json()
     assert g["service"]["status"] == "overdue" and g["service"]["km_left"] < 0
     assert client.patch(f"/api/me/garage/{g['id']}", headers=h, json={"service_interval_km": 10}).status_code == 422
+
+
+def test_similar_cars_same_class_and_price(client):
+    r = client.get("/api/cars/toyota-camry-xv70/similar").json()
+    assert 1 <= len(r["items"]) <= 6
+    lo, hi = r["price_band"]
+    models = set()
+    for c in r["items"]:
+        assert c["body"] in ("sedan", "liftback") and lo <= c["price"] <= hi
+        assert c["model"] != "Camry" and (c["brand"], c["model"]) not in models
+        models.add((c["brand"], c["model"]))
+        assert c["diff"]["price"] == c["price"] - 24000
+    assert client.get("/api/cars/nope/similar").status_code == 404
+
+
+def test_in_production_filter(client):
+    all_ = client.get("/api/cars?limit=200").json()
+    now = client.get("/api/cars?limit=200&in_production=true").json()
+    assert 0 < now["count"] < all_["count"] and all(c["in_production"] for c in now["items"])

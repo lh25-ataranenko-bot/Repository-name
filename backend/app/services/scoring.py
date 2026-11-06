@@ -107,6 +107,8 @@ def passes(car: Car, f: dict[str, Any]) -> list[str]:
         reasons.append("механічна КПП")
     if f.get("drive") not in (None, "", "any") and car["drive"] != f["drive"]:
         reasons.append("інший привід")
+    if f.get("in_production") and not car.get("in_production"):
+        reasons.append("уже не випускається")
     if f.get("brand") and car["brand"] != f["brand"]:
         reasons.append("інша марка")
     if f.get("model") and car["model"] != f["model"]:

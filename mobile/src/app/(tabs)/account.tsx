@@ -223,13 +223,13 @@ function NotificationsBlock() {
         <T v="h3">Сповіщення{data.unread ? ` · ${data.unread} нових` : ""}</T>
         {data.unread > 0 && <Button small kind="ghost" title="Прочитано" onPress={async () => { await api("/api/me/notifications/read", { method: "POST" }); reload(); }} />}
       </Row>
-      {data.items.length === 0 && <T v="muted">Тут з’являться зміни цін і нові відгуки про авто з вашого обраного.</T>}
+      {data.items.length === 0 && <T v="muted">Тут з’являться зміни цін і нові відгуки про обрані авто, а також нагадування про ТО.</T>}
       {data.items.slice(0, 10).map((n) => (
-        <Pressable key={n.id} onPress={() => n.slug && router.push({ pathname: "/car/[slug]", params: { slug: n.slug } })}>
-          <T v="small" style={{ fontWeight: n.read ? "400" : "700" }}>{n.kind === "price" ? "Ціна · " : "Відгук · "}{n.text}</T>
+        <Pressable key={n.id} onPress={() => n.kind !== "service" && n.slug && router.push({ pathname: "/car/[slug]", params: { slug: n.slug } })}>
+          <T v="small" style={{ fontWeight: n.read ? "400" : "700" }}>{n.kind === "price" ? "Ціна · " : n.kind === "service" ? "" : "Відгук · "}{n.text}</T>
         </Pressable>
       ))}
-      <Chip label={user.email_notifications ? "Листи про обране: увімкнено" : "Листи про обране: вимкнено"} on={user.email_notifications}
+      <Chip label={user.email_notifications ? "Листи (обране й ТО): увімкнено" : "Листи (обране й ТО): вимкнено"} on={user.email_notifications}
         onPress={async () => { const u = await api<User>("/api/me", { method: "PATCH", json: { email_notifications: !user.email_notifications } }); updateUser(u); toast("Збережено"); }} />
     </Card>
   );

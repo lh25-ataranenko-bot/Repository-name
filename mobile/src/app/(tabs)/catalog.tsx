@@ -19,6 +19,7 @@ export default function Catalog() {
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState<number | null>(null);
+  const [current, setCurrent] = useState(false);
   const facets = useApi<Facets>("/api/catalog/facets").data;
   const years = facets?.year_min && facets.year_max
     ? Array.from({ length: facets.year_max - facets.year_min + 1 }, (_, i) => facets.year_max! - i) : [];
@@ -29,6 +30,7 @@ export default function Catalog() {
   if (brand) params.set("brand", brand);
   if (model) params.set("model", model);
   if (year) params.set("year", String(year));
+  if (current) params.set("in_production", "true");
   params.set("limit", "30");
   const { data, error, loading, reload } = useApi<{ total: number; count: number; items: Car[] }>(`/api/cars?${params}`);
   // Further pages are appended as the list scrolls.
@@ -67,6 +69,7 @@ export default function Catalog() {
       ListHeaderComponent={
         <View style={{ gap: 10 }}>
           <Field label="Пошук" placeholder="Модель, покоління, код двигуна" value={q} onChangeText={setQ} autoCorrect={false} />
+          <Chip label="Лише ті, що випускаються зараз" on={current} onPress={() => setCurrent(!current)} />
           <T v="label">Марка</T>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
             <Chip label="Усі марки" on={!brand} onPress={() => { setBrand(""); setModel(""); }} />

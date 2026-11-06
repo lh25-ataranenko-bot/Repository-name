@@ -36,7 +36,7 @@ services:
   api:
     build: ./backend
     restart: unless-stopped
-    environment:
+    environment: &api-env
       AUTOWISE_ENV: production
       AUTOWISE_DATABASE_URL: postgresql+psycopg://autowise:${POSTGRES_PASSWORD}@db:5432/autowise
       AUTOWISE_REDIS_URL: redis://redis:6379/0
@@ -59,6 +59,16 @@ services:
     depends_on:
       db: {condition: service_healthy}
       redis: {condition: service_started}
+
+  # Daily jobs: service reminders for garage cars (cabinet notices and letters). Same image and settings as the API.
+  jobs:
+    build: ./backend
+    restart: unless-stopped
+    environment: *api-env
+    healthcheck: {disable: true}  # no web server in this container
+    command: ["sh", "-c", "while true; do python -m app.jobs.service_reminders || echo 'service reminders failed'; sleep 86400; done"]
+    depends_on:
+      api: {condition: service_started}
 
   web:
     build:

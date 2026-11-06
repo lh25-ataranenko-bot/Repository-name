@@ -93,13 +93,14 @@ def list_cars(
     max_price: float | None = Query(None, ge=0),
     model: str | None = Query(None, max_length=80),
     year: int | None = Query(None, ge=MIN_YEAR, le=2100),
+    in_production: bool = False,
     sort: Literal["reliability", "price", "hp", "acc", "cost", "tco"] = "reliability",
     limit: int = Query(48, ge=1, le=200),
     offset: int = Query(0, ge=0),
 ) -> dict[str, Any]:
     cars = scored(db)
     f = {"q": q, "brand": brand, "model": model, "year": year, "body": body, "fuel": fuel, "trans": trans,
-         "drive": drive, "max_price": max_price}
+         "drive": drive, "max_price": max_price, "in_production": in_production}
     found = [c for c in cars if not passes(c, f)]
     if year:
         found = [with_year(c, year) for c in found]
@@ -227,6 +228,48 @@ def get_car(slug: str, db: Session = Depends(get_db),
             car["tco_defaults"] = {**car["tco_defaults"], "price": car["price_for_year"],
                                    "ins": round(car["price_for_year"] * 0.03)}
     return car
+
+
+# Body types a buyer weighs against each other: a sedan and a liftback compete, a van and a sedan do not.
+BODY_GROUP = {"sedan": "car", "liftback": "car", "hatch": "hatch", "wagon": "wagon", "crossover": "crossover",
+              "minivan": "minivan", "van": "van", "pickup": "pickup"}
+SIMILAR_FIELDS = ("slug", "brand", "model", "generation", "name", "year_from", "year_to", "in_production", "year_ref",
+                  "body", "fuel", "trans_type", "transmission", "drive", "hp", "acc", "cons_pass", "cons_real", "reliability",
+                  "price", "tco_5y", "scores", "photo")
+
+
+@router.get("/cars/{slug}/similar")
+def similar(slug: str, db: Session = Depends(get_db), limit: int = Query(6, ge=1, le=12)) -> dict[str, Any]:
+    """Alternatives of the same class and price (±30 %) from other models, closest price first,
+    each with what it does better or worse than this car."""
+    car = pick(db, [slug])[0]
+    if car["price"] is None:
+        return {"items": [], "price_band": None}
+    lo, hi = car["price"] * 0.7, car["price"] * 1.3
+    group = BODY_GROUP.get(car["body"])
+    found = [c for c in scored(db)
+             if c["slug"] != slug and (c["brand"], c["model"]) != (car["brand"], car["model"])
+             and BODY_GROUP.get(c["body"]) == group and c["price"] is not None and lo <= c["price"] <= hi]
+    found.sort(key=lambda c: (abs(c["price"] - car["price"]), c["slug"]))
+    # one modification per model, so the list shows different choices
+    seen: set[tuple[str, str]] = set()
+    picked = []
+    for c in found:
+        if (c["brand"], c["model"]) in seen:
+            continue
+        seen.add((c["brand"], c["model"]))
+        picked.append(c)
+        if len(picked) >= limit:
+            break
+
+    def delta(a: float | None, b: float | None) -> float | None:
+        return None if a is None or b is None else a - b
+
+    items = [{**{k: c.get(k) for k in SIMILAR_FIELDS},
+              "diff": {"price": delta(c["price"], car["price"]), "tco_5y": delta(c.get("tco_5y"), car.get("tco_5y")),
+                       "reliability": delta(c["reliability"], car["reliability"]), "hp": delta(c["hp"], car["hp"])}}
+             for c in picked]
+    return {"items": items, "price_band": [lo, hi]}
 
 
 @router.post("/compare")

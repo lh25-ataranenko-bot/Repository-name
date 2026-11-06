@@ -116,6 +116,8 @@ button.chip{cursor:pointer}
 .pill.good{background:var(--good-soft);color:var(--good)}
 .pill.warn{background:var(--warn-soft);color:var(--warn)}
 .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.good-text{color:var(--good);font-weight:600}
+.bad-text{color:var(--bad);font-weight:600}
 .pill.info{background:var(--accent-soft);color:var(--accent)}
 .pill.plain{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .nd{color:var(--muted);font-style:italic;font-size:13px}

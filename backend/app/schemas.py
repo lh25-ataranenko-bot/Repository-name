@@ -66,6 +66,7 @@ class Filters(BaseModel):
     fuel: str | None = None
     trans: Literal["any", "automatic", "manual"] | None = None
     drive: str | None = None
+    in_production: bool = False
 
 
 class RatingIn(BaseModel):

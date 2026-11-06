@@ -9,7 +9,7 @@ import { ModelYearFields } from "@/components/ModelYearFields";
 import type { Car } from "@/lib/types";
 
 const PAGE = 48;
-const INIT = { q: "", brand: "", model: "", year: "", body: "any", fuel: "any", trans: "any", drive: "any", max_price: "", sort: "reliability" };
+const INIT = { q: "", brand: "", model: "", year: "", body: "any", fuel: "any", trans: "any", drive: "any", max_price: "", in_production: "", sort: "reliability" };
 
 export default function Catalog() {
   const [f, setF] = useState(INIT);
@@ -17,8 +17,6 @@ export default function Catalog() {
   const [more, setMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-  }, []);
   useEffect(() => {
     const p = new URLSearchParams();
     Object.entries(f).forEach(([k, v]) => v && v !== "any" && p.set(k, v));
@@ -68,6 +66,7 @@ export default function Catalog() {
           {sel("f-trans", "Коробка", "trans", [["any", "Будь-яка"], ["automatic", "Автоматична"], ["manual", "Механіка"]])}
           {sel("f-drive", "Привід", "drive", [["any", "Будь-який"], ...Object.entries(DRIVE)])}
           <div className="field"><label htmlFor="f-max">Максимальна ціна, $</label><input id="f-max" type="number" min={0} step={500} placeholder="Без обмеження" value={f.max_price} onChange={set("max_price")} /></div>
+          <label className="check"><input type="checkbox" checked={f.in_production === "true"} onChange={(e) => setF({ ...f, in_production: e.target.checked ? "true" : "" })} /> Лише ті, що випускаються зараз</label>
           <button className="btn-ghost" onClick={() => setF(INIT)}>Скинути фільтри</button>
         </aside>
         <section className="stack" style={{ minWidth: 0 }}>

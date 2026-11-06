@@ -1,7 +1,7 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { api, API_BASE } from "@/lib/api";
-import { Image, ScrollView, View } from "react-native";
+import { Image, Pressable, ScrollView, View } from "react-native";
 import { Button, Card, Chip, Loading, Pill, Row, ScoreBars, Screen, Silhouette, T, useToast } from "@/components/ui";
 import { ASSIST, BODY, DRIVE, FUEL, STATUS, consUnit, isEV, nameOf, nf, span, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -20,6 +20,7 @@ export default function CarScreen() {
   useEffect(() => { api(`/api/cars/${encodeURIComponent(slug)}/view`, { method: "POST" }).catch(() => null); }, [slug]);
   const family = useApi<{ generations_list: { generation: string; year_from: number; year_to: number; in_production?: boolean; modifications: Car[] }[] }>(
     c ? `/api/models/${encodeURIComponent(c.brand)}/${encodeURIComponent(c.model)}` : null).data;
+  const similar = useApi<{ items: (Car & { diff: { price: number | null; tco_5y: number | null } })[] }>(`/api/cars/${encodeURIComponent(slug)}/similar`).data;
   if (!c) return <Screen><Loading error={error} /></Screen>;
   const st = STATUS[c.status] ?? STATUS.unverified;
   const v = (x: number | null, u = "", d = 0) => (x != null ? `${nf(x, d)}${u ? " " + u : ""}` : "Немає даних");
@@ -101,6 +102,19 @@ export default function CarScreen() {
                   onPress={() => m.slug !== c.slug && router.push({ pathname: "/car/[slug]", params: { slug: m.slug } })} />
               ))}</Row>
             </View>
+          ))}
+        </Card>
+      )}
+      {similar && similar.items.length > 0 && (
+        <Card>
+          <T v="h3">Схожі за класом і ціною</T>
+          <T v="muted">Інші моделі того ж типу кузова з ціною в межах ±30 %.</T>
+          {similar.items.map((s) => (
+            <Pressable key={s.slug} accessibilityRole="link" onPress={() => router.push({ pathname: "/car/[slug]", params: { slug: s.slug } })}
+              style={{ paddingVertical: 6, borderTopWidth: 1, borderTopColor: t.line }}>
+              <T style={{ fontWeight: "700" }}>{s.brand} {s.model} {s.name}</T>
+              <T v="small">{usd(s.price)} · володіння 5 р.: {usd(s.tco_5y)}{s.diff.tco_5y != null ? ` (${s.diff.tco_5y < 0 ? "дешевше" : "дорожче"} на ${usd(Math.abs(s.diff.tco_5y))})` : ""} · надійність {s.reliability ?? "—"}</T>
+            </Pressable>
           ))}
         </Card>
       )}

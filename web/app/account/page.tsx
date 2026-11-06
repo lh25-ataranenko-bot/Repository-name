@@ -151,7 +151,7 @@ function Garage() {
   const remove = async (gid: number) => { await api(`/api/me/garage/${gid}`, { method: "DELETE" }); toast("Авто видалено з гаража"); load(); };
 
   return (
-    <section className="stack">
+    <section className="stack" id="garage" style={{ scrollMarginTop: 80 }}>
       <h2>Мій гараж</h2>
       <form className="panel" onSubmit={add}><div className="fields" style={{ alignItems: "end" }}>
         <div className="field" style={{ gridColumn: "span 2" }}><label htmlFor="g-car">Модифікація</label><CarPicker id="g-car" value={slug} onChange={setSlug} /></div>

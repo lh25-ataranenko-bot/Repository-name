@@ -12,6 +12,7 @@ import { YearPicker } from "./year";
 import { Residual } from "@/components/Residual";
 import { ViewPing } from "@/components/ViewPing";
 import { Reviews } from "@/components/Reviews";
+import { Similar } from "@/components/Similar";
 
 async function getCar(slug: string): Promise<Car> {
   try {
@@ -90,6 +91,7 @@ export default async function CarPage({ params, searchParams }: {
       {c.assists.length > 0 && (
         <div><h3 style={{ marginBottom: 8 }}>Асистенти водія</h3><div className="chips">{c.assists.map((a) => <span className="chip" key={a}>{ASSIST[a] ?? a}</span>)}</div></div>
       )}
+      <Similar slug={c.slug} />
       <Reviews slug={c.slug} years={c.years ?? []} />
       <div className="stack">
         <h3>Типові несправності цієї модифікації</h3>

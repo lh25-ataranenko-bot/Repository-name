@@ -99,5 +99,6 @@ npx eas-cli@latest build --platform android --profile preview
 | `db` | PostgreSQL | ні |
 | `redis` | Спільний кеш, ліміти запитів і блокування входу для всіх процесів `api` | ні |
 | `backup` | Щоденний дамп бази в `./backups` | ні |
+| `jobs` | Раз на добу: нагадування про ТО для авто в гаражі (сповіщення в кабінеті й листи, якщо налаштовано SMTP). Запустити вручну: `docker compose -f docker-compose.prod.yml exec jobs python -m app.jobs.service_reminders` | ні |
 
 У режимі production документація API (`/docs`) вимкнена.

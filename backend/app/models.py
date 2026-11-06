@@ -161,10 +161,13 @@ class GarageCar(Base):
     service_interval_km: Mapped[int] = mapped_column(Integer, default=15000, server_default="15000")
     service_interval_months: Mapped[int] = mapped_column(Integer, default=12, server_default="12")
     created_at: Mapped[date] = mapped_column(Date, server_default=func.current_date())
+    # Which reminder was already sent: "<last service entry id or 0>:<soon|overdue>". A new service entry resets it.
+    service_reminder_key: Mapped[str | None] = mapped_column(String(40))
     entries: Mapped[list["GarageEntry"]] = relationship(
         back_populates="car", cascade="all, delete-orphan", order_by="GarageEntry.date"
     )
     modification: Mapped[Modification | None] = relationship()
+    user: Mapped["User"] = relationship()
 
 
 class GarageEntry(Base):
@@ -224,12 +227,12 @@ class CarViewDay(Base):
 
 
 class Notification(Base):
-    """In-cabinet notice about a favourite: price change or a new published review."""
+    """In-cabinet notice: price change or new review of a favourite, or a service reminder for a garage car."""
     __tablename__ = "notifications"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     modification_id: Mapped[int | None] = mapped_column(ForeignKey("modifications.id", ondelete="CASCADE"))
-    kind: Mapped[str] = mapped_column(String(20))  # price | review
+    kind: Mapped[str] = mapped_column(String(20))  # price | review | service
     text: Mapped[str] = mapped_column(String(400))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
