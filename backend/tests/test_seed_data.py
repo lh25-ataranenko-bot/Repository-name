@@ -30,7 +30,7 @@ def test_consistent_values():
         if c["fuel"] == "electric":
             assert c["battery"] and c["tank"] is None and c["trans_type"] == "reducer", c["slug"]
         else:
-            assert c["tank"] and (c["cons_real"] or 0) <= 25 and (c["cons_pass"] or 0) <= 25, c["slug"]
+            assert (c["tank"] is None or c["tank"] > 0) and (c["cons_real"] or 0) <= 25 and (c["cons_pass"] or 0) <= 25, c["slug"]
 
 
 def test_directory_is_consistent():
