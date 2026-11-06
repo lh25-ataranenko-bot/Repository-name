@@ -9,7 +9,7 @@ const PAGES = {
   "/models": [".model-tile"],
   "/models/Toyota/Camry": [".tl-bar", ".car"],
   "/models/Fiat": [".model-tile"],
-  "/models/Fiat/Panda": [".notice"],
+  "/models/Fiat/Panda": [".car"],
   "/cars/toyota-camry-xv70": ["#car-year", ".year-bars", ".spec-grid", "svg[aria-label^='Вартість через 3 роки']", "h3:text('Відгуки власників')"],
   "/compare": ["table.cmp", "select[aria-label^='Рік випуску']"],
   "/tco": ["#e-km", "#e-petrol", "#e-rate", "select[aria-label^='Рік випуску']", "#sc-car"],

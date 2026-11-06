@@ -8,7 +8,9 @@ def test_catalog_list_and_filters(client):
 def test_tree(client):
     tree = client.get("/api/catalog/tree").json()
     bmw = next(b for b in tree if b["brand"] == "BMW")
-    assert len(bmw["models"][0]["generations"][0]["modifications"]) == 2
+    series3 = next(m for m in bmw["models"] if m["model"] == "3 Series")
+    f30 = next(g for g in series3["generations"] if g["generation"] == "F30")
+    assert len(f30["modifications"]) == 2
 
 
 def test_car_detail_and_404(client):
@@ -235,8 +237,16 @@ def test_directory_of_brands_and_models(client):
     with_specs = client.get("/api/models?with_specs=true").json()
     assert 0 < len(with_specs) < len(all_models) and all(m["modifications"] for m in with_specs)
     # a model known only from the directory has a page without generations
-    page = client.get("/api/models/Fiat/Panda").json()
-    assert page["modifications"] == 0 and page["generations_list"] == [] and page["year_from"] == 1980
+    from app.db import SessionLocal
+    from app.models import Brand, CarModel
+    from app.services.cache import catalog_cache
+    with SessionLocal() as db:
+        fiat = db.query(Brand).filter_by(name="Fiat").one()
+        db.add(CarModel(brand_id=fiat.id, name="Тестова модель", year_from=1995, year_to=None, body="hatch"))
+        db.commit()
+    catalog_cache.bump()
+    page = client.get("/api/models/Fiat/Тестова модель").json()
+    assert page["modifications"] == 0 and page["generations_list"] == [] and page["year_from"] == 1995
     assert page["in_production"] is True and page["year_to"] >= 2026
     # a revived model keeps its break in production
     integra = client.get("/api/models/Acura/Integra").json()
