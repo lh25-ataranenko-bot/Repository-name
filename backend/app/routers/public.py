@@ -59,8 +59,8 @@ def build_tree(cars: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [
         {"brand": b, "models": [
             {"model": m, "generations": [{"generation": g, "modifications": mods} for g, mods in sorted(gens.items())]}
-            for m, gens in sorted(models.items())]}
-        for b, models in sorted(out.items())
+            for m, gens in sorted(models.items(), key=lambda kv: kv[0].casefold())]}
+        for b, models in sorted(out.items(), key=lambda kv: kv[0].casefold())
     ]
 
 
@@ -140,7 +140,7 @@ def facets(db: Session = Depends(get_db)) -> dict[str, Any]:
         for c in cars:
             brands.setdefault(c["brand"], set()).add(c["model"])
         years = [y for c in cars for y in (c["year_from"], c["year_to"]) if y]
-        return {"brands": {b: sorted(m) for b, m in sorted(brands.items())},
+        return {"brands": {b: sorted(m, key=str.casefold) for b, m in sorted(brands.items(), key=lambda kv: kv[0].casefold())},
                 "year_min": min(years) if years else None, "year_max": max(years) if years else None}
     return catalog_cache.get(("facets",), build)
 
@@ -164,7 +164,7 @@ def models(db: Session = Depends(get_db), brand: str | None = Query(None, max_le
         by: dict[tuple[str, str], list[dict[str, Any]]] = {}
         for c in scored(db):
             by.setdefault((c["brand"], c["model"]), []).append(c)
-        return [_model_row(b, m, cs) for (b, m), cs in sorted(by.items())]
+        return [_model_row(b, m, cs) for (b, m), cs in sorted(by.items(), key=lambda kv: (kv[0][0].casefold(), kv[0][1].casefold()))]
     rows = catalog_cache.get(("models",), build)
     return [r for r in rows if not brand or r["brand"] == brand]
 

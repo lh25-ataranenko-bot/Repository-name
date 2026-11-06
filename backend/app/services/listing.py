@@ -17,6 +17,17 @@ WMI = {
     "VF1": "Renault (Франція)", "UU1": "Dacia/Renault (Румунія)", "JMZ": "Mazda (Японія)", "5YJ": "Tesla (США)",
     "LRW": "Tesla (Китай)", "XP7": "Tesla (Німеччина)", "SHH": "Honda (Велика Британія)", "JHM": "Honda (Японія)",
     "2HK": "Honda (Канада)", "5J6": "Honda (США)",
+    "WDD": "Mercedes-Benz (Німеччина)", "WDC": "Mercedes-Benz (Німеччина)", "W1K": "Mercedes-Benz (Німеччина)",
+    "W1N": "Mercedes-Benz (Німеччина)", "WAU": "Audi (Німеччина)", "TRU": "Audi (Угорщина)", "WP0": "Porsche (Німеччина)",
+    "WP1": "Porsche (Німеччина)", "VSS": "Seat/Cupra (Іспанія)", "ZFA": "Fiat (Італія)", "ZAR": "Alfa Romeo (Італія)",
+    "TSM": "Suzuki (Угорщина)", "JSA": "Suzuki (Японія)", "SAL": "Land Rover (Велика Британія)",
+    "SAJ": "Jaguar (Велика Британія)", "SAD": "Jaguar (Велика Британія)", "WMW": "Mini (Велика Британія)",
+    "YV1": "Volvo (Швеція)", "YV4": "Volvo (Швеція)", "VF3": "Peugeot (Франція)", "VF7": "Citroen (Франція)",
+    "W0L": "Opel (Німеччина)", "W0V": "Opel (Німеччина)", "WF0": "Ford (Німеччина)", "1FA": "Ford (США)",
+    "1FM": "Ford (США)", "JF1": "Subaru (Японія)", "JF2": "Subaru (Японія)", "JMB": "Mitsubishi (Японія)",
+    "JTH": "Lexus (Японія)", "JN8": "Nissan (Японія)", "VNK": "Toyota (Франція)", "KL1": "Chevrolet/Daewoo (Корея)",
+    "Y6D": "ЗАЗ/Daewoo (Україна)", "LGX": "BYD (Китай)", "LSJ": "MG/SAIC (Китай)", "LVV": "Chery (Китай)",
+    "L6T": "Geely (Китай)", "LGW": "Great Wall/Haval (Китай)",
 }
 VIN_YEAR = {"D": 2013, "E": 2014, "F": 2015, "G": 2016, "H": 2017, "J": 2018, "K": 2019, "L": 2020,
             "M": 2021, "N": 2022, "P": 2023, "R": 2024, "S": 2025, "T": 2026}
