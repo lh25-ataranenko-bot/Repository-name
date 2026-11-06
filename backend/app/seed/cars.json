@@ -20757,7 +20757,7 @@
   "acc": 7.3,
   "vmax": 241,
   "cons_pass": 6.4,
-  "cons_real": null,
+  "cons_real": 8.0,
   "tank": 54.0,
   "battery": null,
   "length": 4757,
@@ -20766,22 +20766,43 @@
   "wheelbase": 2824,
   "clearance": 125,
   "trunk": 480,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2017,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 8.0,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 550.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 33000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мехатронік S tronic DL382",
+    "frequency": "рідко",
+    "cost": 1800
+   },
+   {
+    "part": "Помпа і термостат",
+    "frequency": "іноді",
+    "cost": 600
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "audi-a6-allroad-c8-50-tdi-quattro-akp-8",
@@ -20945,7 +20966,7 @@
   "acc": 5.9,
   "vmax": 250,
   "cons_pass": 6.6,
-  "cons_real": null,
+  "cons_real": 8.5,
   "tank": 72.0,
   "battery": null,
   "length": 5172,
@@ -20954,22 +20975,44 @@
   "wheelbase": 2998,
   "clearance": 140,
   "trunk": 505,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2017,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.5,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1100.0,
+  "repair_per_year": 1100.0,
   "depreciation": 0.15,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 60000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Електроніка й ПЗ",
+    "frequency": "часто",
+    "cost": 500
+   },
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Сажовий фільтр і AdBlue",
+    "frequency": "іноді",
+    "cost": 1000
+   }
+  ]
  },
  {
   "slug": "audi-cabriolet-8g-2-0-mkp-5",
@@ -21227,7 +21270,7 @@
   "acc": 6.3,
   "vmax": 245,
   "cons_pass": 7.4,
-  "cons_real": null,
+  "cons_real": 9.0,
   "tank": 85.0,
   "battery": null,
   "length": 4986,
@@ -21238,20 +21281,42 @@
   "trunk": 605,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.0,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1000.0,
+  "repair_per_year": 1000.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 70000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Сажовий фільтр і AdBlue",
+    "frequency": "іноді",
+    "cost": 1000
+   },
+   {
+    "part": "Мікрогібрид 48 В",
+    "frequency": "рідко",
+    "cost": 900
+   }
+  ]
  },
  {
   "slug": "audi-q8-e-tron-ge-55-quattro-114-kvt-hod",
@@ -22073,7 +22138,7 @@
   "acc": 8.5,
   "vmax": 213,
   "cons_pass": 5.7,
-  "cons_real": null,
+  "cons_real": 7.0,
   "tank": 42.0,
   "battery": null,
   "length": 4319,
@@ -22082,22 +22147,42 @@
   "wheelbase": 2670,
   "clearance": 140,
   "trunk": 380,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2019,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC"
+  ],
+  "comfort": 7.0,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 450.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 25000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мотор B38 (вібрації)",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Робот DCT-7",
+    "frequency": "рідко",
+    "cost": 1300
+   },
+   {
+    "part": "Помпа",
+    "frequency": "рідко",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "bmw-2-series-g42-220i-coupe-akp-8",
@@ -22355,7 +22440,7 @@
   "acc": 5.4,
   "vmax": 250,
   "cons_pass": 8.4,
-  "cons_real": null,
+  "cons_real": 10.0,
   "tank": 74.0,
   "battery": null,
   "length": 5391,
@@ -22366,20 +22451,42 @@
   "trunk": 540,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.5,
+  "reliability": 70,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1200.0,
+  "repair_per_year": 1100.0,
   "depreciation": 0.15,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 100000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Електроніка й ПЗ",
+    "frequency": "іноді",
+    "cost": 500
+   },
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "рідко",
+    "cost": 1800
+   },
+   {
+    "part": "Датчики асистентів",
+    "frequency": "рідко",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "bmw-8-series-g15-840i-coupe-akp-8",
@@ -23107,7 +23214,7 @@
   "acc": 5.5,
   "vmax": 250,
   "cons_pass": 9.1,
-  "cons_real": null,
+  "cons_real": 11.2,
   "tank": 83.0,
   "battery": null,
   "length": 4935,
@@ -23118,20 +23225,42 @@
   "trunk": 580,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.5,
+  "reliability": 70,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1000.0,
+  "repair_per_year": 900.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 70000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Витоки оливи (B58)",
+    "frequency": "іноді",
+    "cost": 600
+   },
+   {
+    "part": "Пневмопідвіска (опція)",
+    "frequency": "рідко",
+    "cost": 1500
+   },
+   {
+    "part": "Електроніка",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "bmw-x7-g07-xdrive40d-akp-8",
@@ -28089,7 +28218,7 @@
   "acc": 7.1,
   "vmax": 180,
   "cons_pass": 14.7,
-  "cons_real": null,
+  "cons_real": 16.5,
   "tank": 91.0,
   "battery": null,
   "length": 5352,
@@ -28100,20 +28229,42 @@
   "trunk": 722,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 700.0,
+  "repair_per_year": 800.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 55000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Ліфтери й розподільний вал (AFM, DFM)",
+    "frequency": "іноді",
+    "cost": 3000
+   },
+   {
+    "part": "АКП-10 (поштовхи)",
+    "frequency": "іноді",
+    "cost": 1500
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "chevrolet-trailblazer-ii-1-3-turbo-cvt",
@@ -28794,7 +28945,7 @@
   "acc": 7.4,
   "vmax": 200,
   "cons_pass": 11.2,
-  "cons_real": null,
+  "cons_real": 12.0,
   "tank": 72.0,
   "battery": null,
   "length": 5172,
@@ -28805,20 +28956,42 @@
   "trunk": 915,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 58,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 650.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 23000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "АКП-9 (поштовхи, ПЗ)",
+    "frequency": "часто",
+    "cost": 1500
+   },
+   {
+    "part": "Масляний теплообмінник",
+    "frequency": "іноді",
+    "cost": 500
+   },
+   {
+    "part": "Розсувні двері",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "chrysler-pt-cruiser-pt-2-4-akp-4",
@@ -29546,7 +29719,7 @@
   "acc": 11.8,
   "vmax": 189,
   "cons_pass": 4.1,
-  "cons_real": null,
+  "cons_real": 5.6,
   "tank": 57.0,
   "battery": null,
   "length": 4428,
@@ -29555,22 +29728,43 @@
   "wheelbase": 2785,
   "clearance": 150,
   "trunk": 537,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2013,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 350.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 11000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Система AdBlue",
+    "frequency": "часто",
+    "cost": 900
+   },
+   {
+    "part": "Ремінь ГРМ (DV6)",
+    "frequency": "іноді",
+    "cost": 400
+   },
+   {
+    "part": "Електроніка (BSI, датчики)",
+    "frequency": "іноді",
+    "cost": 250
+   }
+  ]
  },
  {
   "slug": "citroen-c4-x-i-1-2-puretech-akp-8",
@@ -30063,7 +30257,7 @@
   "acc": 15.0,
   "vmax": 160,
   "cons_pass": 7.4,
-  "cons_real": null,
+  "cons_real": 9.5,
   "tank": 90.0,
   "battery": null,
   "length": 5413,
@@ -30074,20 +30268,36 @@
   "trunk": 10000,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
+  "airbags": 2,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 650.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 17000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Зчеплення й маховик",
+    "frequency": "часто",
+    "cost": 1000
+   },
+   {
+    "part": "Система AdBlue",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Корозія",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "citroen-jumpy-iii-2-0-bluehdi-mkp-6",
@@ -30768,7 +30978,7 @@
   "acc": 13.9,
   "vmax": 162,
   "cons_pass": 4.5,
-  "cons_real": null,
+  "cons_real": 5.4,
   "tank": 50.0,
   "battery": null,
   "length": 4363,
@@ -30777,22 +30987,38 @@
   "wheelbase": 2810,
   "clearance": 186,
   "trunk": 800,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 3,
+  "ncap_year": 2012,
+  "airbags": 4,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 4.5,
+  "reliability": 73,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 300.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 9000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Вкладиші колінвала (K9K)",
+    "frequency": "іноді",
+    "cost": 1200
+   },
+   {
+    "part": "Зчеплення",
+    "frequency": "іноді",
+    "cost": 500
+   },
+   {
+    "part": "Корозія задніх дверей",
+    "frequency": "рідко",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "dacia-jogger-i-1-0-tce-mkp-6",
@@ -30862,7 +31088,7 @@
   "acc": 11.6,
   "vmax": 175,
   "cons_pass": 4.4,
-  "cons_real": null,
+  "cons_real": 5.5,
   "tank": 50.0,
   "battery": null,
   "length": 4498,
@@ -30871,22 +31097,38 @@
   "wheelbase": 2810,
   "clearance": 190,
   "trunk": 207,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 3,
+  "ncap_year": 2012,
+  "airbags": 4,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 300.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 10000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Вкладиші колінвала (K9K)",
+    "frequency": "іноді",
+    "cost": 1200
+   },
+   {
+    "part": "Форсунки",
+    "frequency": "іноді",
+    "cost": 500
+   },
+   {
+    "part": "Шумоізоляція й скрипи",
+    "frequency": "часто",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "dacia-logan-iii-1-0-tce-cvt",
@@ -30909,7 +31151,7 @@
   "acc": 13.3,
   "vmax": 170,
   "cons_pass": 5.9,
-  "cons_real": null,
+  "cons_real": 6.8,
   "tank": 50.0,
   "battery": null,
   "length": 4396,
@@ -30918,22 +31160,40 @@
   "wheelbase": 2649,
   "clearance": 170,
   "trunk": 528,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 2,
+  "ncap_year": 2021,
+  "airbags": 6,
+  "assists": [
+   "AEB"
+  ],
+  "comfort": 5.0,
+  "reliability": 74,
+  "reliability_confidence": "середня",
+  "maint_per_year": 250.0,
+  "repair_per_year": 250.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 14000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Варіатор Jatco (перегрів у місті)",
+    "frequency": "іноді",
+    "cost": 1400
+   },
+   {
+    "part": "Котушки запалювання",
+    "frequency": "іноді",
+    "cost": 120
+   },
+   {
+    "part": "Шумоізоляція",
+    "frequency": "часто",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "dacia-logan-mcv-ii-1-5-dci-mkp-5",
@@ -32507,7 +32767,7 @@
   "acc": 7.9,
   "vmax": 200,
   "cons_pass": 12.4,
-  "cons_real": null,
+  "cons_real": 13.5,
   "tank": 93.0,
   "battery": null,
   "length": 5110,
@@ -32518,20 +32778,41 @@
   "trunk": 490,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 7.5,
+  "reliability": 62,
+  "reliability_confidence": "середня",
+  "maint_per_year": 550.0,
+  "repair_per_year": 600.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 26000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Масляний теплообмінник (Pentastar)",
+    "frequency": "часто",
+    "cost": 500
+   },
+   {
+    "part": "Коромисла Pentastar",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Електроніка",
+    "frequency": "іноді",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "dodge-hornet-i-1-3-phev-r-t-akp-6",
@@ -34622,7 +34903,7 @@
   "acc": 12.9,
   "vmax": 160,
   "cons_pass": 5.1,
-  "cons_real": null,
+  "cons_real": 6.2,
   "tank": 35.0,
   "battery": null,
   "length": 3571,
@@ -34631,22 +34912,38 @@
   "wheelbase": 2300,
   "clearance": 130,
   "trunk": 185,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 3,
+  "ncap_year": 2017,
+  "airbags": 7,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 250.0,
+  "repair_per_year": 300.0,
   "depreciation": 0.09,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 7500.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Зчеплення",
+    "frequency": "іноді",
+    "cost": 400
+   },
+   {
+    "part": "Електропідсилювач керма",
+    "frequency": "іноді",
+    "cost": 400
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "часто",
+    "cost": 150
+   }
+  ]
  },
  {
   "slug": "fiat-500l-330-1-4-mkp-6",
@@ -35139,7 +35436,7 @@
   "acc": 16.0,
   "vmax": 155,
   "cons_pass": 7.8,
-  "cons_real": null,
+  "cons_real": 9.5,
   "tank": 90.0,
   "battery": null,
   "length": 5413,
@@ -35150,20 +35447,36 @@
   "trunk": 10000,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
+  "airbags": 2,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 650.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 15000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Зчеплення й маховик",
+    "frequency": "часто",
+    "cost": 1000
+   },
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "Корозія",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "fiat-fiorino-iii-225-1-3-multijet-mkp-5",
@@ -36408,7 +36721,7 @@
   "acc": 11.4,
   "vmax": 187,
   "cons_pass": 5.1,
-  "cons_real": null,
+  "cons_real": 6.8,
   "tank": 55.0,
   "battery": null,
   "length": 4380,
@@ -36417,22 +36730,38 @@
   "wheelbase": 2648,
   "clearance": 150,
   "trunk": 471,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 5,
+  "ncap_year": 2010,
+  "airbags": 7,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 6.5,
+  "reliability": 62,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 9500.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Перегрів 1.0 EcoBoost (охолодження)",
+    "frequency": "іноді",
+    "cost": 1500
+   },
+   {
+    "part": "Ремінь ГРМ в оливі",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "Зчеплення",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "ford-capri-i-extended-range-rwd-77-kvt-hod",
@@ -36878,7 +37207,7 @@
   "acc": 6.0,
   "vmax": 180,
   "cons_pass": 13.4,
-  "cons_real": null,
+  "cons_real": 14.5,
   "tank": 98.0,
   "battery": null,
   "length": 5885,
@@ -36889,20 +37218,42 @@
   "trunk": 1500,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 7.5,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 600.0,
+  "repair_per_year": 700.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 50000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Фазорегулятори (EcoBoost 3.5)",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "АКП-10 (поштовхи)",
+    "frequency": "іноді",
+    "cost": 1500
+   },
+   {
+    "part": "Конденсат в інтеркулері",
+    "frequency": "рідко",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "ford-f-150-lightning-i-extended-range-131-kvt-hod",
@@ -37113,7 +37464,7 @@
   "acc": 10.7,
   "vmax": 200,
   "cons_pass": 5.4,
-  "cons_real": null,
+  "cons_real": 7.0,
   "tank": 70.0,
   "battery": null,
   "length": 4848,
@@ -37122,22 +37473,43 @@
   "wheelbase": 2849,
   "clearance": 150,
   "trunk": 300,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2015,
+  "airbags": 9,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 20000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Сажовий фільтр і EGR",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Система AdBlue",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "АКП-6 (PowerShift у ранніх)",
+    "frequency": "рідко",
+    "cost": 1500
+   }
+  ]
  },
  {
   "slug": "ford-gt-ii-3-5-ecoboost-v6-dct-7",
@@ -37536,7 +37908,7 @@
   "acc": 10.2,
   "vmax": 200,
   "cons_pass": 5.3,
-  "cons_real": null,
+  "cons_real": 6.9,
   "tank": 70.0,
   "battery": null,
   "length": 4796,
@@ -37545,22 +37917,43 @@
   "wheelbase": 2849,
   "clearance": 150,
   "trunk": 285,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2015,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 19000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Сажовий фільтр і EGR",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Система AdBlue",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "Мультимедіа SYNC",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "ford-scorpio-ii-2-0-mkp-5",
@@ -37865,7 +38258,7 @@
   "acc": 14.0,
   "vmax": 160,
   "cons_pass": 4.8,
-  "cons_real": null,
+  "cons_real": 6.2,
   "tank": 60.0,
   "battery": null,
   "length": 4418,
@@ -37876,20 +38269,38 @@
   "trunk": 2900,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 2,
+  "assists": [
+   "AEB"
+  ],
+  "comfort": 5.0,
+  "reliability": 70,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 13000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Ремінь ГРМ в оливі",
+    "frequency": "рідко",
+    "cost": 700
+   },
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Зчеплення",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "ford-windstar-ii-3-8-akp-4",
@@ -40826,7 +41237,7 @@
   "acc": 7.2,
   "vmax": 200,
   "cons_pass": 11.2,
-  "cons_real": null,
+  "cons_real": 12.0,
   "tank": 74.0,
   "battery": null,
   "length": 4954,
@@ -40837,20 +41248,41 @@
   "trunk": 524,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 76,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 30000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "АКП-9 (смикання, ПЗ)",
+    "frequency": "іноді",
+    "cost": 1500
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Знос гальм",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "honda-prelude-v-2-2-mkp-5",
@@ -41860,7 +42292,7 @@
   "acc": 12.5,
   "vmax": 180,
   "cons_pass": 9.3,
-  "cons_real": null,
+  "cons_real": 10.5,
   "tank": 75.0,
   "battery": null,
   "length": 5150,
@@ -41871,20 +42303,36 @@
   "trunk": 851,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
+  "airbags": 2,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 6.0,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.09,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 18000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Форсунки",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Турбіна",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Корозія рами й арок",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "hyundai-i10-iii-1-2-akp-4",
@@ -41954,7 +42402,7 @@
   "acc": 11.3,
   "vmax": 197,
   "cons_pass": 5.6,
-  "cons_real": null,
+  "cons_real": 6.5,
   "tank": 70.0,
   "battery": null,
   "length": 4775,
@@ -41963,22 +42411,40 @@
   "wheelbase": 2770,
   "clearance": 150,
   "trunk": 553,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2011,
+  "airbags": 9,
+  "assists": [
+   "LKA"
+  ],
+  "comfort": 7.0,
+  "reliability": 76,
+  "reliability_confidence": "середня",
+  "maint_per_year": 350.0,
+  "repair_per_year": 350.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 12500.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Двомасовий маховик",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Стуки підвіски",
+    "frequency": "іноді",
+    "cost": 250
+   }
+  ]
  },
  {
   "slug": "hyundai-inster-i-long-range-49-kvt-hod",
@@ -42236,7 +42702,7 @@
   "acc": 10.9,
   "vmax": 185,
   "cons_pass": 8.8,
-  "cons_real": null,
+  "cons_real": 10.0,
   "tank": 58.0,
   "battery": null,
   "length": 4410,
@@ -42245,22 +42711,38 @@
   "wheelbase": 2640,
   "clearance": 170,
   "trunk": 465,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 5,
+  "ncap_year": 2010,
+  "airbags": 6,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 6.5,
+  "reliability": 76,
+  "reliability_confidence": "середня",
+  "maint_per_year": 330.0,
+  "repair_per_year": 330.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 13000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Муфта повного приводу",
+    "frequency": "іноді",
+    "cost": 600
+   },
+   {
+    "part": "Каталізатор",
+    "frequency": "рідко",
+    "cost": 700
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "іноді",
+    "cost": 150
+   }
+  ]
  },
  {
   "slug": "hyundai-lantra-j2-1-6-mkp-5",
@@ -42330,7 +42812,7 @@
   "acc": 7.5,
   "vmax": 200,
   "cons_pass": 11.7,
-  "cons_real": null,
+  "cons_real": 12.8,
   "tank": 71.0,
   "battery": null,
   "length": 4981,
@@ -42341,20 +42823,42 @@
   "trunk": 509,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.5,
+  "reliability": 78,
+  "reliability_confidence": "середня",
+  "maint_per_year": 400.0,
+  "repair_per_year": 350.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 38000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Скрипи третього ряду",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Датчики асистентів",
+    "frequency": "рідко",
+    "cost": 200
+   }
+  ]
  },
  {
   "slug": "hyundai-pony-x2-1-5-mkp-5",
@@ -43364,7 +43868,7 @@
   "acc": 5.8,
   "vmax": 250,
   "cons_pass": 10.2,
-  "cons_real": null,
+  "cons_real": 11.5,
   "tank": 76.0,
   "battery": null,
   "length": 4800,
@@ -43373,22 +43877,43 @@
   "wheelbase": 2850,
   "clearance": 140,
   "trunk": 500,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2013,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 8.0,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 600.0,
+  "repair_per_year": 700.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 22000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Турбіни VR30 (у ранніх)",
+    "frequency": "іноді",
+    "cost": 2500
+   },
+   {
+    "part": "Електронне кермо DAS",
+    "frequency": "рідко",
+    "cost": 600
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "infiniti-q60-v37-3-0t-akp-7",
@@ -43693,7 +44218,7 @@
   "acc": 7.0,
   "vmax": 200,
   "cons_pass": 11.2,
-  "cons_real": null,
+  "cons_real": 11.8,
   "tank": 74.0,
   "battery": null,
   "length": 5032,
@@ -43704,20 +44229,42 @@
   "trunk": 411,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.5,
+  "reliability": 74,
+  "reliability_confidence": "середня",
+  "maint_per_year": 550.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 45000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "АКП-9 (ПЗ)",
+    "frequency": "рідко",
+    "cost": 1500
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Знос гальм",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "infiniti-qx70-s51-3-7-akp-7-awd",
@@ -45714,7 +46261,7 @@
   "acc": 11.5,
   "vmax": 190,
   "cons_pass": 5.5,
-  "cons_real": null,
+  "cons_real": 6.4,
   "tank": 58.0,
   "battery": null,
   "length": 4525,
@@ -45723,22 +46270,38 @@
   "wheelbase": 2750,
   "clearance": 150,
   "trunk": 492,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 4,
+  "ncap_year": 2013,
+  "airbags": 6,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 6.5,
+  "reliability": 76,
+  "reliability_confidence": "середня",
+  "maint_per_year": 350.0,
+  "repair_per_year": 350.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 13000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Двомасовий маховик",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "іноді",
+    "cost": 150
+   }
+  ]
  },
  {
   "slug": "kia-cerato-iv-bd-2-0-akp-6",
@@ -46325,7 +46888,7 @@
   "acc": 13.7,
   "vmax": 161,
   "cons_pass": 5.4,
-  "cons_real": null,
+  "cons_real": 6.4,
   "tank": 35.0,
   "battery": null,
   "length": 3595,
@@ -46334,22 +46897,40 @@
   "wheelbase": 2400,
   "clearance": 141,
   "trunk": 255,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 3,
+  "ncap_year": 2017,
+  "airbags": 6,
+  "assists": [
+   "AEB"
+  ],
+  "comfort": 5.0,
+  "reliability": 80,
+  "reliability_confidence": "середня",
+  "maint_per_year": 220.0,
+  "repair_per_year": 200.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 11000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Повільна АКП-4 (особливість)",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "іноді",
+    "cost": 100
+   },
+   {
+    "part": "Шумоізоляція",
+    "frequency": "часто",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "kia-pride-da-1-3-mkp-5",
@@ -48393,7 +48974,7 @@
   "acc": 6.8,
   "vmax": 209,
   "cons_pass": 8.5,
-  "cons_real": null,
+  "cons_real": 10.0,
   "tank": 89.0,
   "battery": null,
   "length": 4956,
@@ -48402,22 +48983,44 @@
   "wheelbase": 2923,
   "clearance": 283,
   "trunk": 258,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2017,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.5,
+  "reliability": 55,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1000.0,
+  "repair_per_year": 1300.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 55000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "часто",
+    "cost": 1800
+   },
+   {
+    "part": "Електроніка й мультимедіа",
+    "frequency": "часто",
+    "cost": 400
+   },
+   {
+    "part": "Сажовий фільтр і AdBlue",
+    "frequency": "іноді",
+    "cost": 1000
+   }
+  ]
  },
  {
   "slug": "land-rover-freelander-ii-l359-2-2-td4-akp-6",
@@ -48534,7 +49137,7 @@
   "acc": 6.6,
   "vmax": 225,
   "cons_pass": 7.9,
-  "cons_real": null,
+  "cons_real": 9.5,
   "tank": 80.0,
   "battery": null,
   "length": 4946,
@@ -48545,20 +49148,42 @@
   "trunk": 835,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.0,
+  "reliability": 56,
+  "reliability_confidence": "низька",
+  "maint_per_year": 1100.0,
+  "repair_per_year": 1300.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 95000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Електроніка (Pivi Pro, датчики)",
+    "frequency": "часто",
+    "cost": 400
+   },
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Мікрогібрид 48 В",
+    "frequency": "рідко",
+    "cost": 1200
+   }
+  ]
  },
  {
   "slug": "land-rover-range-rover-velar-l560-p250-2-0-akp-8",
@@ -48910,7 +49535,7 @@
   "acc": 6.1,
   "vmax": 230,
   "cons_pass": 10.0,
-  "cons_real": null,
+  "cons_real": 11.5,
   "tank": 66.0,
   "battery": null,
   "length": 4880,
@@ -48919,22 +49544,44 @@
   "wheelbase": 2850,
   "clearance": 140,
   "trunk": 482,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2013,
+  "airbags": 10,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.5,
+  "reliability": 88,
+  "reliability_confidence": "висока",
+  "maint_per_year": 500.0,
+  "repair_per_year": 250.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 28000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Нагар на клапанах (2GR-FSE)",
+    "frequency": "рідко",
+    "cost": 600
+   },
+   {
+    "part": "Помпа",
+    "frequency": "рідко",
+    "cost": 400
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "lexus-gx-iii-j250-550-3-4-v6-turbo-akp-10",
@@ -49051,7 +49698,7 @@
   "acc": 7.0,
   "vmax": 230,
   "cons_pass": 7.5,
-  "cons_real": null,
+  "cons_real": 9.0,
   "tank": 66.0,
   "battery": null,
   "length": 4680,
@@ -49060,22 +49707,44 @@
   "wheelbase": 2800,
   "clearance": 130,
   "trunk": 480,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2013,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 86,
+  "reliability_confidence": "висока",
+  "maint_per_year": 450.0,
+  "repair_per_year": 250.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 28000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Тачпад мультимедіа (незручний)",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Помпа",
+    "frequency": "рідко",
+    "cost": 400
+   },
+   {
+    "part": "Гальмівні диски",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "lexus-lbx-i-1-5-hybrid-e-cvt",
@@ -52059,7 +52728,7 @@
   "acc": 10.9,
   "vmax": 188,
   "cons_pass": 7.8,
-  "cons_real": null,
+  "cons_real": 9.0,
   "tank": 60.0,
   "battery": null,
   "length": 4585,
@@ -52068,22 +52737,38 @@
   "wheelbase": 2750,
   "clearance": 150,
   "trunk": 426,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 4,
+  "ncap_year": 2011,
+  "airbags": 6,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 6.5,
+  "reliability": 76,
+  "reliability_confidence": "середня",
+  "maint_per_year": 330.0,
+  "repair_per_year": 330.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 9000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Корозія порогів",
+    "frequency": "іноді",
+    "cost": 400
+   },
+   {
+    "part": "Задні гальма (супорти)",
+    "frequency": "іноді",
+    "cost": 200
+   },
+   {
+    "part": "Розсувні двері (тросики)",
+    "frequency": "іноді",
+    "cost": 250
+   }
+  ]
  },
  {
   "slug": "mazda-626-gf-2-0-mkp-5",
@@ -52247,7 +52932,7 @@
   "acc": 9.6,
   "vmax": 200,
   "cons_pass": 6.4,
-  "cons_real": null,
+  "cons_real": 7.2,
   "tank": 48.0,
   "battery": null,
   "length": 4275,
@@ -52256,22 +52941,40 @@
   "wheelbase": 2570,
   "clearance": 160,
   "trunk": 350,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 4,
+  "ncap_year": 2015,
+  "airbags": 6,
+  "assists": [
+   "AEB"
+  ],
+  "comfort": 6.0,
+  "reliability": 84,
+  "reliability_confidence": "середня",
+  "maint_per_year": 280.0,
+  "repair_per_year": 200.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 16000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Шумоізоляція",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "рідко",
+    "cost": 100
+   }
+  ]
  },
  {
   "slug": "mazda-cx-50-i-2-5-akp-6-awd",
@@ -52435,7 +53138,7 @@
   "acc": 7.5,
   "vmax": 210,
   "cons_pass": 10.2,
-  "cons_real": null,
+  "cons_real": 11.8,
   "tank": 74.0,
   "battery": null,
   "length": 5075,
@@ -52446,20 +53149,42 @@
   "trunk": 407,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 78,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 30000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Турбіна",
+    "frequency": "рідко",
+    "cost": 1200
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Гальмівні диски",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "mazda-cx-90-i-3-3-turbo-mhev-akp-8-awd",
@@ -53798,7 +54523,7 @@
   "acc": 8.4,
   "vmax": 223,
   "cons_pass": 5.8,
-  "cons_real": null,
+  "cons_real": 7.4,
   "tank": 43.0,
   "battery": null,
   "length": 4419,
@@ -53807,22 +54532,43 @@
   "wheelbase": 2729,
   "clearance": 150,
   "trunk": 455,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2019,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.0,
+  "reliability": 70,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 450.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 26000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мотор M282 (витрата оливи)",
+    "frequency": "іноді",
+    "cost": 1500
+   },
+   {
+    "part": "Робот 7G-DCT",
+    "frequency": "іноді",
+    "cost": 1300
+   },
+   {
+    "part": "Мультимедіа MBUX",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "mercedes-benz-citan-w420-1-5-cdi-mkp-6",
@@ -54644,7 +55390,7 @@
   "acc": 7.9,
   "vmax": 220,
   "cons_pass": 7.7,
-  "cons_real": null,
+  "cons_real": 9.5,
   "tank": 100.0,
   "battery": null,
   "length": 5120,
@@ -54653,22 +55399,43 @@
   "wheelbase": 3075,
   "clearance": 220,
   "trunk": 680,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2012,
+  "airbags": 9,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 8.5,
+  "reliability": 58,
+  "reliability_confidence": "середня",
+  "maint_per_year": 900.0,
+  "repair_per_year": 1100.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 30000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Пневмопідвіска Airmatic",
+    "frequency": "часто",
+    "cost": 1800
+   },
+   {
+    "part": "Масляний теплообмінник (OM642)",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Сажовий фільтр і AdBlue",
+    "frequency": "іноді",
+    "cost": 1000
+   }
+  ]
  },
  {
   "slug": "mercedes-benz-glb-x247-glb-200-dct-7",
@@ -54879,7 +55646,7 @@
   "acc": 6.3,
   "vmax": 238,
   "cons_pass": 8.4,
-  "cons_real": null,
+  "cons_real": 9.0,
   "tank": 90.0,
   "battery": null,
   "length": 5207,
@@ -54890,20 +55657,42 @@
   "trunk": 355,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 9,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.0,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1100.0,
+  "repair_per_year": 1100.0,
   "depreciation": 0.14,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 90000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Мультимедіа MBUX",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Датчики асистентів",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "mercedes-benz-r-class-w251-r-350-cdi-4matic-akp-7",
@@ -54973,7 +55762,7 @@
   "acc": 6.4,
   "vmax": 250,
   "cons_pass": 6.8,
-  "cons_real": null,
+  "cons_real": 7.5,
   "tank": 76.0,
   "battery": null,
   "length": 5179,
@@ -54982,22 +55771,44 @@
   "wheelbase": 3106,
   "clearance": 130,
   "trunk": 550,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2021,
+  "airbags": 10,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.5,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1200.0,
+  "repair_per_year": 1200.0,
   "depreciation": 0.15,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 100000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Електроніка й ПЗ",
+    "frequency": "часто",
+    "cost": 500
+   },
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Датчики асистентів",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "mercedes-benz-sl-r232-sl-43-2-0-akp-9",
@@ -55255,7 +56066,7 @@
   "acc": 9.1,
   "vmax": 206,
   "cons_pass": 6.1,
-  "cons_real": null,
+  "cons_real": 8.0,
   "tank": 57.0,
   "battery": null,
   "length": 5140,
@@ -55266,20 +56077,41 @@
   "trunk": 1030,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 8.5,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 700.0,
+  "repair_per_year": 700.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 40000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Розсувні двері (електропривід)",
+    "frequency": "іноді",
+    "cost": 600
+   },
+   {
+    "part": "Пневмопідвіска (опція)",
+    "frequency": "рідко",
+    "cost": 1500
+   },
+   {
+    "part": "Сажовий фільтр і EGR",
+    "frequency": "іноді",
+    "cost": 900
+   }
+  ]
  },
  {
   "slug": "mercedes-benz-vaneo-w414-1-7-cdi-mkp-5",
@@ -55349,7 +56181,7 @@
   "acc": 11.7,
   "vmax": 184,
   "cons_pass": 8.6,
-  "cons_real": null,
+  "cons_real": 10.5,
   "tank": 75.0,
   "battery": null,
   "length": 4763,
@@ -55360,20 +56192,36 @@
   "trunk": 700,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
+  "airbags": 4,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 7.0,
+  "reliability": 62,
+  "reliability_confidence": "середня",
+  "maint_per_year": 600.0,
+  "repair_per_year": 700.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 17000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Корозія кузова",
+    "frequency": "часто",
+    "cost": 800
+   },
+   {
+    "part": "Форсунки",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "АКП-5 (гідроблок)",
+    "frequency": "іноді",
+    "cost": 1200
+   }
+  ]
  },
  {
   "slug": "mercedes-benz-w124-w124-e-220-akp-4",
@@ -57041,7 +57889,7 @@
   "acc": 11.6,
   "vmax": 180,
   "cons_pass": 5.9,
-  "cons_real": null,
+  "cons_real": 6.6,
   "tank": 47.0,
   "battery": null,
   "length": 3870,
@@ -57050,22 +57898,38 @@
   "wheelbase": 2500,
   "clearance": 150,
   "trunk": 220,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 4,
+  "ncap_year": 2004,
+  "airbags": 6,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 80,
+  "reliability_confidence": "середня",
+  "maint_per_year": 220.0,
+  "repair_per_year": 220.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 5000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Кондиціонер",
+    "frequency": "рідко",
+    "cost": 400
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "іноді",
+    "cost": 100
+   },
+   {
+    "part": "Корозія порогів",
+    "frequency": "іноді",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "mitsubishi-eclipse-iv-2-4-akp-4",
@@ -58827,7 +59691,7 @@
   "acc": 7.8,
   "vmax": 210,
   "cons_pass": 10.2,
-  "cons_real": null,
+  "cons_real": 12.5,
   "tank": 72.0,
   "battery": null,
   "length": 4888,
@@ -58838,20 +59702,41 @@
   "trunk": 860,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 400.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 23000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Варіатор Jatco CVT8",
+    "frequency": "часто",
+    "cost": 2000
+   },
+   {
+    "part": "Кондиціонер (компресор)",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "nissan-nv200-m20-1-5-dci-mkp-5",
@@ -60378,7 +61263,7 @@
   "acc": 9.2,
   "vmax": 200,
   "cons_pass": 5.6,
-  "cons_real": null,
+  "cons_real": 6.9,
   "tank": 44.0,
   "battery": null,
   "length": 4151,
@@ -60387,22 +61272,42 @@
   "wheelbase": 2557,
   "clearance": 160,
   "trunk": 350,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 4,
+  "ncap_year": 2021,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "BSM"
+  ],
+  "comfort": 6.0,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 22000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Ремінь ГРМ в оливі (PureTech)",
+    "frequency": "часто",
+    "cost": 1200
+   },
+   {
+    "part": "Витрата оливи",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "opel-monterey-a-3-1-td-mkp-5",
@@ -61036,7 +61941,7 @@
   "acc": 10.8,
   "vmax": 188,
   "cons_pass": 6.5,
-  "cons_real": null,
+  "cons_real": 7.9,
   "tank": 50.0,
   "battery": null,
   "length": 4442,
@@ -61045,22 +61950,38 @@
   "wheelbase": 2652,
   "clearance": 155,
   "trunk": 506,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 3,
+  "ncap_year": 2013,
+  "airbags": 4,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.5,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 220.0,
+  "repair_per_year": 250.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 8500.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Шумоізоляція",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "іноді",
+    "cost": 100
+   },
+   {
+    "part": "Котушки",
+    "frequency": "рідко",
+    "cost": 100
+   }
+  ]
  },
  {
   "slug": "peugeot-306-7-1-6-mkp-5",
@@ -61412,7 +62333,7 @@
   "acc": 11.2,
   "vmax": 189,
   "cons_pass": 4.8,
-  "cons_real": null,
+  "cons_real": 5.8,
   "tank": 56.0,
   "battery": null,
   "length": 4641,
@@ -61421,22 +62342,43 @@
   "wheelbase": 2840,
   "clearance": 180,
   "trunk": 780,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2017,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 350.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 25000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Система AdBlue",
+    "frequency": "часто",
+    "cost": 900
+   },
+   {
+    "part": "Ремінь ГРМ (DV5)",
+    "frequency": "іноді",
+    "cost": 400
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "peugeot-605-sv-2-0-mkp-5",
@@ -61694,7 +62636,7 @@
   "acc": 15.0,
   "vmax": 160,
   "cons_pass": 7.4,
-  "cons_real": null,
+  "cons_real": 9.5,
   "tank": 90.0,
   "battery": null,
   "length": 5413,
@@ -61705,20 +62647,36 @@
   "trunk": 10000,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
+  "airbags": 2,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 650.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 17000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Зчеплення й маховик",
+    "frequency": "часто",
+    "cost": 1000
+   },
+   {
+    "part": "Система AdBlue",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Корозія",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "peugeot-e-2008-ii-50-kvt-hod",
@@ -63151,7 +64109,7 @@
   "acc": 5.3,
   "vmax": 262,
   "cons_pass": 9.2,
-  "cons_real": null,
+  "cons_real": 11.5,
   "tank": 75.0,
   "battery": null,
   "length": 5049,
@@ -63162,20 +64120,42 @@
   "trunk": 495,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 10,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 9.0,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 1300.0,
+  "repair_per_year": 1100.0,
   "depreciation": 0.14,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 80000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Пневмопідвіска",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Витоки охолоджувача",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "Гальма (дорогі комплекти)",
+    "frequency": "часто",
+    "cost": 1200
+   }
+  ]
  },
  {
   "slug": "proton-persona-ii-1-6-cvt",
@@ -63433,7 +64413,7 @@
   "acc": 6.3,
   "vmax": 180,
   "cons_pass": 14.0,
-  "cons_real": null,
+  "cons_real": 15.0,
   "tank": 98.0,
   "battery": null,
   "length": 5916,
@@ -63444,20 +64424,42 @@
   "trunk": 1700,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 64,
+  "reliability_confidence": "середня",
+  "maint_per_year": 600.0,
+  "repair_per_year": 700.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 48000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Ліфтери HEMI",
+    "frequency": "іноді",
+    "cost": 2500
+   },
+   {
+    "part": "Стартер-генератор eTorque",
+    "frequency": "рідко",
+    "cost": 1200
+   },
+   {
+    "part": "Вихлопний колектор (шпильки)",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "ram-2500-3500-v-6-7-cummins-td-akp-6-4x4",
@@ -63856,7 +64858,7 @@
   "acc": 9.9,
   "vmax": 202,
   "cons_pass": 4.7,
-  "cons_real": null,
+  "cons_real": 6.0,
   "tank": 58.0,
   "battery": null,
   "length": 4857,
@@ -63865,22 +64867,43 @@
   "wheelbase": 2884,
   "clearance": 160,
   "trunk": 680,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2015,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 8.0,
+  "reliability": 60,
+  "reliability_confidence": "низька",
+  "maint_per_year": 400.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.14,
-  "liquidity": null,
+  "liquidity": "низька",
   "price": 22000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Електроніка й мультимедіа",
+    "frequency": "часто",
+    "cost": 300
+   },
+   {
+    "part": "Робот EDC",
+    "frequency": "іноді",
+    "cost": 1300
+   },
+   {
+    "part": "Підвіска 4Control",
+    "frequency": "рідко",
+    "cost": 900
+   }
+  ]
  },
  {
   "slug": "renault-express-f40-1-9-d-mkp-5",
@@ -63950,7 +64973,7 @@
   "acc": 11.7,
   "vmax": 182,
   "cons_pass": 4.0,
-  "cons_real": null,
+  "cons_real": 5.2,
   "tank": 55.0,
   "battery": null,
   "length": 4449,
@@ -63959,22 +64982,42 @@
   "wheelbase": 2646,
   "clearance": 200,
   "trunk": 472,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2015,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "BSM"
+  ],
+  "comfort": 7.0,
+  "reliability": 70,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 350.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 17000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Робот EDC",
+    "frequency": "іноді",
+    "cost": 1300
+   },
+   {
+    "part": "Форсунки",
+    "frequency": "іноді",
+    "cost": 500
+   },
+   {
+    "part": "Мультимедіа R-Link",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "renault-kangoo-z-e-i-33-kvt-hod",
@@ -64044,7 +65087,7 @@
   "acc": 9.5,
   "vmax": 201,
   "cons_pass": 5.8,
-  "cons_real": null,
+  "cons_real": 7.5,
   "tank": 60.0,
   "battery": null,
   "length": 4672,
@@ -64053,22 +65096,43 @@
   "wheelbase": 2705,
   "clearance": 210,
   "trunk": 498,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2017,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 72,
+  "reliability_confidence": "середня",
+  "maint_per_year": 400.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 26000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Варіатор X-Tronic",
+    "frequency": "іноді",
+    "cost": 1800
+   },
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "renault-latitude-l70-2-0-dci-akp-6",
@@ -64514,7 +65578,7 @@
   "acc": 12.5,
   "vmax": 181,
   "cons_pass": 4.2,
-  "cons_real": null,
+  "cons_real": 5.4,
   "tank": 52.0,
   "battery": null,
   "length": 4406,
@@ -64523,22 +65587,42 @@
   "wheelbase": 2734,
   "clearance": 170,
   "trunk": 506,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2016,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "BSM"
+  ],
+  "comfort": 7.0,
+  "reliability": 66,
+  "reliability_confidence": "середня",
+  "maint_per_year": 300.0,
+  "repair_per_year": 350.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 14000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Робот EDC (сухе зчеплення)",
+    "frequency": "іноді",
+    "cost": 1300
+   },
+   {
+    "part": "Вкладиші колінвала (K9K)",
+    "frequency": "рідко",
+    "cost": 1200
+   },
+   {
+    "part": "Мультимедіа R-Link",
+    "frequency": "іноді",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "renault-scenic-e-tech-v-87-kvt-hod",
@@ -66864,7 +67948,7 @@
   "acc": 10.3,
   "vmax": 200,
   "cons_pass": 5.3,
-  "cons_real": null,
+  "cons_real": 6.8,
   "tank": 70.0,
   "battery": null,
   "length": 4854,
@@ -66873,22 +67957,40 @@
   "wheelbase": 2919,
   "clearance": 150,
   "trunk": 658,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2010,
+  "airbags": 7,
+  "assists": [
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 450.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 17000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Сажовий фільтр і EGR",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Мехатронік DSG",
+    "frequency": "рідко",
+    "cost": 1500
+   },
+   {
+    "part": "Розсувні двері (електропривід)",
+    "frequency": "іноді",
+    "cost": 500
+   }
+  ]
  },
  {
   "slug": "seat-altea-5p-1-6-tdi-mkp-5",
@@ -67428,7 +68530,7 @@
   "acc": 14.4,
   "vmax": 161,
   "cons_pass": 4.5,
-  "cons_real": null,
+  "cons_real": 5.4,
   "tank": 35.0,
   "battery": null,
   "length": 3563,
@@ -67437,22 +68539,40 @@
   "wheelbase": 2420,
   "clearance": 140,
   "trunk": 251,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 3,
+  "ncap_year": 2017,
+  "airbags": 6,
+  "assists": [
+   "AEB"
+  ],
+  "comfort": 5.0,
+  "reliability": 80,
+  "reliability_confidence": "середня",
+  "maint_per_year": 250.0,
+  "repair_per_year": 200.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 6000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Котушки запалювання",
+    "frequency": "іноді",
+    "cost": 120
+   },
+   {
+    "part": "Вібрації трициліндрового мотора",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Помпа",
+    "frequency": "рідко",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "skoda-elroq-i-85-82-kvt-hod",
@@ -68697,7 +69817,7 @@
   "acc": 9.8,
   "vmax": 200,
   "cons_pass": 7.2,
-  "cons_real": null,
+  "cons_real": 8.0,
   "tank": 50.0,
   "battery": null,
   "length": 4625,
@@ -68706,22 +69826,42 @@
   "wheelbase": 2670,
   "clearance": 130,
   "trunk": 460,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2017,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC"
+  ],
+  "comfort": 7.0,
+  "reliability": 80,
+  "reliability_confidence": "середня",
+  "maint_per_year": 380.0,
+  "repair_per_year": 280.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 19000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Варіатор Lineartronic (шум)",
+    "frequency": "рідко",
+    "cost": 1500
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Шумоізоляція",
+    "frequency": "часто",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "subaru-justy-m300-1-0-mkp-5",
@@ -68791,7 +69931,7 @@
   "acc": 9.5,
   "vmax": 210,
   "cons_pass": 8.0,
-  "cons_real": null,
+  "cons_real": 9.0,
   "tank": 60.0,
   "battery": null,
   "length": 4800,
@@ -68800,22 +69940,44 @@
   "wheelbase": 2750,
   "clearance": 150,
   "trunk": 506,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2015,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 7.5,
+  "reliability": 78,
+  "reliability_confidence": "середня",
+  "maint_per_year": 400.0,
+  "repair_per_year": 300.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 15000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Варіатор (рідко)",
+    "frequency": "рідко",
+    "cost": 1500
+   },
+   {
+    "part": "Витрата оливи FB25",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "subaru-levorg-vn-1-8-turbo-cvt",
@@ -70389,7 +71551,7 @@
   "acc": 13.8,
   "vmax": 160,
   "cons_pass": 4.1,
-  "cons_real": null,
+  "cons_real": 5.0,
   "tank": 35.0,
   "battery": null,
   "length": 3455,
@@ -70398,22 +71560,38 @@
   "wheelbase": 2340,
   "clearance": 140,
   "trunk": 168,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
+  "ncap": 4,
+  "ncap_year": 2014,
+  "airbags": 6,
   "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "comfort": 5.0,
+  "reliability": 84,
+  "reliability_confidence": "середня",
+  "maint_per_year": 220.0,
+  "repair_per_year": 180.0,
   "depreciation": 0.09,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 8000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Зчеплення",
+    "frequency": "іноді",
+    "cost": 350
+   },
+   {
+    "part": "Шумоізоляція",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Сайлентблоки",
+    "frequency": "рідко",
+    "cost": 100
+   }
+  ]
  },
  {
   "slug": "toyota-aygo-x-ab70-1-0-cvt",
@@ -71376,7 +72554,7 @@
   "acc": null,
   "vmax": 160,
   "cons_pass": 9.0,
-  "cons_real": null,
+  "cons_real": 10.0,
   "tank": 70.0,
   "battery": null,
   "length": 5265,
@@ -71387,20 +72565,40 @@
   "trunk": 6200,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 3,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC"
+  ],
+  "comfort": 6.5,
+  "reliability": 84,
+  "reliability_confidence": "середня",
+  "maint_per_year": 500.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.08,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 40000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Форсунки",
+    "frequency": "рідко",
+    "cost": 900
+   },
+   {
+    "part": "Підвіска при перевантаженні",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "toyota-iq-aj10-1-0-mkp-5",
@@ -71846,7 +73044,7 @@
   "acc": 11.3,
   "vmax": 165,
   "cons_pass": 4.1,
-  "cons_real": null,
+  "cons_real": 5.0,
   "tank": 45.0,
   "battery": null,
   "length": 4615,
@@ -71855,22 +73053,40 @@
   "wheelbase": 2780,
   "clearance": 140,
   "trunk": 505,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2012,
+  "airbags": 7,
+  "assists": [
+   "ACC"
+  ],
+  "comfort": 6.5,
+  "reliability": 88,
+  "reliability_confidence": "висока",
+  "maint_per_year": 330.0,
+  "repair_per_year": 180.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 14000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "12-В акумулятор",
+    "frequency": "іноді",
+    "cost": 180
+   },
+   {
+    "part": "Помпа інвертора",
+    "frequency": "рідко",
+    "cost": 450
+   },
+   {
+    "part": "Тягова батарея (вік)",
+    "frequency": "рідко",
+    "cost": 1800
+   }
+  ]
  },
  {
   "slug": "toyota-proace-ii-2-0-d-4d-mkp-6",
@@ -72316,7 +73532,7 @@
   "acc": 7.6,
   "vmax": 180,
   "cons_pass": 6.0,
-  "cons_real": null,
+  "cons_real": 6.6,
   "tank": 55.0,
   "battery": null,
   "length": 4745,
@@ -72327,20 +73543,42 @@
   "trunk": null,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 9,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 88,
+  "reliability_confidence": "середня",
+  "maint_per_year": 400.0,
+  "repair_per_year": 200.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 35000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "12-В акумулятор",
+    "frequency": "іноді",
+    "cost": 180
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Гул e-CVT при розгоні",
+    "frequency": "часто",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "toyota-verso-r20-1-8-cvt",
@@ -72739,7 +73977,7 @@
   "acc": 8.0,
   "vmax": 200,
   "cons_pass": 11.0,
-  "cons_real": null,
+  "cons_real": 12.5,
   "tank": 70.0,
   "battery": null,
   "length": 5036,
@@ -72750,20 +73988,42 @@
   "trunk": 583,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 70,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 500.0,
   "depreciation": 0.13,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 35000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Помпа і термостат (EA888)",
+    "frequency": "часто",
+    "cost": 600
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Витоки оливи",
+    "frequency": "іноді",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "volkswagen-atlas-cross-sport-i-2-0-tsi-akp-8-4motion",
@@ -73021,7 +74281,7 @@
   "acc": null,
   "vmax": 155,
   "cons_pass": 8.2,
-  "cons_real": null,
+  "cons_real": 9.8,
   "tank": 75.0,
   "battery": null,
   "length": 5986,
@@ -73032,20 +74292,39 @@
   "trunk": 11300,
   "ncap": null,
   "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "airbags": 2,
+  "assists": [
+   "AEB",
+   "LKA"
+  ],
+  "comfort": 6.0,
+  "reliability": 68,
+  "reliability_confidence": "середня",
+  "maint_per_year": 550.0,
+  "repair_per_year": 600.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 30000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Система AdBlue",
+    "frequency": "іноді",
+    "cost": 900
+   },
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 800
+   },
+   {
+    "part": "Двомасовий маховик",
+    "frequency": "іноді",
+    "cost": 900
+   }
+  ]
  },
  {
   "slug": "volkswagen-eos-1f-2-0-tsi-dsg-6",
@@ -73585,7 +74864,7 @@
   "acc": 10.2,
   "vmax": 193,
   "cons_pass": 5.4,
-  "cons_real": null,
+  "cons_real": 6.6,
   "tank": 40.0,
   "battery": null,
   "length": 4108,
@@ -73594,22 +74873,43 @@
   "wheelbase": 2551,
   "clearance": 170,
   "trunk": 455,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2019,
+  "airbags": 6,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 6.5,
+  "reliability": 76,
+  "reliability_confidence": "середня",
+  "maint_per_year": 320.0,
+  "repair_per_year": 300.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 19000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мехатронік DQ200",
+    "frequency": "іноді",
+    "cost": 1200
+   },
+   {
+    "part": "Котушки",
+    "frequency": "іноді",
+    "cost": 120
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 0
+   }
+  ]
  },
  {
   "slug": "volkswagen-taigo-cs-1-0-tsi-dsg-7",
@@ -73820,7 +75120,7 @@
   "acc": 14.4,
   "vmax": 161,
   "cons_pass": 4.5,
-  "cons_real": null,
+  "cons_real": 5.4,
   "tank": 35.0,
   "battery": null,
   "length": 3600,
@@ -73829,22 +75129,40 @@
   "wheelbase": 2420,
   "clearance": 140,
   "trunk": 251,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 3,
+  "ncap_year": 2019,
+  "airbags": 6,
+  "assists": [
+   "AEB"
+  ],
+  "comfort": 5.0,
+  "reliability": 80,
+  "reliability_confidence": "середня",
+  "maint_per_year": 250.0,
+  "repair_per_year": 200.0,
   "depreciation": 0.1,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 7000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Котушки запалювання",
+    "frequency": "іноді",
+    "cost": 120
+   },
+   {
+    "part": "Вібрації трициліндрового мотора",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Помпа",
+    "frequency": "рідко",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "volkswagen-vento-1h-1-8-mkp-5",
@@ -74713,7 +76031,7 @@
   "acc": 8.9,
   "vmax": 210,
   "cons_pass": 4.3,
-  "cons_real": null,
+  "cons_real": 5.5,
   "tank": 52.0,
   "battery": null,
   "length": 4369,
@@ -74722,22 +76040,43 @@
   "wheelbase": 2647,
   "clearance": 140,
   "trunk": 335,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2012,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 74,
+  "reliability_confidence": "середня",
+  "maint_per_year": 400.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.11,
-  "liquidity": null,
+  "liquidity": "середня",
   "price": 13000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Сажовий фільтр",
+    "frequency": "іноді",
+    "cost": 700
+   },
+   {
+    "part": "Мультимедіа Sensus",
+    "frequency": "рідко",
+    "cost": 0
+   },
+   {
+    "part": "Підвіска",
+    "frequency": "іноді",
+    "cost": 300
+   }
+  ]
  },
  {
   "slug": "volvo-v50-545-2-0-d-mkp-6",
@@ -74807,7 +76146,7 @@
   "acc": 7.4,
   "vmax": 180,
   "cons_pass": 6.9,
-  "cons_real": null,
+  "cons_real": 7.6,
   "tank": 60.0,
   "battery": null,
   "length": 4761,
@@ -74816,22 +76155,44 @@
   "wheelbase": 2872,
   "clearance": 140,
   "trunk": 529,
-  "ncap": null,
-  "ncap_year": null,
-  "airbags": null,
-  "assists": [],
-  "comfort": null,
-  "reliability": null,
-  "reliability_confidence": null,
-  "maint_per_year": null,
-  "repair_per_year": null,
+  "ncap": 5,
+  "ncap_year": 2018,
+  "airbags": 7,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.0,
+  "reliability": 74,
+  "reliability_confidence": "середня",
+  "maint_per_year": 450.0,
+  "repair_per_year": 400.0,
   "depreciation": 0.12,
-  "liquidity": null,
+  "liquidity": "висока",
   "price": 35000.0,
-  "source": "Довідник AutoWise: основні характеристики (не перевірено)",
+  "source": "Каталог виробника, Euro NCAP (демо)",
   "updated_at": "2026-11-06",
-  "status": "unverified",
-  "issues": []
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Мікрогібрид 48 В",
+    "frequency": "рідко",
+    "cost": 900
+   },
+   {
+    "part": "Мультимедіа (Android Automotive)",
+    "frequency": "іноді",
+    "cost": 0
+   },
+   {
+    "part": "Гальмівні диски",
+    "frequency": "іноді",
+    "cost": 400
+   }
+  ]
  },
  {
   "slug": "volvo-v70-iii-135-2-4-d5-akp-6",

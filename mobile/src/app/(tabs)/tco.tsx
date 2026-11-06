@@ -70,7 +70,7 @@ export default function Tco() {
                     <View><T v="label">На 1 км</T><T v="h3">{nf(r.result.per_km * env.rate, 1)} грн</T></View>
                   </Row>
                   {r.result.credit && <T v="small">Кредит: {usd(r.result.credit.monthly_payment)} на місяць, відсотки за час володіння {usd(r.result.C)}</T>}
-                  <T v="muted">Купівля {usd(r.result.P)} · пальне {usd(r.result.F)} · ТО {usd(r.result.M)} · ремонти {usd(r.result.R)} · страхування {usd(r.result.I)} · перепродаж −{usd(r.result.S)}{r.consumption_real ? "" : " · витрата паспортна"}</T>
+                  <T v="muted">Купівля {usd(r.result.P)} · пальне {usd(r.result.F)} · ТО {usd(r.result.M)} · ремонти {usd(r.result.R)} · страхування {usd(r.result.I)} · перепродаж −{usd(r.result.S)}{r.consumption_real ? "" : " · витрата паспортна"}{r.estimated?.length ? " · ТО й ремонти ≈ оцінка за класом авто" : ""}</T>
                 </>
               ) : <T v="muted">Немає даних для розрахунку</T>}
             </Card>

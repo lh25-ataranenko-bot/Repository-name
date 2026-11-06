@@ -400,6 +400,7 @@ def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
         r = tco(c, env, ov.to_overrides() if ov else None, Credit(**body.credit.model_dump()) if body.credit else None)
         results.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['generation']} {c['name']}",
                         "defaults": default_inputs(c), "consumption_real": c["cons_real"] is not None,
+                        "estimated": c.get("estimated", []),
                         "unit": "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км",
                         "year": c.get("for_year"), "year_ref": c["year_ref"],
                         "years": list(range(c["year_from"], c["year_to"] + 1)) if c["year_from"] and c["year_to"] else [],

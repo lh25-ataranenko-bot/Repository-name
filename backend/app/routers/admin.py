@@ -57,11 +57,12 @@ def quality(db: Session = Depends(get_db), _: User = Depends(require_editor)) ->
     cars = load_cars(db)
     items = []
     for c in cars:
-        filled = sum(c[k] is not None for k in COMPLETENESS)
+        est = set(c.get("estimated", []))  # estimated by class: not data
+        filled = sum(c[k] is not None and k not in est for k in COMPLETENESS)
         items.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['name']}", "generation": c["generation"],
                       "status": c["status"], "source": c["source"], "updated_at": c["updated_at"],
                       "completeness": round(filled / len(COMPLETENESS) * 100),
-                      "missing": [k for k in COMPLETENESS if c[k] is None]})
+                      "missing": [k for k in COMPLETENESS if c[k] is None or k in est]})
     counts = {s: sum(1 for c in cars if c["status"] == s) for s in ("verified", "partial", "unverified")}
     return {"total": len(cars), "counts": counts, "items": items}
 

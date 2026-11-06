@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 
 from ..models import CarModel, CarPhoto, Generation, Modification
 from .calc import Car, Env, cost_per_100km, real_range_km, tco
+from .estimates import estimate_running_costs
 from .scoring import compute_scores
 from ..years import span, this_year
 
@@ -55,6 +56,10 @@ def load_cars(db: Session) -> list[Car]:
         p = by_slug.get(c["slug"])
         c["photo"] = {"url": f"/api/media/photos/{p.filename}", "width": p.width, "height": p.height, "author": p.author,
                       "license": LICENSES.get(p.license, p.license), "source_url": p.source_url} if p else None
+    # yearly maintenance and repairs estimated by class where the catalogue has no data (see estimates.py)
+    estimate_running_costs(cars)
+    for c in cars:
+        c.setdefault("estimated", [])
     return cars
 
 
@@ -71,6 +76,14 @@ def with_scores(cars: list[Car], env: Env) -> list[Car]:
 
 def unit(c: Car) -> str:
     return "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км"
+
+
+def _est(c: Car, field: str) -> str | None:
+    """«≈ 450 (оцінка за класом)» for estimated running costs, the plain number otherwise."""
+    v = c.get(field)
+    if v is None:
+        return None
+    return f"≈ {fmt_num(v, 0)} (оцінка за класом)" if field in c.get("estimated", []) else fmt_num(v, 0)
 
 
 Row = tuple[str, Callable[[Car], Any], dict[str, Any]]
@@ -116,8 +129,8 @@ ROWS: list[tuple[str, list[Row]]] = [
     ("Експлуатація", [
         ("Надійність (0–100)", lambda c: c["reliability"],
          {"num": 0, "best": "max", "fmt": lambda c: f"{c['reliability']} · упевненість {c['reliability_confidence']}" if c["reliability"] is not None else None}),
-        ("ТО на рік, $", lambda c: c["maint_per_year"], {"num": 0, "best": "min"}),
-        ("Ремонти на рік (оцінка), $", lambda c: c["repair_per_year"], {"num": 0, "best": "min"}),
+        ("ТО на рік, $", lambda c: c["maint_per_year"], {"num": 0, "best": "min", "fmt": lambda c: _est(c, "maint_per_year")}),
+        ("Ремонти на рік (оцінка), $", lambda c: c["repair_per_year"], {"num": 0, "best": "min", "fmt": lambda c: _est(c, "repair_per_year")}),
         ("Типові несправності", lambda c: "; ".join(i["part"] for i in c["issues"]) or None, {}),
     ]),
     ("Ринок", [

@@ -45,6 +45,8 @@ export interface Car {
   reliability_confidence: string | null;
   maint_per_year: number | null;
   repair_per_year: number | null;
+  /** Fields estimated by class (yearly maintenance and repairs) where the catalogue has no data. */
+  estimated?: string[];
   depreciation: number | null;
   liquidity: string | null;
   price: number | null;
@@ -101,7 +103,7 @@ export interface TcoNumbers {
 export interface TcoInputs { price: number | null; cons: number | null; maint: number | null; repair: number | null; ins: number | null; dep_pct: number | null }
 export interface TcoResponse {
   env: Env;
-  results: { slug: string; name: string; defaults: TcoInputs; consumption_real: boolean; unit: string; year: number | null; year_ref: number | null; years: number[]; result: TcoNumbers | null }[];
+  results: { slug: string; name: string; defaults: TcoInputs; consumption_real: boolean; estimated?: string[]; unit: string; year: number | null; year_ref: number | null; years: number[]; result: TcoNumbers | null }[];
   comparison: { cheapest: string; most_expensive: string; difference: number } | null;
   missing: string[];
 }

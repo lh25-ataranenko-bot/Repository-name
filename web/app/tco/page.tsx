@@ -100,6 +100,7 @@ function Tco() {
               <div className="notice info">За {yw} і {nf(env.km)} км на рік найдешевше обійдеться <b>{byName(data.comparison.cheapest)}</b>. Це на <b>{usd(data.comparison.difference)}</b> менше, ніж {byName(data.comparison.most_expensive)}.</div>
             )}
             {data && data.results.length === 1 && <div className="notice info">Додайте ще одне авто, щоб побачити фінансову різницю за однакових умов.</div>}
+            {data?.results.some((r) => r.estimated?.length) ? <p className="small muted">≈ Для {data.results.filter((r) => r.estimated?.length).map((r) => r.name).join(", ")} ТО й ремонти оцінені за класом авто (ціна й тип пального), бо в каталозі немає даних. Замініть їх своїми витратами в припущеннях.</p> : null}
             {data?.missing.length ? <div className="notice">Не вистачає даних для розрахунку: {data.missing.map(byName).join(", ")}. Заповніть порожні поля в припущеннях.</div> : null}
             <div className="panel stack">
               <div className="legend">{SEG.map(([k, l, c]) => <span key={k}><span className="dot" style={{ background: c }} />{l}</span>)}</div>

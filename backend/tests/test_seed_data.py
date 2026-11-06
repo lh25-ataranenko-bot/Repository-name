@@ -47,3 +47,19 @@ def test_directory_is_consistent():
         assert m["wikidata"] is None or m["wikidata"].startswith("Q"), m
     # every catalogue model is in the directory under the same name
     assert {(c["brand"], c["model"]) for c in CARS} <= set(keys)
+
+
+def test_refresh_only_untouched_basic_demo_rows():
+    from types import SimpleNamespace
+    from app.seed.seed import refresh_demo_row
+
+    def mod(**kw):
+        return SimpleNamespace(id=kw.pop("id", 1), status="unverified", source="Довідник AutoWise: основні характеристики (не перевірено)",
+                               reliability=None, issues=[], updated_at=None, **kw)
+    newer = {"slug": "x", "brand": "B", "model": "M", "generation": "G", "reliability": 70, "status": "partial",
+             "source": "Каталог виробника, Euro NCAP (демо)", "updated_at": "2026-11-06", "issues": []}
+    m = mod()
+    assert refresh_demo_row(m, newer, edited=set()) and m.reliability == 70 and m.status == "partial"
+    assert not refresh_demo_row(mod(id=7), newer, edited={7})  # an editor changed it
+    assert not refresh_demo_row(SimpleNamespace(id=2, status="verified", source="Довідник AutoWise"), newer, set())
+    assert not refresh_demo_row(mod(), {**newer, "source": "Довідник AutoWise: основні"}, set())  # nothing newer

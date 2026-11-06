@@ -68,7 +68,9 @@ export function CarEditor({ slug }: { slug?: string }) {
     if (!slug) return;
     api<Car>(`/api/cars/${slug}`).then((loaded) => {
       // the API fills year_to with the current year for cars still in production; the editor shows it empty
-      const c = loaded.in_production ? { ...loaded, year_to: null } : loaded;
+      // estimated running costs are not data: the editor shows those fields empty
+      const est = Object.fromEntries((loaded.estimated ?? []).map((k) => [k, null]));
+      const c = { ...loaded, ...est, ...(loaded.in_production ? { year_to: null } : {}) };
       setCar(c); setForm(toForm(c)); setAssists(c.assists); setIssues(c.issues); }).catch((e) => setError(e.message));
     api<Change[]>(`/api/admin/changelog?slug=${slug}`).then(setLog).catch(() => null);
   };

@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db import SessionLocal
-from ..models import Brand, CarModel, Generation, Issue, Modification, User
+from ..models import Brand, CarModel, ChangeLog, Generation, Issue, Modification, User
 from ..security import hash_password
 
 DATA = Path(__file__).with_name("cars.json")
@@ -32,8 +32,11 @@ def get_or_create(db: Session, model, **kw):
 
 def seed(db: Session, demo_catalogue: bool = True) -> int:
     added = 0
+    edited = set(db.scalars(select(ChangeLog.modification_id).where(ChangeLog.modification_id.is_not(None))))
     for row in (json.loads(DATA.read_text(encoding="utf-8")) if demo_catalogue else []):
-        if db.scalar(select(Modification.id).where(Modification.slug == row["slug"])):
+        existing = db.scalar(select(Modification).where(Modification.slug == row["slug"]))
+        if existing is not None:
+            refresh_demo_row(existing, row, edited)
             continue
         row = dict(row)
         issues = row.pop("issues")
@@ -53,6 +56,25 @@ def seed(db: Session, demo_catalogue: bool = True) -> int:
                     password_hash=hash_password(s.admin_password)))
     db.commit()
     return added
+
+
+# Demo entries that only had basic specs and were never touched by an editor take the newer demo data
+# (reliability, faults, running costs added later). Anything an editor changed is left alone.
+REFRESHABLE_SOURCE = "Довідник AutoWise"
+
+
+def refresh_demo_row(mod: Modification, row: dict, edited: set[int]) -> bool:
+    if mod.id in edited or mod.status != "unverified" or not (mod.source or "").startswith(REFRESHABLE_SOURCE):
+        return False
+    if row.get("source", "").startswith(REFRESHABLE_SOURCE):
+        return False  # the demo data has nothing newer for this one
+    skip = {"slug", "brand", "model", "generation", "issues", "updated_at"}
+    for k, v in row.items():
+        if k not in skip:
+            setattr(mod, k, v)
+    mod.updated_at = date.fromisoformat(row["updated_at"]) if row.get("updated_at") else mod.updated_at
+    mod.issues = [Issue(**i) for i in row["issues"]]
+    return True
 
 
 def seed_directory(db: Session) -> int:
