@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { Bar, Button, Card, Chip, Loading, Row, Screen, T, useToast } from "@/components/ui";
+import { Bar, Button, Card, Chip, Field, Loading, Row, Screen, T, useToast } from "@/components/ui";
 import { CATS, FUEL, PRESETS, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
@@ -54,8 +54,10 @@ export default function Rating() {
           {weights && <Button small kind="ghost" title="Повернути профіль" onPress={() => setWeights(null)} />}
         </Card>
       )}
-      <T v="label">Бюджет: {usd(budget)}</T>
-      <Row>{[15000, 20000, 25000, 30000, 40000].map((b) => <Chip key={b} label={usd(b)} on={budget === b} onPress={() => setBudget(b)} />)}</Row>
+      <T v="label">Бюджет: {budget ? usd(budget) : "без обмеження"}</T>
+      <Row>{[10000, 20000, 30000, 50000, 100000, 250000, 0].map((b) => <Chip key={b} label={b ? usd(b) : "Без обмеження"} on={budget === b} onPress={() => setBudget(b)} />)}</Row>
+      <Field label="Точна сума, $" keyboardType="number-pad" value={budget ? String(budget) : ""} placeholder="Без обмеження"
+        onChangeText={(v) => setBudget(Math.max(0, Math.round(Number(v.replace(/\D/g, "")) || 0)))} />
       <T v="label">Рік випуску</T>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
         <Chip label="Будь-який" on={!year} onPress={() => setYear(null)} />

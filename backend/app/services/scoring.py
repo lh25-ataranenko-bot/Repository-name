@@ -116,7 +116,8 @@ def passes(car: Car, f: dict[str, Any]) -> list[str]:
     q = (f.get("q") or "").strip().lower()
     if q:
         hay = " ".join(str(car.get(k) or "") for k in ("brand", "model", "generation", "name", "engine_code")).lower()
-        if q not in hay:
+        named = f.get("q_models") or set()  # "камри", "октавія": recognised by the name search
+        if q not in hay and (car["brand"], car["model"]) not in named and (car["brand"], None) not in named:
             reasons.append("не збігається з пошуком")
     return reasons
 

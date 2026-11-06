@@ -16,7 +16,9 @@ def parse_query(text: str, usd_rate: float) -> dict[str, Any]:
     f: dict[str, Any] = {}
     tags: list[str] = []
 
-    m = re.search(r"(\d[\d\s.,]*)\s*(тис\.?|тисяч|k|к)?\s*(\$|дол|usd|у\.о|грн|€|євро)?", q)
+    money = r"(\d[\d\s.,]*)\s*(тис\.?|тисяч|k|к)?\s*(\$|дол|usd|у\.о|грн|€|євро)?"
+    # the amount after "до", "за", "бюджет" first: in "мазда 6 до 15 тисяч" the 6 is a model
+    m = re.search(r"(?:до|за|бюджет|max|макс)\s*" + money, q) or re.search(money, q)
     if m and re.search(r"до|бюджет|за|max|макс|\$|тис|дол|грн", q):
         n = float(m.group(1).replace(" ", "").replace(",", "."))
         if m.group(2) or n < 300:

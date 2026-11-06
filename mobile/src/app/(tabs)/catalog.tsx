@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import { FlatList, ScrollView, View } from "react-native";
 import { CarRow } from "@/components/CarRow";
 import { Chip, Field, Loading, Row, T } from "@/components/ui";
+import { NameSearch } from "@/components/NameSearch";
 import { BODY, FUEL } from "@/lib/format";
 import { useTheme } from "@/lib/theme";
 import type { Car, Facets } from "@/lib/types";
@@ -69,6 +70,8 @@ export default function Catalog() {
       ListHeaderComponent={
         <View style={{ gap: 10 }}>
           <Field label="Пошук" placeholder="Модель, покоління, код двигуна" value={q} onChangeText={setQ} autoCorrect={false} />
+          <NameSearch onPick={(s) => { setBrand(s.brand); setModel(s.type === "model" ? s.model ?? "" : ""); }} />
+          {brand !== "" && <T v="muted">Обрано: {brand}{model ? ` ${model}` : ""}</T>}
           <Chip label="Лише ті, що випускаються зараз" on={current} onPress={() => setCurrent(!current)} />
           <T v="label">Марка</T>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>

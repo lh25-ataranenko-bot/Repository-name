@@ -282,9 +282,12 @@ hr{border:0;border-top:1px solid var(--line);margin:0}
   .tray .wrap{justify-content:flex-end}
 }
 .picker{position:relative;min-width:260px;max-width:100%}
+.field .picker{min-width:0}
 .picker-list{position:absolute;z-index:15;left:0;right:0;top:calc(100% + 4px);margin:0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:320px;overflow-y:auto}
 .picker-list li{display:grid;gap:1px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:14px}
 .picker-list li.on{background:var(--accent-soft)}
+.combo-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:18px;line-height:1;padding:4px 8px;min-height:0;color:var(--muted);cursor:pointer}
+.picker input[role=combobox]{padding-right:32px}
 .chat-turn{display:grid;gap:8px}
 .chat-bubble{padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;gap:6px;max-width:100%;overflow-wrap:anywhere}
 .chat-turn.user .chat-bubble{background:var(--accent-soft);border-color:var(--accent);justify-self:end;max-width:min(640px,100%)}

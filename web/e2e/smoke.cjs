@@ -42,7 +42,10 @@ for (const [path, selectors] of Object.entries(PAGES)) {
 // The model filter must narrow the catalogue (regression: filters disappearing or not applying).
 const page = await browser.newPage();
 await page.goto(BASE + "/catalog", { waitUntil: "networkidle" });
-await page.selectOption("#f-model", "Toyota|Camry");
+// typed in Cyrillic, as people do: the suggestion picks Toyota Camry
+await page.fill("#f-model", "камрі");
+await page.waitForSelector("[role=option]:has-text('Camry')");
+await page.keyboard.press("Enter");
 await page.waitForTimeout(1000);
 const titles = await page.locator(".car .crumb").allTextContents();
 if (!titles.length || titles.some((t) => !t.includes("Camry"))) failures.push(`/catalog: фільтр моделі не спрацював (${titles.length} карток)`);

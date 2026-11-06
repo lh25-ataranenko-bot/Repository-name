@@ -1,5 +1,6 @@
 "use client";
 
+import { BudgetField } from "@/components/BudgetField";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
@@ -65,11 +66,7 @@ export function QuickPick() {
   return (
     <form className="quick" onSubmit={submit}>
       <div className="spread"><h3>Швидкий підбір</h3></div>
-      <div className="field">
-        <label htmlFor="qBudget">Бюджет</label>
-        <div className="big num">{usd(budget)}</div>
-        <input type="range" id="qBudget" min={10000} max={35000} step={500} value={budget} onChange={(e) => setBudget(+e.target.value)} />
-      </div>
+      <BudgetField id="qBudget" label="Бюджет" value={budget} onChange={setBudget} />
       <div className="fields">
         <ModelYearFields idPrefix="q" value={my} onChange={setMy} />
         <div className="field"><label htmlFor="qBody">Кузов</label><select id="qBody" value={body} onChange={(e) => setBody(e.target.value)}><option value="any">Будь-який</option>{Object.entries(BODY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>

@@ -15,6 +15,7 @@ from ..services.calc import Credit, Env, Overrides, default_inputs, price_for_ye
 from ..services.cache import Counter, catalog_cache
 from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
 from ..models import Brand, CarModel
+from ..services.names import NameIndex
 from ..services.query_parser import parse_query
 from ..services.scoring import CATEGORIES, PRESETS, explain, passes, weighted
 from ..years import MIN_YEAR, max_year, span, this_year
@@ -102,7 +103,8 @@ def list_cars(
     offset: int = Query(0, ge=0),
 ) -> dict[str, Any]:
     cars = scored(db)
-    f = {"q": q, "brand": brand, "model": model, "year": year, "body": body, "fuel": fuel, "trans": trans,
+    q_models = {(h["brand"], h.get("model")) for h in name_index(db).strong(q)} if q and q.strip() else set()
+    f = {"q": q, "q_models": q_models, "brand": brand, "model": model, "year": year, "body": body, "fuel": fuel, "trans": trans,
          "drive": drive, "max_price": max_price, "in_production": in_production}
     found = [c for c in cars if not passes(c, f)]
     if year:
@@ -256,20 +258,54 @@ def model_page(brand: str, model: str, db: Session = Depends(get_db)) -> dict[st
     }
 
 
+def name_index(db: Session) -> NameIndex:
+    """Brands and models for typed search, rebuilt when the catalogue changes."""
+    def build() -> NameIndex:
+        d = directory(db)
+        rows = []
+        for r in models(db, None, False):
+            dd = d.get((r["brand"], r["model"]), {})
+            rows.append({"brand": r["brand"], "model": r["model"], "alias": r.get("alias"), "brand_alias": dd.get("brand_alias"),
+                         "years": span(r["year_from"], r["year_to"], r.get("in_production", False)),
+                         "modifications": r["modifications"]})
+        return NameIndex(rows)
+    return catalog_cache.get(("names",), build)
+
+
+@router.get("/suggest")
+def suggest(db: Session = Depends(get_db), q: str = Query("", max_length=80), brand: str | None = Query(None, max_length=80),
+            limit: int = Query(10, ge=1, le=30)) -> list[dict[str, Any]]:
+    """Brands and models for what a person types: Latin or Cyrillic, Ukrainian or Russian spelling, small typos,
+    the wrong keyboard layout. With brand set, only that brand's models (an empty q lists them all)."""
+    idx = name_index(db)
+    if not q.strip():
+        if brand:
+            return [{"type": "model", "brand": it["brand"], "model": it["model"], "label": f"{it['brand']} {it['model']}",
+                     "alias": it.get("alias"), "years": it["years"], "modifications": it["modifications"], "score": 0}
+                    for it in idx.items if it["brand"] == brand]
+        return [{"type": "brand", "brand": b, "label": b, "score": 0, "models": sum(1 for it in idx.items if it["brand"] == b)}
+                for b in sorted(idx.brands, key=str.casefold)][:limit]
+    return idx.suggest(q, limit, brand)
+
+
 @router.get("/cars/lookup")
 def lookup(db: Session = Depends(get_db), q: str = Query("", max_length=100),
            limit: int = Query(20, ge=1, le=50)) -> list[dict[str, Any]]:
     """Light search for pickers: every word must match brand, model, generation, name or engine code."""
     words = q.lower().split()
-    out = []
+    # names typed in Cyrillic, with typos or the wrong layout: models the name search recognises
+    hits = name_index(db).strong(q) if q.strip() else []
+    rank = {(h["brand"], h.get("model")): i for i, h in enumerate(hits)}
+    found = []
     for c in scored(db):
         hay = f"{c['brand']} {c['model']} {c['generation']} {c['name']} {c['engine_code'] or ''}".lower()
-        if all(w in hay for w in words):
-            out.append({k: c[k] for k in ("slug", "brand", "model", "generation", "name", "year_from", "year_to",
-                                         "in_production", "year_ref", "price", "body", "fuel")})
-            if len(out) >= limit:
-                break
-    return out
+        exact = all(w in hay for w in words)
+        r = rank.get((c["brand"], c["model"]), rank.get((c["brand"], None)))
+        if exact or r is not None:
+            found.append(((0 if exact else 1, r if r is not None else 99), c))
+    found.sort(key=lambda x: x[0])
+    return [{k: c[k] for k in ("slug", "brand", "model", "generation", "name", "year_from", "year_to",
+                               "in_production", "year_ref", "price", "body", "fuel")} for _, c in found[:limit]]
 
 
 @router.get("/cars/{slug}")
@@ -447,8 +483,13 @@ def rating(body: RatingIn, db: Session = Depends(get_db)) -> dict[str, Any]:
 
 
 @router.post("/search/parse")
-def search_parse(body: ParseIn) -> dict[str, Any]:
-    return parse_query(body.q, Env.default().rate)
+def search_parse(body: ParseIn, db: Session = Depends(get_db)) -> dict[str, Any]:
+    out = parse_query(body.q, Env.default().rate)
+    named = name_index(db).find_in_text(body.q)  # "тойота камри до 20 тисяч", "шкода дизель"
+    if named:
+        out["filters"].update(named)
+        out["tags"].insert(0, " ".join(named.values()))
+    return out
 
 
 @router.post("/check")

@@ -1,5 +1,6 @@
 "use client";
 
+import { BudgetField } from "@/components/BudgetField";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -52,8 +53,7 @@ function Rating() {
       <div className="side-layout">
         <aside className="panel stack">
           <h3>Обов’язкові умови</h3>
-          <div className="field"><label htmlFor="rt-max">Максимальна ціна: <b>{usd(f.max_price)}</b></label>
-            <input type="range" id="rt-max" min={10000} max={40000} step={500} value={f.max_price} onChange={(e) => setF({ ...f, max_price: +e.target.value })} /></div>
+          <BudgetField id="rt-max" label="Максимальна ціна" value={f.max_price} onChange={(v) => setF({ ...f, max_price: v })} />
           <ModelYearFields idPrefix="rt" value={{ brand: f.brand, model: f.model, year: f.year }} onChange={(v) => setF({ ...f, ...v })} />
           {sel("trans", "Коробка", [["any", "Будь-яка"], ["automatic", "Автоматична"], ["manual", "Механіка"]])}
           {sel("drive", "Привід", [["any", "Будь-який"], ...Object.entries(DRIVE)])}

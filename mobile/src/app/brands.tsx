@@ -13,11 +13,15 @@ export default function Brands() {
   const t = useTheme();
   const [q, setQ] = useState("");
   const brands = useApi<BrandRow[]>("/api/brands");
-  const models = useApi<ModelRow[]>(q.trim().length >= 2 ? "/api/models" : null);
-  const query = q.trim().toLowerCase();
+  // brands and models in any spelling: "камри", "octvia", "бмв х5"
+  const hits = useApi<{ type: "brand" | "model"; brand: string; model?: string; alias?: string | null; modifications?: number }[]>(
+    q.trim().length >= 2 ? `/api/suggest?${new URLSearchParams({ q, limit: "30" })}` : null);
   type Item = BrandRow | ModelRow;
-  const found: Item[] | null = query.length >= 2 && models.data
-    ? models.data.filter((m) => `${m.brand} ${m.model} ${m.alias ?? ""}`.toLowerCase().includes(query)).slice(0, 60) : null;
+  const found: Item[] | null = q.trim().length >= 2 && hits.data
+    ? hits.data.map((h) => h.type === "model"
+        ? { brand: h.brand, model: h.model!, alias: h.alias, modifications: h.modifications ?? 0 }
+        : brands.data?.find((b) => b.brand === h.brand) ?? { brand: h.brand, country: null, alias: null, models: 0, models_in_production: 0, models_with_specs: 0 })
+    : null;
   if (!brands.data) return <Loading error={brands.error} />;
   const row = { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: t.line, gap: 2 } as const;
   return (
