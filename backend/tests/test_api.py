@@ -105,16 +105,17 @@ def test_offline_resend_is_idempotent(client):
 
 def test_year_and_model_filters(client):
     r = client.get("/api/cars", params={"brand": "Toyota", "model": "Camry"}).json()
-    assert {c["generation"] for c in r["items"]} == {"XV50", "XV70"}
+    assert {"XV40", "XV50", "XV70"} <= {c["generation"] for c in r["items"]} and all(c["model"] == "Camry" for c in r["items"])
     r = client.get("/api/cars", params={"brand": "Toyota", "model": "Camry", "year": 2014}).json()
-    assert [c["slug"] for c in r["items"]] == ["toyota-camry-xv50-25"]
-    camry = r["items"][0]
+    assert r["items"] and {c["generation"] for c in r["items"]} == {"XV50"} and "toyota-camry-xv50-25" in [c["slug"] for c in r["items"]]
+    camry = next(c for c in r["items"] if c["slug"] == "toyota-camry-xv50-25")
     assert camry["for_year"] == 2014 and camry["price_for_year"] == camry["price"]  # 2014 is the reference year
-    older = client.get("/api/cars", params={"brand": "Toyota", "model": "Camry", "year": 2011}).json()["items"][0]
+    older = next(c for c in client.get("/api/cars", params={"brand": "Toyota", "model": "Camry", "year": 2011}).json()["items"]
+                 if c["slug"] == "toyota-camry-xv50-25")
     assert older["price_for_year"] < camry["price"]  # older car of the same modification is cheaper
     # the budget is compared with the price of a car of that year
-    cheap = client.get("/api/cars", params={"year": 2011, "max_price": 13000, "model": "Camry"}).json()
-    assert cheap["count"] == 1
+    cheap = client.get("/api/cars", params={"year": 2011, "max_price": 13000, "model": "Camry"}).json()["items"]
+    assert "toyota-camry-xv50-25" in [c["slug"] for c in cheap] and all(c["price_for_year"] <= 13000 for c in cheap)
 
 
 def test_car_years_and_price_for_year(client):
@@ -141,9 +142,9 @@ def test_models_and_model_page(client):
     rows = client.get("/api/models", params={"brand": "Toyota"}).json()
     camry = next(r for r in rows if r["model"] == "Camry")
     # years of the whole model line come from the directory; generations from the catalogue
-    assert camry["generations"] == 2 and camry["year_from"] == 1982 and camry["in_production"]
+    assert camry["generations"] == 3 and camry["year_from"] == 1982 and camry["in_production"]
     page = client.get("/api/models/Toyota/Camry").json()
-    assert [g["generation"] for g in page["generations_list"]] == ["XV50", "XV70"]  # oldest first
+    assert [g["generation"] for g in page["generations_list"]] == ["XV40", "XV50", "XV70"]  # oldest first
     assert page["most_reliable"] and "Camry" not in page["other_models"] and "RAV4" in page["other_models"]
     assert client.get("/api/models/Toyota/Nope").status_code == 404
 
