@@ -63,3 +63,24 @@ def test_refresh_only_untouched_basic_demo_rows():
     assert not refresh_demo_row(mod(id=7), newer, edited={7})  # an editor changed it
     assert not refresh_demo_row(SimpleNamespace(id=2, status="verified", source="Довідник AutoWise"), newer, set())
     assert not refresh_demo_row(mod(), {**newer, "source": "Довідник AutoWise: основні"}, set())  # nothing newer
+
+
+def test_prune_removes_only_untouched_unreferenced_demo_rows():
+    """Dropped demo rows go; anything a user saved or an editor touched stays (the FKs cascade, so a blind
+    delete would take favourites and reviews with it)."""
+    from sqlalchemy import select
+    from app.db import SessionLocal
+    from app.models import Favorite, Modification, User
+    from app.seed.seed import prune_demo_rows
+
+    with SessionLocal() as db:
+        demo = db.scalars(select(Modification).where(Modification.status == "unverified").limit(3)).all()
+        free, liked, edited = demo
+        admin = db.scalar(select(User))
+        db.add(Favorite(user_id=admin.id, modification_id=liked.id))
+        db.flush()
+        keep = {m.slug for m in db.scalars(select(Modification))} - {free.slug, liked.slug, edited.slug}
+        assert prune_demo_rows(db, keep, {edited.id}) == 1
+        assert db.get(Modification, free.id) is None
+        assert db.get(Modification, liked.id) is not None and db.get(Modification, edited.id) is not None
+        db.rollback()

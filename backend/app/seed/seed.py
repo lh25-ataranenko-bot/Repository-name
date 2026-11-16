@@ -14,7 +14,8 @@ from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..db import SessionLocal
-from ..models import Brand, CarModel, ChangeLog, Generation, Issue, Modification, User
+from ..models import (Brand, CarModel, CarPhoto, CarViewDay, ChangeLog, Favorite, GarageCar, Generation, Issue,
+                      Modification, Notification, Review, User)
 from ..security import hash_password
 
 DATA = Path(__file__).with_name("cars.json")
@@ -49,6 +50,8 @@ def seed(db: Session, demo_catalogue: bool = True) -> int:
         db.add(mod)
         added += 1
 
+    if demo_catalogue:
+        prune_demo_rows(db, {row["slug"] for row in json.loads(DATA.read_text(encoding="utf-8"))}, edited)
     seed_directory(db)
     s = get_settings()
     if not db.scalar(select(User).where(User.email == s.admin_email)):
@@ -75,6 +78,25 @@ def refresh_demo_row(mod: Modification, row: dict, edited: set[int]) -> bool:
     mod.updated_at = date.fromisoformat(row["updated_at"]) if row.get("updated_at") else mod.updated_at
     mod.issues = [Issue(**i) for i in row["issues"]]
     return True
+
+
+def prune_demo_rows(db: Session, slugs: set[str], edited: set[int]) -> int:
+    """Removes demo entries that were dropped from the catalogue (e.g. near-duplicates), but only those nobody
+    touched: still unverified, with the demo source, never edited. One that something else refers to (a
+    review, a favourite, a listing) is kept. Returns how many were removed."""
+    # Foreign keys to modifications mostly cascade, so a delete would silently take users' data with it:
+    # anything referenced by these tables stays.
+    users_data = (Favorite, GarageCar, Review, Notification, CarPhoto, CarViewDay)
+    removed = 0
+    for mod in db.scalars(select(Modification).where(Modification.status == "unverified")).all():
+        if mod.slug in slugs or mod.id in edited or not (mod.source or "").startswith(REFRESHABLE_SOURCE):
+            continue
+        if any(db.scalar(select(t.modification_id).where(t.modification_id == mod.id).limit(1)) for t in users_data):
+            continue
+        db.delete(mod)
+        removed += 1
+    db.flush()
+    return removed
 
 
 def seed_directory(db: Session) -> int:
