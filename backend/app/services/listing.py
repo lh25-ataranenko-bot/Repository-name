@@ -128,6 +128,8 @@ def checklist(car: Car, km: int) -> dict[str, list[str]]:
         special.append("Історія заміни рідини варіатора, ривки при розгоні")
     if car["fuel"] == "electric":
         special.append("Звіт SOH батареї і кількість швидких заряджань")
+    if car["fuel"] == "hydrogen":
+        special.append("Термін служби водневих балонів (дата сертифікації) і де найближча воднева заправка: в Україні їх немає")
     if car["drive"] == "AWD":
         special.append("Робота повного приводу: муфта, роздатка, шуми в поворотах")
     if km > 200000:

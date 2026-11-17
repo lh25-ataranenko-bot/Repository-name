@@ -1,4 +1,4 @@
-export type Fuel = "petrol" | "diesel" | "hybrid" | "electric";
+export type Fuel = "petrol" | "diesel" | "hybrid" | "electric" | "hydrogen";
 export type CategoryKey = "economy" | "dynamics" | "reliability" | "comfort" | "safety" | "practicality" | "tco";
 export type Scores = Record<CategoryKey, number | null>;
 
@@ -85,7 +85,7 @@ export interface Meta {
   current_year: number;
 }
 
-export interface Env { petrol: number; diesel: number; kwh: number; rate: number; km: number; years: number; other: number }
+export interface Env { petrol: number; diesel: number; kwh: number; rate: number; km: number; years: number; other: number; h2?: number }
 
 export interface CompareRow { label: string; values: (string | null)[]; best: number[]; same: boolean }
 export interface CompareResult {

@@ -15,7 +15,7 @@ export default function Tco() {
   const t = useTheme();
   const { compare, ready, years } = useStore();
   const chosen = Object.fromEntries(compare.filter((s) => years[s]).map((s) => [s, years[s]]));
-  const [env, setEnv] = useState<Env>({ petrol: 58.5, diesel: 55.9, kwh: 4.32, rate: 41.6, km: 15000, years: 5, other: 250 });
+  const [env, setEnv] = useState<Env>({ petrol: 58.5, diesel: 55.9, kwh: 4.32, h2: 650, rate: 41.6, km: 15000, years: 5, other: 250 });
   const [loan, setLoan] = useState<{ down_payment_pct: number; rate_pct: number; term_months: number } | null>(null);
   const { data, error } = useApi<TcoResponse>(ready && compare.length ? "/api/tco" : null, { method: "POST", json: { slugs: compare, env, years: chosen, credit: loan } });
   const first = compare[0];
@@ -36,6 +36,7 @@ export default function Tco() {
         <Field label="Бензин, грн/л" keyboardType="decimal-pad" defaultValue={String(env.petrol)} onChangeText={num("petrol")} />
         <Field label="Дизель, грн/л" keyboardType="decimal-pad" defaultValue={String(env.diesel)} onChangeText={num("diesel")} />
         <Field label="Електро, грн/кВт·год" keyboardType="decimal-pad" defaultValue={String(env.kwh)} onChangeText={num("kwh")} />
+        <Field label="Водень, грн/кг" keyboardType="decimal-pad" defaultValue={String(env.h2)} onChangeText={num("h2")} />
         <Field label="Курс, грн за $" keyboardType="decimal-pad" defaultValue={String(env.rate)} onChangeText={num("rate")} />
         <Field label="Інші витрати, $/рік" keyboardType="numeric" defaultValue={String(env.other)} onChangeText={num("other")} />
       </Row>

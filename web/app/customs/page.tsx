@@ -73,7 +73,7 @@ function Customs() {
             <div className="field"><label htmlFor="cu-del">Доставка до кордону, {cur}</label><input id="cu-del" type="number" min={0} step={50} value={form.delivery} onChange={num("delivery")} /></div>
             <div className="field"><label htmlFor="cu-year">Рік випуску</label><input id="cu-year" type="number" min={MIN_YEAR} max={CURRENT_YEAR} value={form.production_year} onChange={num("production_year")} /></div>
             <div className="field"><label htmlFor="cu-fuel">Двигун</label><select id="cu-fuel" value={form.fuel} onChange={(e) => setForm({ ...form, fuel: e.target.value })}>
-              <option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option></select></div>
+              <option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="hybrid">Гібрид</option><option value="electric">Електро</option><option value="hydrogen">Водень</option></select></div>
             {(form.fuel === "petrol" || form.fuel === "diesel") && <div className="field"><label htmlFor="cu-cc">Об’єм двигуна, см³</label><input id="cu-cc" type="number" min={500} max={9000} step={1} value={form.cc} onChange={num("cc")} /></div>}
             {form.fuel === "electric" && <div className="field"><label htmlFor="cu-kwh">Ємність батареї, кВт·год</label><input id="cu-kwh" type="number" min={1} max={250} step={0.1} value={form.battery_kwh} onChange={num("battery_kwh")} /></div>}
             <div className="field"><label htmlFor="cu-eur">Курс євро, грн</label><input id="cu-eur" type="number" min={1} step={0.1} value={form.eur_uah} onChange={num("eur_uah")} /></div>

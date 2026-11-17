@@ -16,6 +16,9 @@ from typing import Any
 
 FIELDS = ("maint_per_year", "repair_per_year")
 MIN_SAMPLES = 8
+# A fuel with too few cars of its own borrows the fit of a similar drivetrain: a fuel-cell car is driven by an
+# electric motor through a reducer, like an EV (the fuel-cell stack itself is listed as a typical fault).
+SIMILAR = {"hydrogen": "electric"}
 
 
 def fit(cars: list[dict[str, Any]]) -> dict[tuple[str, str], dict[str, float]]:
@@ -43,7 +46,7 @@ def apply(cars: list[dict[str, Any]], model: dict[tuple[str, str], dict[str, flo
         price = c.get("price")
         done = []
         for field in FIELDS:
-            m = model.get((field, c["fuel"]))
+            m = model.get((field, c["fuel"])) or model.get((field, SIMILAR.get(c["fuel"], "")))
             if c.get(field) is None and price and m and m["lo"] <= price <= m["hi"]:
                 c[field] = round(math.exp(m["a"]) * price ** m["b"] / 10) * 10
                 done.append(field)

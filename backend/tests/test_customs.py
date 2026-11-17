@@ -42,3 +42,25 @@ def test_api(client):
     assert r.status_code == 200 and r.json()["total"]["uah"] > 15000 * 41.6
     assert client.post("/api/customs", json={"price": 15000, "production_year": 2019, "fuel": "petrol"}).status_code == 422
     assert client.post("/api/customs", json={"price": 15000, "production_year": 2030, "fuel": "hybrid"}).status_code == 422
+
+
+
+def test_hydrogen_car_is_taxed_like_an_ev():
+    from app.services.customs import CustomsRates, excise_eur
+    eur, note = excise_eur("hydrogen", None, None, 2021, 2026, CustomsRates())
+    assert eur == 0 and "кВт·год" in note
+
+
+def test_hydrogen_units_are_kilograms():
+    from app.schemas import fuel_unit_errors
+    assert fuel_unit_errors("hydrogen", 0.76, 0.9, 5.0) == []
+    assert fuel_unit_errors("hydrogen", 7.5, None, None)  # litres typed into a hydrogen car
+    assert fuel_unit_errors("petrol", 0.8, None, None)
+    assert fuel_unit_errors("petrol", 7.5, 9.0, 50) == []
+
+
+def test_hydrogen_running_cost_uses_hydrogen_price():
+    from app.services.calc import Env, cost_per_100km
+    env = Env(petrol=58.5, diesel=55.9, kwh=4.32, rate=41.6, km=15000, years=5, other=250, h2=650.0)
+    cost = cost_per_100km({"fuel": "hydrogen", "cons_real": 1.0}, env)
+    assert abs(cost - 650.0 / 41.6) < 0.01

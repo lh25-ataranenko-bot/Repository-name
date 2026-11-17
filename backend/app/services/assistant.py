@@ -55,7 +55,7 @@ TOOLS: list[dict[str, Any]] = [
                 "max_price": {"type": "number", "description": "Максимальна ціна в доларах США; 0 — без обмеження. З роком порівнюється з ціною авто цього року."},
                 "year": {"type": "integer", "description": "Рік випуску: лише модифікації, що випускалися в цьому році, з оцінкою ціни для нього; 0 — будь-який."},
                 "body": {"type": "string", "enum": ["any", "sedan", "liftback", "crossover", "hatch", "wagon", "minivan", "van", "pickup"]},
-                "fuel": {"type": "string", "enum": ["any", "petrol", "diesel", "hybrid", "electric"]},
+                "fuel": {"type": "string", "enum": ["any", "petrol", "diesel", "hybrid", "electric", "hydrogen"]},
                 "transmission": {"type": "string", "enum": ["any", "automatic", "manual"]},
                 "drive": {"type": "string", "enum": ["any", "FWD", "RWD", "AWD"]},
                 "priority": {

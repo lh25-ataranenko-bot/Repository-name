@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 from .services.calc import Env, Overrides
 from .years import Year
@@ -11,6 +11,7 @@ class EnvIn(BaseModel):
     petrol: float | None = Field(None, ge=0, le=1000)
     diesel: float | None = Field(None, ge=0, le=1000)
     kwh: float | None = Field(None, ge=0, le=100)
+    h2: float | None = Field(None, ge=0, le=10000)
     rate: float | None = Field(None, gt=0, le=1000)
     km: int | None = Field(None, ge=0, le=200000)
     years: int | None = Field(None, ge=1, le=20)
@@ -169,7 +170,7 @@ class ImportIn(BaseModel):
 
 
 Body = Literal["sedan", "liftback", "crossover", "hatch", "wagon", "minivan", "van", "pickup", "coupe", "cabrio"]
-FuelT = Literal["petrol", "diesel", "hybrid", "electric"]
+FuelT = Literal["petrol", "diesel", "hybrid", "electric", "hydrogen"]
 TransT = Literal["auto", "robot", "cvt", "manual", "reducer"]
 DriveT = Literal["FWD", "RWD", "AWD"]
 
@@ -191,9 +192,10 @@ class CarFields(BaseModel):
     drive: DriveT | None = None
     acc: float | None = Field(None, ge=2, le=30)
     vmax: int | None = Field(None, ge=80, le=420)
-    cons_pass: float | None = Field(None, ge=1, le=40)
-    cons_real: float | None = Field(None, ge=1, le=40)
-    tank: float | None = Field(None, ge=10, le=200)
+    # l/100 km (kWh/100 km for EVs, kg/100 km for hydrogen); tank in litres (kg for hydrogen): see per_fuel_units
+    cons_pass: float | None = Field(None, ge=0.3, le=40)
+    cons_real: float | None = Field(None, ge=0.3, le=40)
+    tank: float | None = Field(None, ge=2, le=200)
     battery: float | None = Field(None, ge=5, le=250)
     length: int | None = Field(None, ge=2000, le=7000)
     width: int | None = Field(None, ge=1200, le=2600)
@@ -214,6 +216,30 @@ class CarFields(BaseModel):
     liquidity: Literal["висока", "середня", "низька"] | None = None
     price: float | None = Field(None, ge=500, le=1_000_000)
     source: str | None = Field(None, max_length=200)
+
+    @model_validator(mode="after")
+    def per_fuel_units(self):
+        for msg in fuel_unit_errors(self.fuel, self.cons_pass, self.cons_real, self.tank):
+            raise ValueError(msg)
+        return self
+
+
+def fuel_unit_errors(fuel: str | None, cons_pass: float | None, cons_real: float | None, tank: float | None) -> list[str]:
+    """Hydrogen is measured in kilograms (about 1 kg/100 km, a 5-6 kg tank), everything else in litres or kWh."""
+    if fuel is None:
+        return []
+    cons = [v for v in (cons_pass, cons_real) if v is not None]
+    if fuel == "hydrogen":
+        if any(v > 3 for v in cons):
+            return ["Витрата водню вказується в кг/100 км (зазвичай близько 1)"]
+        if tank is not None and tank > 15:
+            return ["Бак водню вказується в кг (зазвичай 5-6 кг)"]
+        return []
+    if any(v < 1 for v in cons):
+        return ["Витрата менша за 1 на 100 км нереалістична для цього типу пального"]
+    if tank is not None and tank < 10:
+        return ["Об'єм бака менший за 10 л нереалістичний"]
+    return []
 
 
 class CarPatch(CarFields):
@@ -268,7 +294,7 @@ class CustomsIn(BaseModel):
     currency: Literal["USD", "EUR"] = "USD"
     delivery: float = Field(0, ge=0, le=100_000)
     production_year: Year
-    fuel: Literal["petrol", "diesel", "hybrid", "electric"]
+    fuel: Literal["petrol", "diesel", "hybrid", "electric", "hydrogen"]
     cc: int | None = Field(None, ge=500, le=9000)
     battery_kwh: float | None = Field(None, ge=1, le=250)
     eu_origin: bool = False

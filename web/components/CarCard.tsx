@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BODY, DRIVE, FUEL, isEV, usd, nf, years } from "@/lib/format";
+import { BODY, DRIVE, FUEL, amountUnit, isEV, usd, nf, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import type { Car } from "@/lib/types";
 import { Silhouette } from "./Silhouette";
@@ -30,7 +30,7 @@ export function CarCard({ car: c }: { car: Car }) {
       <dl className="kv">
         <div><dt>Потужність</dt><dd>{c.hp != null ? `${nf(c.hp)} к.с.` : ND}</dd></div>
         <div><dt>0–100 км/год</dt><dd>{c.acc != null ? `${nf(c.acc, 1)} с` : ND}</dd></div>
-        <div><dt>{real || cons == null ? "Витрата (реальна)" : "Витрата (паспорт)"}</dt><dd>{cons != null ? `${nf(cons, 1)} ${isEV(c) ? "кВт·год" : "л"}` : ND}</dd></div>
+        <div><dt>{real || cons == null ? "Витрата (реальна)" : "Витрата (паспорт)"}</dt><dd>{cons != null ? `${nf(cons, 1)} ${amountUnit(c)}` : ND}</dd></div>
         <div><dt>Надійність</dt><dd>{c.reliability != null ? `${c.reliability}/100` : ND}</dd></div>
       </dl>
       <div />

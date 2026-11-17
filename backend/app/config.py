@@ -49,6 +49,8 @@ class Settings(BaseSettings):
     petrol_uah: float = 58.5
     diesel_uah: float = 55.9
     kwh_uah: float = 4.32
+    # Hydrogen, UAH per kg. Ukraine has no public hydrogen stations yet: EU pump price (about €14/kg).
+    h2_uah: float = 650.0
     usd_rate: float = 41.6
     km_per_year: int = 15000
     other_per_year: float = 250

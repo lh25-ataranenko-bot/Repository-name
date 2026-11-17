@@ -33,7 +33,7 @@ PRESETS: dict[str, dict[str, Any]] = {
 
 
 def raw_metrics(car: Car, env: Env) -> dict[str, float | None]:
-    five = Env(env.petrol, env.diesel, env.kwh, env.rate, 15000, 5, env.other)
+    five = Env(env.petrol, env.diesel, env.kwh, env.rate, 15000, 5, env.other, env.h2)
     t = tco(car, five)
     trunk, clr, wb = car.get("trunk"), car.get("clearance"), car.get("wheelbase")
     return {

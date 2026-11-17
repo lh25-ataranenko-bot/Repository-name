@@ -25,6 +25,7 @@ class Env:
     km: int
     years: int
     other: float
+    h2: float = field(default_factory=lambda: get_settings().h2_uah)  # UAH per kg of hydrogen
 
     @classmethod
     def default(cls) -> "Env":
@@ -104,6 +105,8 @@ def energy_price_uah(car: Car, env: Env) -> float:
         return env.diesel
     if car.get("fuel") == "electric":
         return env.kwh
+    if car.get("fuel") == "hydrogen":
+        return env.h2
     return env.petrol
 
 

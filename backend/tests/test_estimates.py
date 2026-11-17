@@ -26,3 +26,14 @@ def test_api_marks_estimates(client):
     table = client.post("/api/compare", json={"slugs": ["toyota-camry-xv70", "ford-mustang-vii-s650-2-3-ecoboost-akp-10"]}).json()
     row = next(r for g in table["table"] for r in g["rows"] if r["label"].startswith("ТО на рік"))
     assert "оцінка за класом" in row["values"][1] and "оцінка" not in row["values"][0]
+
+
+def test_hydrogen_borrows_the_electric_fit():
+    known = [_car(p, maint=round(20 * p ** 0.45), repair=round(30 * p ** 0.3), fuel="electric") for p in range(20000, 60000, 4000)]
+    cars = [_car(35000, fuel="hydrogen")]
+    assert apply(cars, fit(known)) == 1 and cars[0]["maint_per_year"] is not None
+
+
+def test_mirai_has_a_cost_of_ownership(client):
+    car = client.get("/api/cars/toyota-mirai-jpd20-fcev").json()
+    assert car["fuel"] == "hydrogen" and car["estimated"] and car["tco_5y"] is not None

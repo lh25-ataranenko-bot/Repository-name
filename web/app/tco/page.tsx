@@ -19,7 +19,7 @@ const FIELDS: [keyof TcoInputs, string, number][] = [
   ["price", "Ціна купівлі, $", 100], ["cons", "Витрата на 100 км", 0.1], ["maint", "ТО, $/рік", 10],
   ["repair", "Ремонти, $/рік", 10], ["ins", "Страхування, $/рік", 10], ["dep_pct", "Знецінення, %/рік", 0.5],
 ];
-const DEFAULT_ENV: Env = { petrol: 58.5, diesel: 55.9, kwh: 4.32, rate: 41.6, km: 15000, years: 5, other: 250 };
+const DEFAULT_ENV: Env = { petrol: 58.5, diesel: 55.9, kwh: 4.32, h2: 650, rate: 41.6, km: 15000, years: 5, other: 250 };
 
 function Tco() {
   const { compare, setCompare, toggleCompare, years, setYear, ready } = useStore();
@@ -75,9 +75,9 @@ function Tco() {
           {[1, 3, 5, 10].map((y) => <button key={y} className="chip" aria-pressed={env.years === y} onClick={() => setEnv({ ...env, years: y })}>{y} {yearsWord(y)}</button>)}</div>
         <div className="fields">
           {envField("km", "Пробіг за рік, км", 1000)}{envField("petrol", "Бензин А-95, грн/л", 0.1)}{envField("diesel", "Дизель, грн/л", 0.1)}
-          {envField("kwh", "Електроенергія, грн/кВт·год", 0.01)}{envField("rate", "Курс, грн за $", 0.1)}{envField("other", "Інші витрати, $/рік", 10)}
+          {envField("kwh", "Електроенергія, грн/кВт·год", 0.01)}{envField("h2", "Водень, грн/кг", 10)}{envField("rate", "Курс, грн за $", 0.1)}{envField("other", "Інші витрати, $/рік", 10)}
         </div>
-        <p className="small muted">Інші витрати: паркування, мийка, шини, податки. Ціни на пальне типові для жовтня 2026 р., замініть на свої.</p>
+        <p className="small muted">Інші витрати: паркування, мийка, шини, податки. Ціни на пальне типові для жовтня 2026 р., замініть на свої. Водневих заправок в Україні поки немає: ціна водню — європейська (близько €14/кг).</p>
         <label className="check"><input type="checkbox" checked={loanOn} onChange={(e) => setLoanOn(e.target.checked)} /> Купую в кредит</label>
         {loanOn && (
           <div className="fields">

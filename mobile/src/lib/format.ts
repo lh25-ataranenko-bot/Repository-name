@@ -18,12 +18,14 @@ export const span = (from: number | null | undefined, to: number | null | undefi
   from ? `${from}–${inProduction ? "досі" : to ?? "—"}` : "—";
 export const years = (c: Pick<Car, "year_from" | "year_to" | "in_production">) => span(c.year_from, c.year_to, c.in_production);
 export const isEV = (c: Pick<Car, "fuel">) => c.fuel === "electric";
-export const consUnit = (c: Pick<Car, "fuel">) => (isEV(c) ? "кВт·год/100 км" : "л/100 км");
+// what consumption and the tank are measured in: kWh for EVs, kilograms for hydrogen, litres otherwise
+export const amountUnit = (c: Pick<Car, "fuel">) => (isEV(c) ? "кВт·год" : c.fuel === "hydrogen" ? "кг" : "л");
+export const consUnit = (c: Pick<Car, "fuel">) => `${amountUnit(c)}/100 км`;
 export const yearsWord = (y: number) => (y === 1 ? "рік" : y < 5 ? "роки" : "років");
 
 export const COLORS_KEYS = ["c1", "c2", "c3", "c4", "c5"] as const;
 
-export const FUEL: Record<string, string> = { petrol: "Бензин", diesel: "Дизель", hybrid: "Гібрид", electric: "Електро" };
+export const FUEL: Record<string, string> = { petrol: "Бензин", diesel: "Дизель", hybrid: "Гібрид", electric: "Електро", hydrogen: "Водень" };
 export const BODY: Record<string, string> = { sedan: "Седан", liftback: "Ліфтбек", crossover: "Кросовер", hatch: "Хетчбек", wagon: "Універсал", minivan: "Мінівен", van: "Фургон", pickup: "Пікап", coupe: "Купе", cabrio: "Кабріолет / родстер" };
 export const DRIVE: Record<string, string> = { FWD: "Передній", RWD: "Задній", AWD: "Повний" };
 export const ASSIST: Record<string, string> = {

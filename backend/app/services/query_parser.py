@@ -31,7 +31,7 @@ def parse_query(text: str, usd_rate: float) -> dict[str, Any]:
 
     for pattern, value, tag in [
         (r"дизел", "diesel", "дизель"), (r"гібрид|hybrid", "hybrid", "гібрид"),
-        (r"електр|\bev\b", "electric", "електро"), (r"бензин", "petrol", "бензин"),
+        (r"електр|\bev\b", "electric", "електро"), (r"водн|водород|hydrogen|fcev", "hydrogen", "водень"), (r"бензин", "petrol", "бензин"),
     ]:
         if re.search(pattern, q):
             f["fuel"] = value

@@ -12,7 +12,7 @@ from .estimates import estimate_running_costs
 from .scoring import compute_scores
 from ..years import span, this_year
 
-FUEL = {"petrol": "Бензин", "diesel": "Дизель", "hybrid": "Гібрид", "electric": "Електро"}
+FUEL = {"petrol": "Бензин", "diesel": "Дизель", "hybrid": "Гібрид", "electric": "Електро", "hydrogen": "Водень"}
 BODY = {"sedan": "Седан", "liftback": "Ліфтбек", "crossover": "Кросовер", "hatch": "Хетчбек", "wagon": "Універсал", "minivan": "Мінівен", "van": "Фургон", "pickup": "Пікап",
         "coupe": "Купе", "cabrio": "Кабріолет / родстер"}
 DRIVE = {"FWD": "Передній", "RWD": "Задній", "AWD": "Повний"}
@@ -69,13 +69,13 @@ def with_scores(cars: list[Car], env: Env) -> list[Car]:
         c["scores"] = scores[c["slug"]]
         c["cost_per_100km"] = cost_per_100km(c, env)
         c["range_km"] = real_range_km(c)
-        t = tco(c, Env(env.petrol, env.diesel, env.kwh, env.rate, 15000, 5, env.other))
+        t = tco(c, Env(env.petrol, env.diesel, env.kwh, env.rate, 15000, 5, env.other, env.h2))
         c["tco_5y"] = t.total if t else None
     return cars
 
 
 def unit(c: Car) -> str:
-    return "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км"
+    return {"electric": "кВт·год/100 км", "hydrogen": "кг/100 км"}.get(c["fuel"], "л/100 км")
 
 
 def _est(c: Car, field: str) -> str | None:

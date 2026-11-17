@@ -39,7 +39,7 @@ def age_coefficient(production_year: int, current_year: int) -> int:
 def excise_eur(fuel: str, cc: int | None, battery_kwh: float | None, production_year: int, current_year: int,
                r: CustomsRates) -> tuple[float, str]:
     """(excise in EUR, how it was computed)."""
-    if fuel == "electric":
+    if fuel in ("electric", "hydrogen"):  # a fuel-cell car has only an electric motor, so it is taxed like an EV
         kwh = battery_kwh or 0
         return kwh * r.electric_eur_per_kwh, f"{kwh:g} кВт·год × €{r.electric_eur_per_kwh:g}"
     if fuel == "hybrid":

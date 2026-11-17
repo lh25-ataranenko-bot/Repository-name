@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..models import Brand, CarModel, ChangeLog, Generation, Issue, Modification, User
-from ..schemas import CarCreate, CarPatch, ImportIn, IssueIn, RoleIn
+from ..schemas import CarCreate, CarPatch, ImportIn, IssueIn, RoleIn, fuel_unit_errors
 from ..security import require_admin, require_editor
 from ..years import max_year
 from ..services import importer, notify
@@ -44,7 +44,9 @@ def check_values(m: Modification) -> None:
     # year_to empty = still in production, so the price year may be any year from the start up to next year
     if m.year_ref and m.year_from and not m.year_from <= m.year_ref <= (m.year_to or max_year()):
         raise HTTPException(422, "Рік, до якого належить ціна, має бути в межах років випуску")
-    if m.fuel != "electric":
+    for msg in fuel_unit_errors(m.fuel, m.cons_pass, m.cons_real, m.tank):
+        raise HTTPException(422, msg)
+    if m.fuel in ("petrol", "diesel", "hybrid"):
         for field in ("cons_pass", "cons_real"):
             v = getattr(m, field)
             if v is not None and v > 25:

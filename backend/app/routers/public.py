@@ -13,7 +13,7 @@ from ..schemas import AssistantIn, CheckIn, CompareIn, CustomsIn, ScenariosIn, P
 from ..services import assistant, customs, listing
 from ..services.calc import Credit, Env, Overrides, default_inputs, price_for_year, tco
 from ..services.cache import Counter, catalog_cache
-from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, with_scores
+from ..services.catalog import ASSIST, BODY, DRIVE, FUEL, STATUS, TRANS, comparison_table, load_cars, unit, with_scores
 from ..models import Brand, CarModel
 from ..services.names import NameIndex
 from ..services.query_parser import parse_query
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api", tags=["public"])
 
 def env_key(env: Env) -> tuple:
     # Scores depend on energy prices and the exchange rate, not on mileage or period.
-    return (env.petrol, env.diesel, env.kwh, env.rate, env.other)
+    return (env.petrol, env.diesel, env.kwh, env.h2, env.rate, env.other)
 
 
 def scored(db: Session, env: Env | None = None) -> list[dict[str, Any]]:
@@ -128,7 +128,7 @@ def as_of_year(car: dict[str, Any], year: int | None, env: Env | None = None) ->
     if p is not None:
         c["price"] = p
         e = env or Env.default()
-        t = tco(c, Env(e.petrol, e.diesel, e.kwh, e.rate, 15000, 5, e.other))  # same 5-year basis as the catalogue
+        t = tco(c, Env(e.petrol, e.diesel, e.kwh, e.rate, 15000, 5, e.other, e.h2))  # same 5-year basis as the catalogue
         c["tco_5y"] = t.total if t else None
     return c
 
@@ -401,7 +401,7 @@ def tco_calc(body: TcoIn, db: Session = Depends(get_db)) -> dict[str, Any]:
         results.append({"slug": c["slug"], "name": f"{c['brand']} {c['model']} {c['generation']} {c['name']}",
                         "defaults": default_inputs(c), "consumption_real": c["cons_real"] is not None,
                         "estimated": c.get("estimated", []),
-                        "unit": "кВт·год/100 км" if c["fuel"] == "electric" else "л/100 км",
+                        "unit": unit(c),
                         "year": c.get("for_year"), "year_ref": c["year_ref"],
                         "years": list(range(c["year_from"], c["year_to"] + 1)) if c["year_from"] and c["year_to"] else [],
                         "result": r.as_dict() if r else None})
@@ -433,7 +433,7 @@ def tco_scenarios(body: ScenariosIn, db: Session = Depends(get_db)) -> dict[str,
         return e
 
     def fuel_up(e: Env, k: float) -> Env:
-        return env_with(petrol=e.petrol * k, diesel=e.diesel * k, kwh=e.kwh * k)
+        return env_with(petrol=e.petrol * k, diesel=e.diesel * k, kwh=e.kwh * k, h2=e.h2 * k)
 
     cases = [
         ("Як зараз", base_env, ov),

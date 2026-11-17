@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { Image, Pressable, View } from "react-native";
 import { API_BASE } from "@/lib/api";
-import { FUEL, isEV, nf, usd, years } from "@/lib/format";
+import { FUEL, amountUnit, isEV, nf, usd, years } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import type { Car } from "@/lib/types";
@@ -29,7 +29,7 @@ export function CarRow({ car: c, right }: { car: Car; right?: React.ReactNode })
         <Row style={{ justifyContent: "space-between" }}>
           <Stat label="Потужність" value={c.hp != null ? `${nf(c.hp)} к.с.` : ND} />
           <Stat label="0–100" value={c.acc != null ? `${nf(c.acc, 1)} с` : ND} />
-          <Stat label={c.cons_real != null || cons == null ? "Витрата" : "Витрата (паспорт)"} value={cons != null ? `${nf(cons, 1)} ${isEV(c) ? "кВт·год" : "л"}` : ND} />
+          <Stat label={c.cons_real != null || cons == null ? "Витрата" : "Витрата (паспорт)"} value={cons != null ? `${nf(cons, 1)} ${amountUnit(c)}` : ND} />
           <Stat label="Надійність" value={c.reliability != null ? `${c.reliability}/100` : ND} />
         </Row>
         <Row style={{ justifyContent: "space-between", borderTopWidth: 1, borderTopColor: t.line, paddingTop: 10 }}>

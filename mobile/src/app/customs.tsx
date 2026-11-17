@@ -46,7 +46,7 @@ export default function Customs() {
         <Field label="Доставка до кордону" keyboardType="numeric" value={form.delivery} onChangeText={set("delivery")} />
       </Row>
       <Row><Chip label="Долар США" on={form.currency === "USD"} onPress={() => set("currency")("USD")} /><Chip label="Євро" on={form.currency === "EUR"} onPress={() => set("currency")("EUR")} /></Row>
-      <Row>{[["petrol", "Бензин"], ["diesel", "Дизель"], ["hybrid", "Гібрид"], ["electric", "Електро"]].map(([k, l]) => <Chip key={k} label={l} on={form.fuel === k} onPress={() => set("fuel")(k)} />)}</Row>
+      <Row>{[["petrol", "Бензин"], ["diesel", "Дизель"], ["hybrid", "Гібрид"], ["electric", "Електро"], ["hydrogen", "Водень"]].map(([k, l]) => <Chip key={k} label={l} on={form.fuel === k} onPress={() => set("fuel")(k)} />)}</Row>
       <Row style={{ alignItems: "flex-start" }}>
         <Field label="Рік випуску" keyboardType="numeric" value={form.year} onChangeText={set("year")} />
         {(form.fuel === "petrol" || form.fuel === "diesel") && <Field label="Об’єм, см³" keyboardType="numeric" value={form.cc} onChangeText={set("cc")} />}

@@ -337489,5 +337489,142 @@
     "cost": 500
    }
   ]
+ },
+ {
+  "slug": "toyota-mirai-jpd10-fcev",
+  "brand": "Toyota",
+  "model": "Mirai",
+  "generation": "I (JPD10)",
+  "name": "FCEV 154 к.с. (водень)",
+  "year_from": 2015,
+  "year_to": 2020,
+  "year_ref": 2017,
+  "body": "sedan",
+  "fuel": "hydrogen",
+  "engine_code": null,
+  "displacement": null,
+  "hp": 154,
+  "torque": 335,
+  "transmission": "Редуктор",
+  "trans_type": "reducer",
+  "drive": "FWD",
+  "acc": 9.6,
+  "vmax": 178,
+  "cons_pass": 0.76,
+  "cons_real": 0.9,
+  "tank": 5.0,
+  "battery": null,
+  "length": 4890,
+  "width": 1815,
+  "height": 1535,
+  "wheelbase": 2780,
+  "clearance": 130,
+  "trunk": 361,
+  "ncap": null,
+  "ncap_year": null,
+  "airbags": 8,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM"
+  ],
+  "comfort": 7.5,
+  "reliability": 80,
+  "reliability_confidence": "низька",
+  "maint_per_year": null,
+  "repair_per_year": null,
+  "depreciation": 0.3,
+  "liquidity": "низька",
+  "price": 15000,
+  "source": "Каталог виробника, узагальнені відгуки власників (демо)",
+  "updated_at": "2026-11-17",
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Блок паливних елементів (ресурс)",
+    "frequency": "рідко",
+    "cost": 12000
+   },
+   {
+    "part": "Водневі заправки (в Україні немає)",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "12-В акумулятор",
+    "frequency": "іноді",
+    "cost": 180
+   }
+  ]
+ },
+ {
+  "slug": "toyota-mirai-jpd20-fcev",
+  "brand": "Toyota",
+  "model": "Mirai",
+  "generation": "II (JPD20)",
+  "name": "FCEV 182 к.с. (водень)",
+  "year_from": 2020,
+  "year_to": null,
+  "year_ref": 2022,
+  "body": "sedan",
+  "fuel": "hydrogen",
+  "engine_code": null,
+  "displacement": null,
+  "hp": 182,
+  "torque": 300,
+  "transmission": "Редуктор",
+  "trans_type": "reducer",
+  "drive": "RWD",
+  "acc": 9.2,
+  "vmax": 175,
+  "cons_pass": 0.89,
+  "cons_real": 1.0,
+  "tank": 5.6,
+  "battery": null,
+  "length": 4975,
+  "width": 1885,
+  "height": 1470,
+  "wheelbase": 2920,
+  "clearance": 130,
+  "trunk": 321,
+  "ncap": null,
+  "ncap_year": null,
+  "airbags": 10,
+  "assists": [
+   "AEB",
+   "LKA",
+   "ACC",
+   "BSM",
+   "RCTA"
+  ],
+  "comfort": 8.5,
+  "reliability": 82,
+  "reliability_confidence": "низька",
+  "maint_per_year": null,
+  "repair_per_year": null,
+  "depreciation": 0.3,
+  "liquidity": "низька",
+  "price": 35000,
+  "source": "Каталог виробника, узагальнені відгуки власників (демо)",
+  "updated_at": "2026-11-17",
+  "status": "partial",
+  "issues": [
+   {
+    "part": "Блок паливних елементів (ресурс)",
+    "frequency": "рідко",
+    "cost": 12000
+   },
+   {
+    "part": "Водневі заправки (в Україні немає)",
+    "frequency": "часто",
+    "cost": 0
+   },
+   {
+    "part": "Мультимедіа",
+    "frequency": "рідко",
+    "cost": 150
+   }
+  ]
  }
 ]
