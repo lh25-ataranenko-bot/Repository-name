@@ -30,7 +30,7 @@ def test_pagination(client):
 
 def test_lookup(client):
     r = client.get("/api/cars/lookup", params={"q": "bmw f30"}).json()
-    assert {x["slug"] for x in r} == {"bmw-f30-320d-xdrive", "bmw-f30-320i"}
+    assert {x["slug"] for x in r} == {"bmw-f30-320d-xdrive", "bmw-f30-320i", "bmw-3-series-f30-320i-akp-8-dorestailinh"}
     assert set(r[0]) >= {"slug", "brand", "model", "name"} and "scores" not in r[0]
 
 

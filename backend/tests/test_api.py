@@ -10,7 +10,7 @@ def test_tree(client):
     bmw = next(b for b in tree if b["brand"] == "BMW")
     series3 = next(m for m in bmw["models"] if m["model"] == "3 Series")
     f30 = next(g for g in series3["generations"] if g["generation"] == "F30")
-    assert len(f30["modifications"]) == 2
+    assert len(f30["modifications"]) == 3
 
 
 def test_car_detail_and_404(client):
@@ -142,9 +142,9 @@ def test_models_and_model_page(client):
     rows = client.get("/api/models", params={"brand": "Toyota"}).json()
     camry = next(r for r in rows if r["model"] == "Camry")
     # years of the whole model line come from the directory; generations from the catalogue
-    assert camry["generations"] == 3 and camry["year_from"] == 1982 and camry["in_production"]
+    assert camry["generations"] == 7 and camry["year_from"] == 1982 and camry["in_production"]
     page = client.get("/api/models/Toyota/Camry").json()
-    assert [g["generation"] for g in page["generations_list"]] == ["XV40", "XV50", "XV70"]  # oldest first
+    assert [g["generation"] for g in page["generations_list"]] == ["XV10", "XV20", "XV30", "XV40", "XV50", "XV70", "XV80"]  # oldest first
     assert page["most_reliable"] and "Camry" not in page["other_models"] and "RAV4" in page["other_models"]
     assert client.get("/api/models/Toyota/Nope").status_code == 404
 
