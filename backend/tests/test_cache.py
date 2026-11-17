@@ -10,7 +10,8 @@ def test_edit_is_visible_immediately(client, admin_token):
     before = client.get("/api/cars/kia-ceed-cd-16crdi").json()["price"]  # warms the cache
     client.patch("/api/admin/cars/kia-ceed-cd-16crdi", headers=h, json={"price": before + 1000})
     assert client.get("/api/cars/kia-ceed-cd-16crdi").json()["price"] == before + 1000
-    assert client.get("/api/cars", params={"q": "ceed"}).json()["items"][0]["price"] == before + 1000
+    items = client.get("/api/cars", params={"q": "ceed", "limit": 100}).json()["items"]
+    assert next(i for i in items if i["slug"] == "kia-ceed-cd-16crdi")["price"] == before + 1000
 
 
 def test_get_car_does_not_leak_into_cache(client):
