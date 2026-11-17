@@ -74,8 +74,9 @@ def test_prune_removes_only_untouched_unreferenced_demo_rows():
     from app.seed.seed import prune_demo_rows
 
     with SessionLocal() as db:
-        demo = db.scalars(select(Modification).where(Modification.status == "unverified").limit(3)).all()
-        free, liked, edited = demo
+        free, liked, edited = db.scalars(select(Modification).limit(3)).all()
+        for m in (free, liked, edited):  # make them look like untouched demo rows (rolled back at the end)
+            m.status, m.source = "unverified", "Довідник AutoWise: основні характеристики (не перевірено)"
         admin = db.scalar(select(User))
         db.add(Favorite(user_id=admin.id, modification_id=liked.id))
         db.flush()
